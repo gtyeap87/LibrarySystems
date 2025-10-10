@@ -4,6 +4,7 @@ Description
 
 Note
 - For model, endpoints and architecture design, no AI assitance is used. The AI usage is mainly use in realizing the code design.
+- Utilized SonarQube for code improvement suggestion.
 
 Architecure
 -- Controller
