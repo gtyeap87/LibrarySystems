@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Library.Model;
 
 /// <summary>
-/// Represents weather forecast data with support for both v1 and v2 API features
+/// Represents the stock information for a specific book
 /// </summary>
 public class BookStock : Root
 {

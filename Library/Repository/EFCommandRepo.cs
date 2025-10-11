@@ -2,10 +2,10 @@
 
 namespace Library.Repository
 {
-    public class EFCommandRepo<T>(LibraryContext context, ILogger<EFCommandRepo<T>> logger) : ICommandRepo<T> where T : class
+    public class EfCommandRepo<T>(LibraryContext context, ILogger<EfCommandRepo<T>> logger) : ICommandRepo<T> where T : class
     {
         private readonly LibraryContext _context = context;
-        private readonly ILogger<EFCommandRepo<T>> _logger = logger;
+        private readonly ILogger<EfCommandRepo<T>> _logger = logger;
 
         public async Task<Guid> AddAsync(T entity)
         {

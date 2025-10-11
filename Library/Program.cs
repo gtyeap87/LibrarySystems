@@ -29,7 +29,7 @@ builder.Services.AddScoped<ILibraryQueryRepository, LibraryRepository>();
 builder.Services.AddScoped<ILibraryCommandRepository, LibraryRepository>();
 builder.Services.AddScoped<ILibraryService, LibraryService>();
 builder.Services.AddScoped(typeof(IQueryRepo<>), typeof(EfQueryRepo<>));
-builder.Services.AddScoped(typeof(ICommandRepo<>), typeof(EFCommandRepo<>));
+builder.Services.AddScoped(typeof(ICommandRepo<>), typeof(EfCommandRepo<>));
 
 // Add logging
 builder.Logging.AddConsole();
