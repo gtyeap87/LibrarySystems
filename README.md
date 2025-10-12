@@ -36,4 +36,5 @@ API Perfomarnce implentation
 Future implemention
 - Batch insert for bulk insert
 - API Versioning
-- User Mediatr 
+- User Mediatr
+- Authorization and Authentication 
