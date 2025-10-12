@@ -33,5 +33,6 @@ public enum Genre
     Health,
     Travel,
     Children,
-    YoungAdult
+    YoungAdult,
+    Religion
 }
