@@ -1,7 +1,10 @@
 ﻿using Asp.Versioning;
+using Library.Commands.Member;
 using Library.Data;
+using Library.Features.Commands;
 using Library.Repository;
 using Library.Service;
+using MediatR;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -24,12 +27,15 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<LibraryContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register repositories and services
+// Register Mediatr commands, repositories and services
 builder.Services.AddScoped<ILibraryQueryRepository, LibraryRepository>();
 builder.Services.AddScoped<ILibraryCommandRepository, LibraryRepository>();
 builder.Services.AddScoped<ILibraryService, LibraryService>();
 builder.Services.AddScoped(typeof(IQueryRepo<>), typeof(EfQueryRepo<>));
 builder.Services.AddScoped(typeof(ICommandRepo<>), typeof(EfCommandRepo<>));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<AddMemberCommandHandler>());
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<UpdateMemberCommandHandler>());
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<DeleteMemberCommandHandler>());
 
 // Add logging
 builder.Logging.AddConsole();

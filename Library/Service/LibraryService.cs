@@ -1,7 +1,11 @@
-﻿using Library.Model;
+﻿using Library.Commands.Member;
+using Library.Features.Commands;
+using Library.Model;
 using Library.Model.Request;
 using Library.Repository;
 using Library.Repository.Specification;
+using MediatR;
+using Microsoft.AspNetCore.Components.Forms;
 using RestWebApi.Service;
 
 namespace Library.Service
@@ -13,8 +17,8 @@ namespace Library.Service
         IQueryRepo<Book> bookQueryRepo,
         IQueryRepo<LoanBook> loanBookQueryRepo,
         ICommandRepo<Book> bookCommandRepo,
-        ICommandRepo<Member> memberCommandRepo,
-        ICommandRepo<LoanBook> loanBookCommandRepo
+        ICommandRepo<LoanBook> loanBookCommandRepo,
+        IMediator mediator
         ) : ILibraryService
     {
         private readonly ILibraryQueryRepository _queryRepo = queryRepo;
@@ -23,8 +27,8 @@ namespace Library.Service
         private readonly IQueryRepo<LoanBook> _loanBookQueryRepo = loanBookQueryRepo;
         private readonly IQueryRepo<Member> _memberQueryRepo = memberQueryRepo;
         private readonly ICommandRepo<Book> _bookCommandRepo = bookCommandRepo;
-        private readonly ICommandRepo<Member> _memberCommandRepo = memberCommandRepo;
         private readonly ICommandRepo<LoanBook> _loanBookCommandRepo = loanBookCommandRepo;
+        private readonly IMediator _mediator = mediator;
 
         #region Library
 
@@ -129,33 +133,19 @@ namespace Library.Service
         public async Task<Guid> AddMemberAsync(MemberRequest request)
         {
             var member = request.Member;
-            var newMemberId = await _memberCommandRepo.AddAsync(member);
+            var newMemberId = await _mediator.Send(new AddMemberCommand(member));
             return newMemberId;
         }
 
         public async Task<Member> UpdateMemberAsync(MemberRequest request)
         {
-            var updatedMember = await _memberCommandRepo.UpdateAsync(request.Member);
-
+            var updatedMember = await _mediator.Send(new UpdateMemberCommand(request.Member));
             return updatedMember;
         }
 
         public async Task DeleteMemberAsync(Guid memberId)
         {
-            var member = await _memberQueryRepo.GetByIdAsync(memberId)
-                ?? throw new KeyNotFoundException($"Member with ID {memberId} not found.");
-
-            //Before delete, check if there are any active loans for the book
-            var spec = new LoanedBookSpec(null, member?.Name);
-            var activeLoans = await _loanBookQueryRepo.ListAsync(spec);
-            if (activeLoans.Any())
-            {
-                throw new InvalidOperationException("Cannot delete member with active loans.");
-            }
-            else
-            {
-                await _memberCommandRepo.DeleteAsync(member);
-            }
+            await _mediator.Send(new DeleteMemberCommand(memberId));
         }
 
         #endregion Member
