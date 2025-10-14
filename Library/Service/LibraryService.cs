@@ -17,7 +17,6 @@ namespace Library.Service
         IQueryRepo<Book> bookQueryRepo,
         IQueryRepo<LoanBook> loanBookQueryRepo,
         ICommandRepo<Book> bookCommandRepo,
-        ICommandRepo<LoanBook> loanBookCommandRepo,
         IMediator mediator
         ) : ILibraryService
     {
@@ -27,7 +26,6 @@ namespace Library.Service
         private readonly IQueryRepo<LoanBook> _loanBookQueryRepo = loanBookQueryRepo;
         private readonly IQueryRepo<Member> _memberQueryRepo = memberQueryRepo;
         private readonly ICommandRepo<Book> _bookCommandRepo = bookCommandRepo;
-        private readonly ICommandRepo<LoanBook> _loanBookCommandRepo = loanBookCommandRepo;
         private readonly IMediator _mediator = mediator;
 
         #region Library
@@ -160,13 +158,13 @@ namespace Library.Service
         public async Task<Guid> AddLoanBookAsync(LoanBookRequest request)
         {
             var loanBook = request.LoanBook;
-            var newLoanedBookId = await _loanBookCommandRepo.AddAsync(loanBook);
+            var newLoanedBookId = await _mediator.Send(new AddLoanedBookCommand(loanBook));
             return newLoanedBookId;
         }
 
         public async Task<LoanBook> UpdateLoanedBookReturnedDateAsync(LoanBookRequest request)
         {
-            var updatedLoanedBook = await _loanBookCommandRepo.UpdateAsync(request.LoanBook);
+            var updatedLoanedBook = await _mediator.Send(new UpdateLoanedBookCommand(request.LoanBook));
             return updatedLoanedBook;
         }
 

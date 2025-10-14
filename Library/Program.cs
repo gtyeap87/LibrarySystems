@@ -36,6 +36,8 @@ builder.Services.AddScoped(typeof(ICommandRepo<>), typeof(EfCommandRepo<>));
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<AddMemberCommandHandler>());
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<UpdateMemberCommandHandler>());
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<DeleteMemberCommandHandler>());
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<AddLoanedBookCommandHandler>());
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<UpdateLoanedBookCommandHandler>());
 
 // Add logging
 builder.Logging.AddConsole();
