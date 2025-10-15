@@ -6,14 +6,9 @@ namespace Library.Features.Commands
 {
     public record AddMemberCommand(Member Member) : IRequest<Guid>;
 
-    public class AddMemberCommandHandler : IRequestHandler<AddMemberCommand, Guid>
+    public class AddMemberCommandHandler(ICommandRepo<Member> memberCommandRepo) : IRequestHandler<AddMemberCommand, Guid>
     {
-        private readonly ICommandRepo<Member> _memberCommandRepo;
-
-        public AddMemberCommandHandler(ICommandRepo<Member> memberCommandRepo)
-        {
-            _memberCommandRepo = memberCommandRepo;
-        }
+        private readonly ICommandRepo<Member> _memberCommandRepo = memberCommandRepo;
 
         public async Task<Guid> Handle(AddMemberCommand command, CancellationToken cancellationToken)
         {
