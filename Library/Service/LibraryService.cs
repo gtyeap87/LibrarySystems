@@ -12,20 +12,12 @@ namespace Library.Service
 {
     public class LibraryService(
         ILibraryQueryRepository queryRepo,
-        ILibraryCommandRepository commandRepo,
         IQueryRepo<Member> memberQueryRepo,
-        IQueryRepo<Book> bookQueryRepo,
-        IQueryRepo<LoanBook> loanBookQueryRepo,
-        ICommandRepo<Book> bookCommandRepo,
         IMediator mediator
         ) : ILibraryService
     {
         private readonly ILibraryQueryRepository _queryRepo = queryRepo;
-        private readonly ILibraryCommandRepository _commandRepo = commandRepo;
-        private readonly IQueryRepo<Book> _bookQueryRepo = bookQueryRepo;
-        private readonly IQueryRepo<LoanBook> _loanBookQueryRepo = loanBookQueryRepo;
         private readonly IQueryRepo<Member> _memberQueryRepo = memberQueryRepo;
-        private readonly ICommandRepo<Book> _bookCommandRepo = bookCommandRepo;
         private readonly IMediator _mediator = mediator;
 
         #region Library
@@ -41,49 +33,29 @@ namespace Library.Service
 
         public async Task<Guid> AddBookAsync(BookRequest request)
         {
-            if (_commandRepo is ILibraryCommandRepository)
-            {
-                var book = request.Book;
-                var qty = request.Qty;
-                var newBookId = await _commandRepo.AddBookAsync(book, qty);
-                return newBookId;
-            }
-            else
-            {
-                throw new InvalidOperationException("The repository does not support add operations.");
-            }
+            var book = request.Book;
+            var qty = request.Qty;
+            var newBookId = await _mediator.Send(new AddBookCommand(book, qty));
+            return newBookId;
         }
 
         public async Task<Book> UpdateBookAsync(BookRequest request)
         {
-            // Assuming you have a command repository for updates
-            if (_commandRepo is ILibraryCommandRepository)
-            {
-                var book = request.Book;
+            var updatedBook = await _mediator.Send(new UpdateBookCommand(request.Book));
 
-                return await _commandRepo.UpdateBookAsync(book);
-            }
-            else
-            {
-                throw new InvalidOperationException("The repository does not support update operations.");
-            }
+            var existingBook = (await _queryRepo.GetBooksAsync(updatedBook.Genre, updatedBook.Name))
+                .FirstOrDefault(b => b.Id == request.Book.Id) ?? throw new InvalidOperationException($"Book with ID {request.Book.Id} not found");
+
+            var bookStock = existingBook.BookStocks.FirstOrDefault(bs => bs.BookId == updatedBook.Id) ?? throw new InvalidOperationException($"BookStock for Book ID {updatedBook.Id} not found");
+            bookStock.Quantity = request.Qty;
+            await _mediator.Send(new UpdateBookStockCommand(bookStock));
+
+            return updatedBook;
         }
 
         public async Task DeleteBookAsync(Guid bookId)
         {
-            var book = await _bookQueryRepo.GetByIdAsync(bookId) ?? throw new KeyNotFoundException($"Book with ID {bookId} not found.");
-
-            //Before delete, check if there are any active loans for the book
-            var spec = new LoanedBookSpec(book?.Name, null);
-            var activeLoans = await _loanBookQueryRepo.ListAsync(spec);
-            if (activeLoans.Any())
-            {
-                throw new InvalidOperationException("Cannot delete book with active loans.");
-            }
-            else
-            {
-                await _bookCommandRepo.DeleteAsync(book);
-            }
+            await _mediator.Send(new DeleteBookCommand(bookId));
         }
 
         #endregion Book

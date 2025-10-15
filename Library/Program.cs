@@ -38,6 +38,10 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Up
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<DeleteMemberCommandHandler>());
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<AddLoanedBookCommandHandler>());
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<UpdateLoanedBookCommandHandler>());
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<AddBookCommandHandler>());
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<UpdateBookCommandHandler>());
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<UpdateBookStockCommandHandler>());
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<DeleteBookCommandHandler>());
 
 // Add logging
 builder.Logging.AddConsole();
