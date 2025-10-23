@@ -2,9 +2,9 @@ using Azure.Core;
 using Library.Dto;
 using Library.Model;
 using Library.Model.Request;
+using Library.Service;
 using Microsoft.AspNetCore.Mvc;
 using RestWebApi.Dto;
-using RestWebApi.Service;
 using System.Diagnostics;
 
 namespace Library.Controllers
@@ -36,7 +36,7 @@ namespace Library.Controllers
         public async Task<IActionResult> GetBooksAsync([FromQuery] Genre? genre, string? name)
         {
             _logger.LogInformation("GetBooksAsync");
-            var books = await _service.GetBooksAsync(genre, name);
+            var books = await _service.GetFullBooksAsync(genre, name);
             var bookDtos = books.Select(b => new BookDto
             {
                 Genre = b.Genre,
@@ -138,15 +138,7 @@ namespace Library.Controllers
         {
             _logger.LogInformation("GetMembersAsync");
 
-            var sw = Stopwatch.StartNew();
-            var members = await _service.GetMembersAsync(name, date, false);
-            sw.Stop();
-            _logger.LogInformation("GetMembersAsync took {Elapsed} ms", sw.ElapsedMilliseconds);
-
-            sw.Restart();
             var members2 = await _service.GetMembersOnlyAsync(name, date);
-            sw.Stop();
-            _logger.LogInformation("GetMembersOnlyAsync took {Elapsed} ms", sw.ElapsedMilliseconds);
 
             var membersDto = members2.Select(m => new MemberDto
             {

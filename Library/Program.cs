@@ -2,13 +2,13 @@
 using Library.Commands.Member;
 using Library.Data;
 using Library.Features.Commands;
+using Library.Features.Queries;
 using Library.Repository;
 using Library.Service;
 using MediatR;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using RestWebApi.Service;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,6 +33,9 @@ builder.Services.AddScoped<ILibraryCommandRepository, LibraryRepository>();
 builder.Services.AddScoped<ILibraryService, LibraryService>();
 builder.Services.AddScoped(typeof(IQueryRepo<>), typeof(EfQueryRepo<>));
 builder.Services.AddScoped(typeof(ICommandRepo<>), typeof(EfCommandRepo<>));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<GetBooksQueryHandler>());
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<GetFullBooksQueryHandler>());
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<GetMembersQueryHandler>());
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<AddMemberCommandHandler>());
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<UpdateMemberCommandHandler>());
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<DeleteMemberCommandHandler>());

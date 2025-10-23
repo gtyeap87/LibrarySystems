@@ -1,7 +1,7 @@
 ﻿using Library.Model;
 using Library.Model.Request;
 
-namespace RestWebApi.Service
+namespace Library.Service
 {
     public interface ILibraryService
     {
@@ -12,12 +12,14 @@ namespace RestWebApi.Service
         Task<Guid> AddMemberAsync(MemberRequest request);
 
         Task DeleteBookAsync(Guid bookId);
+
         Task DeleteMemberAsync(Guid memberId);
+
         Task<IEnumerable<Book>> GetBooksAsync(Genre? genre, string? name);
 
-        Task<IEnumerable<LoanBook>> GetLoanBooksAsync(string? bookName, string? memberName);
+        Task<IEnumerable<Book>> GetFullBooksAsync(Genre? genre, string? name);
 
-        Task<IEnumerable<Member>> GetMembersAsync(string? name, DateOnly? date, bool include = false);
+        Task<IEnumerable<LoanBook>> GetLoanBooksAsync(string? bookName, string? memberName);
 
         Task<IEnumerable<Member>> GetMembersExtended2Async(string? name, DateOnly? date);
 

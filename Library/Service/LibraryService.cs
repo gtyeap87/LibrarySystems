@@ -4,20 +4,16 @@ using Library.Features.Queries;
 using Library.Model;
 using Library.Model.Request;
 using Library.Repository;
-using Library.Repository.Specification;
 using MediatR;
-using RestWebApi.Service;
 
 namespace Library.Service
 {
     public class LibraryService(
         ILibraryQueryRepository queryRepo,
-        IQueryRepo<Member> memberQueryRepo,
         IMediator mediator
         ) : ILibraryService
     {
         private readonly ILibraryQueryRepository _queryRepo = queryRepo;
-        private readonly IQueryRepo<Member> _memberQueryRepo = memberQueryRepo;
         private readonly IMediator _mediator = mediator;
 
         #region Library
@@ -28,7 +24,12 @@ namespace Library.Service
 
         public async Task<IEnumerable<Book>> GetBooksAsync(Genre? genre, string? name)
         {
-            return await _mediator.Send(new GetBooksCommand(genre, name));
+            return await _mediator.Send(new GetBooksQuery(genre, name));
+        }
+
+        public async Task<IEnumerable<Book>> GetFullBooksAsync(Genre? genre, string? name)
+        {
+            return await _mediator.Send(new GetFullBooksQuery(genre, name));
         }
 
         public async Task<Guid> AddBookAsync(BookRequest request)
@@ -62,43 +63,15 @@ namespace Library.Service
 
         #region Member
 
-        /// <summary>
-        /// This is non specification version
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="date"></param>
-        /// <returns></returns>
-        public async Task<IEnumerable<Member>> GetMembersAsync(string? name, DateOnly? date, bool include = false)
-        {
-            return await _queryRepo.GetMembersAsync(name, date, include);
-        }
-
         public async Task<IEnumerable<Member>> GetMembersOnlyAsync(string? name, DateOnly? date)
         {
-            var spec = new MembersOnlySpec(name, date);
-            return await _memberQueryRepo.ListAsync(spec);
+            return await _mediator.Send(new GetMembersQuery(name, date));
         }
 
         public async Task<IEnumerable<Member>> GetMembersExtended2Async(string? name, DateOnly? date)
         {
-            var spec = new MembersWithLoansSpec(name, date);
-            return await _memberQueryRepo.ListAsync(spec);
+            return await _mediator.Send(new GetFullMembersQuery(name, date));
         }
-
-        //[Obsolete("Use Spec method() instead.")]
-        //public async Task<Guid> AddMemberAsync(AddMemberRequest request)
-        //{
-        //    if (_queryRepo is ILibraryCommandRepository)
-        //    {
-        //        var member = request.Member;
-        //        var newMemberId = await _commandRepo.AddMemberAsync(member);
-        //        return newMemberId;
-        //    }
-        //    else
-        //    {
-        //        throw new InvalidOperationException("The repository does not support add operations.");
-        //    }
-        //}
 
         public async Task<Guid> AddMemberAsync(MemberRequest request)
         {
