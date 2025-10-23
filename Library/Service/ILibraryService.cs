@@ -21,7 +21,7 @@ namespace Library.Service
 
         Task<IEnumerable<LoanBook>> GetLoanBooksAsync(string? bookName, string? memberName);
 
-        Task<IEnumerable<Member>> GetMembersExtended2Async(string? name, DateOnly? date);
+        Task<IEnumerable<Member>> GetFullMembersAsync(string? name, DateOnly? date);
 
         Task<IEnumerable<Member>> GetMembersOnlyAsync(string? name, DateOnly? date);
 

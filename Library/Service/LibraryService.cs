@@ -68,7 +68,7 @@ namespace Library.Service
             return await _mediator.Send(new GetMembersQuery(name, date));
         }
 
-        public async Task<IEnumerable<Member>> GetMembersExtended2Async(string? name, DateOnly? date)
+        public async Task<IEnumerable<Member>> GetFullMembersAsync(string? name, DateOnly? date)
         {
             return await _mediator.Send(new GetFullMembersQuery(name, date));
         }
