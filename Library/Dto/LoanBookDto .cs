@@ -25,5 +25,5 @@ public class LoanBooksDetailsDto
     /// <summary>
     /// To get total number of books loaned in one transaction
     /// </summary>
-    public int LoanBookQuantity { get; set; }
+    public int LoanedOutBooksQuantity { get; set; }
 }

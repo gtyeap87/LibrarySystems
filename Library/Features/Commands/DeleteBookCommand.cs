@@ -21,7 +21,7 @@ namespace Library.Features.Commands
             var member = await _memberQueryRepo.GetByIdAsync(command.BookId)
                 ?? throw new KeyNotFoundException($"Book with ID {command.BookId} not found.");
 
-            var spec = new LoanedBookSpec(null, member.Name);
+            var spec = new FullLoanedBookSpec(null, member.Name);
             var activeLoans = await _loanBookQueryRepo.ListAsync(spec);
 
             if (activeLoans.Any())

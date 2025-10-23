@@ -9,11 +9,9 @@ using MediatR;
 namespace Library.Service
 {
     public class LibraryService(
-        ILibraryQueryRepository queryRepo,
         IMediator mediator
         ) : ILibraryService
     {
-        private readonly ILibraryQueryRepository _queryRepo = queryRepo;
         private readonly IMediator _mediator = mediator;
 
         #region Library
@@ -97,7 +95,7 @@ namespace Library.Service
 
         public async Task<IEnumerable<LoanBook>> GetLoanBooksAsync(string? bookName, string? memberName)
         {
-            return await _queryRepo.GetLoanBooksAsync(bookName, memberName);
+            return await _mediator.Send(new GetFullLoanedBooksQuery(bookName, memberName));
         }
 
         public async Task<Guid> AddLoanBookAsync(LoanBookRequest request)

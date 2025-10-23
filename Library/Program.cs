@@ -34,6 +34,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Ge
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<GetFullBooksQueryHandler>());
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<GetMembersQueryHandler>());
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<GetFullMembersQueryHandler>());
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<GetFullLoanedBooksQueryHandler>());
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<AddMemberCommandHandler>());
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<UpdateMemberCommandHandler>());
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<DeleteMemberCommandHandler>());

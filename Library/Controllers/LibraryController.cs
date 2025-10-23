@@ -1,28 +1,20 @@
-using Azure.Core;
 using Library.Dto;
 using Library.Model;
 using Library.Model.Request;
 using Library.Service;
 using Microsoft.AspNetCore.Mvc;
 using RestWebApi.Dto;
-using System.Diagnostics;
 
 namespace Library.Controllers
 {
     [ApiController]
     [Route("library")]
-    public class LibraryController : ControllerBase
+    public class LibraryController(
+        ILogger<LibraryController> logger,
+        ILibraryService service) : ControllerBase
     {
-        private readonly ILogger<LibraryController> _logger;
-        private readonly ILibraryService _service;
-
-        public LibraryController(
-            ILogger<LibraryController> logger,
-            ILibraryService service)
-        {
-            _logger = logger;
-            _service = service;
-        }
+        private readonly ILogger<LibraryController> _logger = logger;
+        private readonly ILibraryService _service = service;
 
         #region Book
 
@@ -241,7 +233,7 @@ namespace Library.Controllers
             var loanBooks = await _service.GetLoanBooksAsync(bookName, memberName);
             var loanBookDtos = loanBooks.Select(lb => new LoanBookDto
             {
-                BookName = lb.Member.Name,
+                BookName = lb.Book.Name,
                 MemberName = lb.Member.Name,
                 LoanedDate = lb.LoanedDate,
                 ReturnedDate = lb.ReturnedDate,
@@ -250,15 +242,14 @@ namespace Library.Controllers
             var loanBooksDetailsDto = new LoanBooksDetailsDto
             {
                 LoanBooks = loanBookDtos,
-                LoanBookQuantity = GetLoanBookQuantity(loanBooks, bookName ?? string.Empty, memberName ?? string.Empty)
+                LoanedOutBooksQuantity = GetLoanedOutBooksQuantity(loanBooks)
             };
             return Ok(loanBooksDetailsDto);
         }
 
-        private static int GetLoanBookQuantity(IEnumerable<LoanBook> loanBooks, string bookName, string memberName)
+        private static int GetLoanedOutBooksQuantity(IEnumerable<LoanBook> loanBooks)
         {
-            var totalQty = loanBooks.Count(lb => lb.Book.Name.Equals(bookName, StringComparison.OrdinalIgnoreCase)
-                            || lb.Member.Name.Equals(memberName, StringComparison.OrdinalIgnoreCase));
+            var totalQty = loanBooks.Count(lb => lb.ReturnedDate == null);
             return totalQty;
         }
 

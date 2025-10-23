@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Library.Repository.Specification
 {
-    public class LoanedBookSpec(string? bookName, string? memberName) : Specification<LoanBook>
+    public class FullLoanedBookSpec(string? bookName, string? memberName) : Specification<LoanBook>
     {
         private readonly string? _bookName = bookName;
         private readonly string? _memberName = memberName;
