@@ -44,7 +44,7 @@ namespace Library.Service
         {
             var updatedBook = await _mediator.Send(new UpdateBookCommand(request.Book));
 
-            var existingBook = (await _queryRepo.GetBooksAsync(updatedBook.Genre, updatedBook.Name))
+            var existingBook = (await _mediator.Send(new GetFullBooksQuery(updatedBook.Genre, updatedBook.Name)))
                 .FirstOrDefault(b => b.Id == request.Book.Id) ?? throw new InvalidOperationException($"Book with ID {request.Book.Id} not found");
 
             var bookStock = existingBook.BookStocks.FirstOrDefault(bs => bs.BookId == updatedBook.Id) ?? throw new InvalidOperationException($"BookStock for Book ID {updatedBook.Id} not found");
