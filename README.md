@@ -34,7 +34,17 @@ API Perfomarnce implentation
 - SplitQuery 
   
 Future implemention
+V1
 - Batch insert for bulk insert
 - API Versioning
 - User Mediatr
-- Authorization and Authentication 
+- Authorization and Authentication
+- React
+
+V2
+- Container
+- Microservice
+- Blazor
+
+V3
+- Desktop version
