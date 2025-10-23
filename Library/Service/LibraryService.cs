@@ -1,11 +1,11 @@
 ﻿using Library.Commands.Member;
 using Library.Features.Commands;
+using Library.Features.Queries;
 using Library.Model;
 using Library.Model.Request;
 using Library.Repository;
 using Library.Repository.Specification;
 using MediatR;
-using Microsoft.AspNetCore.Components.Forms;
 using RestWebApi.Service;
 
 namespace Library.Service
@@ -28,7 +28,7 @@ namespace Library.Service
 
         public async Task<IEnumerable<Book>> GetBooksAsync(Genre? genre, string? name)
         {
-            return await _queryRepo.GetBooksAsync(genre, name);
+            return await _mediator.Send(new GetBooksCommand(genre, name));
         }
 
         public async Task<Guid> AddBookAsync(BookRequest request)
