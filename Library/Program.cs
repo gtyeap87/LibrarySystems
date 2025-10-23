@@ -30,20 +30,8 @@ builder.Services.AddScoped<ILibraryCommandRepository, LibraryRepository>();
 builder.Services.AddScoped<ILibraryService, LibraryService>();
 builder.Services.AddScoped(typeof(IQueryRepo<>), typeof(EfQueryRepo<>));
 builder.Services.AddScoped(typeof(ICommandRepo<>), typeof(EfCommandRepo<>));
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<GetBooksQueryHandler>());
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<GetFullBooksQueryHandler>());
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<GetMembersQueryHandler>());
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<GetFullMembersQueryHandler>());
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<GetFullLoanedBooksQueryHandler>());
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<AddMemberCommandHandler>());
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<UpdateMemberCommandHandler>());
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<DeleteMemberCommandHandler>());
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<AddLoanedBookCommandHandler>());
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<UpdateLoanedBookCommandHandler>());
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<AddBookCommandHandler>());
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<UpdateBookCommandHandler>());
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<UpdateBookStockCommandHandler>());
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<DeleteBookCommandHandler>());
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(GetBooksQueryHandler).Assembly));
 
 // Add logging
 builder.Logging.AddConsole();
