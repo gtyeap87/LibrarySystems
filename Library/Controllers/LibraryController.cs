@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Library.Dto;
 using Library.Model;
 using Library.Model.Request;
@@ -8,7 +9,9 @@ using RestWebApi.Dto;
 namespace Library.Controllers
 {
     [ApiController]
-    [Route("library")]
+    [Route("api/v{version:apiVersion}/library")]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     public class LibraryController(
         ILogger<LibraryController> logger,
         ILibraryService service) : ControllerBase
@@ -308,12 +311,9 @@ namespace Library.Controllers
 
         #region Library
 
-        /// <summary>
-        /// Get library summary
-        /// </summary>
-        /// <returns></returns>
         [HttpGet("count")]
-        [ProducesResponseType(typeof(IEnumerable<LibraryDto>), StatusCodes.Status200OK)]
+        [MapToApiVersion("1.0")]
+        [ProducesResponseType(typeof(LibraryDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllCountAsync()
         {
             _logger.LogInformation("GetAllCountAsync");
@@ -329,6 +329,22 @@ namespace Library.Controllers
             );
 
             return Ok(libraryDto);
+        }
+
+        [HttpGet("count")]
+        [MapToApiVersion("2.0")]
+        [ProducesResponseType(typeof(LibraryDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllCount2Async()
+        {
+            _logger.LogInformation("GetAllCount2Async");
+
+            //TODO : implement new version logic here
+
+            return Ok(new LibraryDto(
+                0,
+                0,
+                0
+            ));
         }
 
         #endregion Library

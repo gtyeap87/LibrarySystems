@@ -1,6 +1,6 @@
-﻿using Library.Commands.Member;
+﻿using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using Library.Data;
-using Library.Features.Commands;
 using Library.Features.Queries;
 using Library.Repository;
 using Library.Service;
@@ -51,40 +51,69 @@ builder.Services.AddRateLimiter(options =>
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-////Add API versioning
-//builder.Services.AddApiVersioning(options =>
-//{
-//    options.DefaultApiVersion = new ApiVersion(1, 0); // Default version: 1.0
-//    options.AssumeDefaultVersionWhenUnspecified = true;
-//    options.ReportApiVersions = true;
-//    // Combine multiple versioning schemes
-//    options.ApiVersionReader = ApiVersionReader.Combine(
-//        new QueryStringApiVersionReader("version"),
-//        new UrlSegmentApiVersionReader(),
-//        new HeaderApiVersionReader("X-API-Version"),
-//        new MediaTypeApiVersionReader("version")
-//    );
-//});
+// API Versioning
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0); // Default version: 1.0
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+    options.ApiVersionReader = new UrlSegmentApiVersionReader();
+})
+.AddMvc() // because we’re using controllers
+.AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV"; // e.g., v1, v2
+    options.SubstituteApiVersionInUrl = true;
+});
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    // Define Swagger documents for different versions
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Version = "v1",
+        Title = "Library API v1",
+        Description = "API documentation for version 1"
+    });
+    options.SwaggerDoc("v2", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Version = "v2",
+        Title = "Library API v2",
+        Description = "API documentation for version 2"
+    });
+    // Use the ConflictingActionsResolver workaround
+    options.ResolveConflictingActions(apiDescriptions =>
+    {
+        // Your conflict resolution strategy here
+        return apiDescriptions.First();
+    });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// --- Configure Swagger ---
 if (app.Environment.IsDevelopment())
 {
+    var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        provider.ApiVersionDescriptions.Select(desc => desc.GroupName).ToList().ForEach(version =>
+        {
+            options.SwaggerEndpoint($"/swagger/{version}/swagger.json", $"Library API {version.ToUpperInvariant()}");
+        });
+    });
 }
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
-
 // Enable rate limiting globally
 app.UseRateLimiter();
 
-app.MapControllers().RequireRateLimiting("FixedPolicy");
+app.UseAuthorization();
+app.MapControllers()
+   .RequireRateLimiting("FixedPolicy");
 
 await app.RunAsync();
