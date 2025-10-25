@@ -37,7 +37,7 @@ Future implemention
 V1
 - Batch insert for bulk insert
 - API Versioning
-- User Mediatr
+- ~Mediatr~
 - Authorization and Authentication
 - React
 
@@ -48,3 +48,4 @@ V2
 
 V3
 - Desktop version
+- Minimal API
