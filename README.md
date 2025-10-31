@@ -36,7 +36,7 @@ API Perfomarnce implentation
 Future implemention
 V1
 - Batch insert for bulk insert
-- API Versioning
+- ~API Versioning~
 - ~Mediatr~
 - Authorization and Authentication
 - React
