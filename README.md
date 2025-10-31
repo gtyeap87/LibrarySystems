@@ -7,6 +7,7 @@ Note
 - Utilized SonarQube for code improvement suggestion.
 
 Architecure
+- N-tier
 -- Controller
 -- Service
 -- Repository
