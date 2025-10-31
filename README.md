@@ -31,7 +31,8 @@ Repository design
 API Perfomarnce implentation
 - Rate Limiting
 - AsTracking for display only
-- SplitQuery 
+- SplitQuery
+- Pagination
   
 Future implemention
 V1
@@ -40,6 +41,7 @@ V1
 - ~Mediatr~
 - Authorization and Authentication
 - React
+- Pagination
 
 V2
 - Container
