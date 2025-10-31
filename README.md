@@ -43,6 +43,7 @@ V1
 - Authorization and Authentication
 - React
 - Pagination
+- Unit Test
 
 V2
 - Container
