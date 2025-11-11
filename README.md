@@ -44,6 +44,7 @@ V1
 - React
 - Pagination
 - Unit Test
+- Redis Cache
 
 V2
 - Container
