@@ -54,3 +54,8 @@ V2
 V3
 - Desktop version
 - Minimal API
+- Vue.js (Web)
+- Mobile 
+
+V4
+- Angular (Web)
