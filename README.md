@@ -7,6 +7,7 @@ Note
 - Utilized SonarQube for code improvement suggestion.
 
 Architecure
+- N-tier
 -- Controller
 -- Service
 -- Repository
@@ -31,15 +32,19 @@ Repository design
 API Perfomarnce implentation
 - Rate Limiting
 - AsTracking for display only
-- SplitQuery 
+- SplitQuery
+- Pagination
   
 Future implemention
 V1
 - Batch insert for bulk insert
-- API Versioning
+- ~API Versioning~
 - ~Mediatr~
 - Authorization and Authentication
 - React
+- Pagination
+- Unit Test
+- Redis Cache
 
 V2
 - Container
@@ -49,3 +54,8 @@ V2
 V3
 - Desktop version
 - Minimal API
+- Vue.js (Web)
+- Mobile 
+
+V4
+- Angular (Web)
