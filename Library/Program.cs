@@ -70,13 +70,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     // Define Swagger documents for different versions
-    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.OpenApiInfo
     {
         Version = "v1",
         Title = "Library API v1",
         Description = "API documentation for version 1"
     });
-    options.SwaggerDoc("v2", new Microsoft.OpenApi.Models.OpenApiInfo
+    options.SwaggerDoc("v2", new Microsoft.OpenApi.OpenApiInfo
     {
         Version = "v2",
         Title = "Library API v2",

@@ -30,5 +30,7 @@ namespace Library.Service
         Task<LoanBook> UpdateLoanedBookReturnedDateAsync(LoanBookRequest request);
 
         Task<Member> UpdateMemberAsync(MemberRequest request);
+
+        Task AddBulkMemberAsync(MembersRequest request);
     }
 }

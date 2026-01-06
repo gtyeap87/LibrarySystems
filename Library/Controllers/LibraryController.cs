@@ -167,6 +167,31 @@ namespace Library.Controllers
             return NoContent();
         }
 
+        [HttpPost("members")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> AddMembersAsync(MembersRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("Add new members to library");
+
+                await _service.AddBulkMemberAsync(request);
+
+                foreach (var member in request.Members)
+                {
+                    _logger.LogInformation("Added new member name {Name}", member.Name);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while adding new member");
+                return BadRequest();
+            }
+            return NoContent();
+        }
+
         [HttpPatch("member/{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

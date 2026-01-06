@@ -11,6 +11,11 @@
         public required Member Member { get; set; }
     }
 
+    public class MembersRequest
+    {
+        public required IEnumerable<Member> Members { get; set; }
+    }
+
     public class LoanBookRequest
     {
         public required LoanBook LoanBook { get; set; }

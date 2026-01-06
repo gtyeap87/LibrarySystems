@@ -78,6 +78,12 @@ namespace Library.Service
             return newMemberId;
         }
 
+        public async Task AddBulkMemberAsync(MembersRequest request)
+        {
+            var members = request.Members;
+            await _mediator.Send(new AddBulkMemberCommand(members));
+        }
+
         public async Task<Member> UpdateMemberAsync(MemberRequest request)
         {
             var updatedMember = await _mediator.Send(new UpdateMemberCommand(request.Member));

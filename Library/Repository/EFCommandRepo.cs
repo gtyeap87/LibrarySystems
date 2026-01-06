@@ -1,4 +1,5 @@
-﻿using Library.Data;
+﻿using EFCore.BulkExtensions;
+using Library.Data;
 
 namespace Library.Repository
 {
@@ -29,6 +30,15 @@ namespace Library.Repository
             }
 
             return Guid.Empty; // fallback if entity has no Id
+        }
+
+        public async Task BulkInsertAsync(IEnumerable<T> entities)
+        {
+            _logger.LogInformation("Bulk inserting {Count} {EntityName} records", entities.Count(), typeof(T).Name);
+
+            await _context.BulkInsertAsync(entities);
+
+            _logger.LogInformation("Successfully bulk inserted {Count} {EntityName} records", entities.Count(), typeof(T).Name);
         }
 
         public async Task<T> UpdateAsync(T entity)
