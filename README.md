@@ -42,7 +42,7 @@ V1
 - ~Mediatr~
 - Authorization and Authentication
 - React
-- Pagination
+- ~Pagination~
 - Unit Test
 - Redis Cache
 
