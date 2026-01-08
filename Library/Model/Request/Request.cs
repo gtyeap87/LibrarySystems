@@ -6,6 +6,11 @@
         public int Qty { get; set; }
     }
 
+    public class BooksRequest
+    {
+        public required IEnumerable<BookRequest> Books { get; set; } = [];
+    }
+
     public class MemberRequest
     {
         public required Member Member { get; set; }

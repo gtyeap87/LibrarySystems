@@ -32,6 +32,28 @@ namespace Library.Repository
             return Guid.Empty; // fallback if entity has no Id
         }
 
+        public async Task AddRangeAsync(IEnumerable<T> entities)
+        {
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Adding a new {EntityName} to the library", typeof(T).Name);
+
+            await _context.Set<T>().AddRangeAsync(entities);
+            await _context.SaveChangesAsync();
+
+            var idProperty = typeof(T).GetProperty("Id");
+            if (idProperty != null)
+            {
+                for (int i = 0; i < entities.Count(); i++)
+                {
+                    var idValue = idProperty.GetValue(entities.ElementAt(i));
+                    if (idValue is Guid id && _logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Successfully added {EntityName} with ID {Id}", typeof(T).Name, id);
+                    }
+                }
+            }
+        }
+
         public async Task BulkInsertAsync(IEnumerable<T> entities)
         {
             _logger.LogInformation("Bulk inserting {Count} {EntityName} records", entities.Count(), typeof(T).Name);

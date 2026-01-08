@@ -15,16 +15,6 @@ namespace Library.Service
 
         Task DeleteMemberAsync(Guid memberId);
 
-        Task<IEnumerable<Book>> GetBooksAsync(Genre? genre, string? name);
-
-        Task<IEnumerable<Book>> GetFullBooksAsync(Genre? genre, string? name);
-
-        Task<IEnumerable<LoanBook>> GetLoanBooksAsync(string? bookName, string? memberName);
-
-        Task<IEnumerable<Member>> GetFullMembersAsync(string? name, DateOnly? date);
-
-        Task<IEnumerable<Member>> GetMembersOnlyAsync(string? name, DateOnly? date);
-
         Task<Book> UpdateBookAsync(BookRequest request);
 
         Task<LoanBook> UpdateLoanedBookReturnedDateAsync(LoanBookRequest request);
@@ -32,5 +22,19 @@ namespace Library.Service
         Task<Member> UpdateMemberAsync(MemberRequest request);
 
         Task AddBulkMemberAsync(MembersRequest request);
+
+        Task<IEnumerable<Book>> GetBooksAsync(Genre? genre, string? name, PaginationRequest page);
+
+        Task<IEnumerable<Member>> GetMembersOnlyAsync(string? name, DateOnly? date, PaginationRequest page);
+
+        Task<IEnumerable<Book>> GetFullBooksAsync(Genre? genre, string? name, PaginationRequest page);
+
+        Task<IEnumerable<LoanBook>> GetLoanBooksAsync(string? bookName, string? memberName, PaginationRequest page);
+
+        Task<IEnumerable<Member>> GetFullMembersAsync(string? name, DateOnly? date, PaginationRequest page);
+
+        Task AddMembersAsync(MembersRequest request);
+
+        Task AddBooksAsync(BooksRequest request);
     }
 }
