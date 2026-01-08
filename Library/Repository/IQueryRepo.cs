@@ -1,4 +1,5 @@
-﻿using Library.Repository.Specification;
+﻿using Library.Model.Request;
+using Library.Repository.Specification;
 
 namespace Library.Repository
 {
@@ -6,6 +7,6 @@ namespace Library.Repository
     {
         Task<T?> GetByIdAsync(Guid id);
 
-        Task<IEnumerable<T>> ListAsync(ISpecification<T> spec);
+        Task<IEnumerable<T>> ListAsync(ISpecification<T> spec, PaginationRequest page);
     }
 }

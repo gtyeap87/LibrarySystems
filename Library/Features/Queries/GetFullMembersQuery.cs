@@ -1,11 +1,12 @@
 using Library.Model;
+using Library.Model.Request;
 using Library.Repository;
 using Library.Repository.Specification;
 using MediatR;
 
 namespace Library.Features.Queries;
 
-public record GetFullMembersQuery(string? Name, DateOnly? Date) : IRequest<IEnumerable<Member>>;
+public record GetFullMembersQuery(string? Name, DateOnly? Date, PaginationRequest Page) : IRequest<IEnumerable<Member>>;
 
 public class GetFullMembersQueryHandler(IQueryRepo<Member> memberQueryRepo) : IRequestHandler<GetFullMembersQuery, IEnumerable<Member>>
 {
@@ -14,6 +15,6 @@ public class GetFullMembersQueryHandler(IQueryRepo<Member> memberQueryRepo) : IR
     public async Task<IEnumerable<Member>> Handle(GetFullMembersQuery command, CancellationToken cancellationToken)
     {
         var spec = new MembersWithLoansSpec(command.Name, command.Date);
-        return await _memberQueryRepo.ListAsync(spec);
+        return await _memberQueryRepo.ListAsync(spec, command.Page);
     }
 }

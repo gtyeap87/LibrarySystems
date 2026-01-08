@@ -20,15 +20,15 @@ namespace Library.Service
 
         #region Book
 
-        //public async Task<IEnumerable<Book>> GetBooksAsync(Genre? genre, string? name, PaginationRequest page)
-        //{
-        //    return await _mediator.Send(new GetBooksQuery(genre, name, page));
-        //}
+        public async Task<IEnumerable<Book>> GetBooksAsync(Genre? genre, string? name, PaginationRequest page)
+        {
+            return await _mediator.Send(new GetBooksQuery(genre, name, page));
+        }
 
-        //public async Task<IEnumerable<Book>> GetFullBooksAsync(Genre? genre, string? name, PaginationRequest page)
-        //{
-        //    return await _mediator.Send(new GetFullBooksQuery(genre, name, page));
-        //}
+        public async Task<IEnumerable<Book>> GetFullBooksAsync(Genre? genre, string? name, PaginationRequest page)
+        {
+            return await _mediator.Send(new GetFullBooksQuery(genre, name, page));
+        }
 
         public async Task<Guid> AddBookAsync(BookRequest request)
         {
@@ -45,43 +45,43 @@ namespace Library.Service
             await _mediator.Send(new AddBooksCommand(books));
         }
 
-        //public async Task<Book> UpdateBookAsync(BookRequest request)
-        //{
-        //    var updatedBook = await _mediator.Send(new UpdateBookCommand(request.Book));
+        public async Task<Book> UpdateBookAsync(BookRequest request)
+        {
+            var updatedBook = await _mediator.Send(new UpdateBookCommand(request.Book));
 
-        //    var existingBook = (await _mediator.Send(new GetFullBooksQuery(updatedBook.Genre, updatedBook.Name,
-        //        new PaginationRequest()
-        //        {
-        //            PageNumber = 1,
-        //            PageSize = int.MaxValue
-        //        })))
-        //        .FirstOrDefault(b => b.Id == request.Book.Id) ?? throw new InvalidOperationException($"Book with ID {request.Book.Id} not found");
+            var existingBook = (await _mediator.Send(new GetFullBooksQuery(updatedBook.Genre, updatedBook.Name,
+                new PaginationRequest()
+                {
+                    PageNumber = 1,
+                    PageSize = int.MaxValue
+                })))
+                .FirstOrDefault(b => b.Id == request.Book.Id) ?? throw new InvalidOperationException($"Book with ID {request.Book.Id} not found");
 
-        //    var bookStock = existingBook.BookStocks.FirstOrDefault(bs => bs.BookId == updatedBook.Id) ?? throw new InvalidOperationException($"BookStock for Book ID {updatedBook.Id} not found");
-        //    bookStock.Quantity = request.Qty;
-        //    await _mediator.Send(new UpdateBookStockCommand(bookStock));
+            var bookStock = existingBook.BookStocks.FirstOrDefault(bs => bs.BookId == updatedBook.Id) ?? throw new InvalidOperationException($"BookStock for Book ID {updatedBook.Id} not found");
+            bookStock.Quantity = request.Qty;
+            await _mediator.Send(new UpdateBookStockCommand(bookStock));
 
-        //    return updatedBook;
-        //}
+            return updatedBook;
+        }
 
-        //public async Task DeleteBookAsync(Guid bookId)
-        //{
-        //    await _mediator.Send(new DeleteBookCommand(bookId, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue }));
-        //}
+        public async Task DeleteBookAsync(Guid bookId)
+        {
+            await _mediator.Send(new DeleteBookCommand(bookId, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue }));
+        }
 
         #endregion Book
 
         #region Member
 
-        //public async Task<IEnumerable<Member>> GetMembersOnlyAsync(string? name, DateOnly? date, PaginationRequest page)
-        //{
-        //    return await _mediator.Send(new GetMembersQuery(name, date, page));
-        //}
+        public async Task<IEnumerable<Member>> GetMembersOnlyAsync(string? name, DateOnly? date, PaginationRequest page)
+        {
+            return await _mediator.Send(new GetMembersQuery(name, date, page));
+        }
 
-        //public async Task<IEnumerable<Member>> GetFullMembersAsync(string? name, DateOnly? date, PaginationRequest page)
-        //{
-        //    return await _mediator.Send(new GetFullMembersQuery(name, date, page));
-        //}
+        public async Task<IEnumerable<Member>> GetFullMembersAsync(string? name, DateOnly? date, PaginationRequest page)
+        {
+            return await _mediator.Send(new GetFullMembersQuery(name, date, page));
+        }
 
         public async Task<Guid> AddMemberAsync(MemberRequest request)
         {
@@ -107,19 +107,19 @@ namespace Library.Service
             return updatedMember;
         }
 
-        //public async Task DeleteMemberAsync(Guid memberId)
-        //{
-        //    await _mediator.Send(new DeleteMemberCommand(memberId, new PaginationRequest() { PageSize = int.MaxValue }));
-        //}
+        public async Task DeleteMemberAsync(Guid memberId)
+        {
+            await _mediator.Send(new DeleteMemberCommand(memberId, new PaginationRequest() { PageSize = int.MaxValue }));
+        }
 
         #endregion Member
 
         #region Loan Book
 
-        //public async Task<IEnumerable<LoanBook>> GetLoanBooksAsync(string? bookName, string? memberName, PaginationRequest page)
-        //{
-        //    return await _mediator.Send(new GetFullLoanedBooksQuery(bookName, memberName, page));
-        //}
+        public async Task<IEnumerable<LoanBook>> GetLoanBooksAsync(string? bookName, string? memberName, PaginationRequest page)
+        {
+            return await _mediator.Send(new GetFullLoanedBooksQuery(bookName, memberName, page));
+        }
 
         public async Task<Guid> AddLoanBookAsync(LoanBookRequest request)
         {

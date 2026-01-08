@@ -21,26 +21,26 @@ namespace Library.Controllers
 
         #region Book
 
-        ///// <summary>
-        /////
-        ///// </summary>
-        ///// <param name="genre"></param>
-        ///// <returns></returns>
-        //[HttpGet("books")]
-        //[ProducesResponseType(typeof(IEnumerable<BookDto>), StatusCodes.Status200OK)]
-        //public async Task<IActionResult> GetBooksAsync([FromQuery] Genre? genre, string? name, int pageSize, int pageNumber)
-        //{
-        //    _logger.LogInformation("GetBooksAsync");
-        //    var books = await _service.GetFullBooksAsync(genre, name, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
-        //    var bookDtos = books.Select(b => new BookDto
-        //    {
-        //        Genre = b.Genre,
-        //        Name = b.Name,
-        //        AvailableQuantity = b.BookStocks.Sum(bs => bs.Quantity)
-        //    });
+        /// <summary>
+        /// Get Books
+        /// </summary>
+        /// <param name="genre"></param>
+        /// <returns></returns>
+        [HttpGet("books")]
+        [ProducesResponseType(typeof(IEnumerable<BookDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetBooksAsync([FromQuery] Genre? genre, string? name, int pageSize, int pageNumber)
+        {
+            _logger.LogInformation("GetBooksAsync");
+            var books = await _service.GetFullBooksAsync(genre, name, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
+            var bookDtos = books.Select(b => new BookDto
+            {
+                Genre = b.Genre,
+                Name = b.Name,
+                AvailableQuantity = b.BookStocks.Sum(bs => bs.Quantity)
+            });
 
-        //    return Ok(bookDtos);
-        //}
+            return Ok(bookDtos);
+        }
 
         [HttpPost("book")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -154,27 +154,27 @@ namespace Library.Controllers
 
         #region Member
 
-        ///// <summary>
-        /////
-        ///// </summary>
-        ///// <param name="name"></param>
-        ///// <param name="date"></param>
-        ///// <returns></returns>
-        //[HttpGet("members")]
-        //[ProducesResponseType(typeof(IEnumerable<MemberDto>), StatusCodes.Status200OK)]
-        //public async Task<IActionResult> GetMembersAsync([FromQuery] string? name, DateOnly? date, int pageSize, int pageNumber)
-        //{
-        //    _logger.LogInformation("GetMembersAsync");
+        /// <summary>
+        /// Get Members
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        [HttpGet("members")]
+        [ProducesResponseType(typeof(IEnumerable<MemberDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetMembersAsync([FromQuery] string? name, DateOnly? date, int pageSize, int pageNumber)
+        {
+            _logger.LogInformation("GetMembersAsync");
 
-        //    var members2 = await _service.GetMembersOnlyAsync(name, date, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
+            var members2 = await _service.GetMembersOnlyAsync(name, date, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
 
-        //    var membersDto = members2.Select(m => new MemberDto
-        //    {
-        //        Name = m.Name,
-        //        JoinedDate = m.JoinedDate
-        //    });
-        //    return Ok(membersDto);
-        //}
+            var membersDto = members2.Select(m => new MemberDto
+            {
+                Name = m.Name,
+                JoinedDate = m.JoinedDate
+            });
+            return Ok(membersDto);
+        }
 
         /// <summary>
         ///
@@ -288,33 +288,33 @@ namespace Library.Controllers
 
         #region Loan Member
 
-        ///// <summary>
-        /////
-        ///// </summary>
-        ///// <param name="name"></param>
-        ///// <param name="date"></param>
-        ///// <returns></returns>
-        //[HttpGet("loan-books")]
-        //[ProducesResponseType(typeof(IEnumerable<MemberDto>), StatusCodes.Status200OK)]
-        //public async Task<IActionResult> GetLoanBooksAsync([FromQuery] string? bookName, string? memberName, int pageSize, int pageNumber)
-        //{
-        //    _logger.LogInformation("GetLoanBooksAsync");
-        //    var loanBooks = await _service.GetLoanBooksAsync(bookName, memberName, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
-        //    var loanBookDtos = loanBooks.Select(lb => new LoanBookDto
-        //    {
-        //        BookName = lb.Book.Name,
-        //        MemberName = lb.Member.Name,
-        //        LoanedDate = lb.LoanedDate,
-        //        ReturnedDate = lb.ReturnedDate,
-        //    });
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        [HttpGet("loan-books")]
+        [ProducesResponseType(typeof(IEnumerable<MemberDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetLoanBooksAsync([FromQuery] string? bookName, string? memberName, int pageSize, int pageNumber)
+        {
+            _logger.LogInformation("GetLoanBooksAsync");
+            var loanBooks = await _service.GetLoanBooksAsync(bookName, memberName, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
+            var loanBookDtos = loanBooks.Select(lb => new LoanBookDto
+            {
+                BookName = lb.Book.Name,
+                MemberName = lb.Member.Name,
+                LoanedDate = lb.LoanedDate,
+                ReturnedDate = lb.ReturnedDate,
+            });
 
-        //    var loanBooksDetailsDto = new LoanBooksDetailsDto
-        //    {
-        //        LoanBooks = loanBookDtos,
-        //        LoanedOutBooksQuantity = GetLoanedOutBooksQuantity(loanBooks)
-        //    };
-        //    return Ok(loanBooksDetailsDto);
-        //}
+            var loanBooksDetailsDto = new LoanBooksDetailsDto
+            {
+                LoanBooks = loanBookDtos,
+                LoanedOutBooksQuantity = GetLoanedOutBooksQuantity(loanBooks)
+            };
+            return Ok(loanBooksDetailsDto);
+        }
 
         private static int GetLoanedOutBooksQuantity(IEnumerable<LoanBook> loanBooks)
         {
@@ -377,25 +377,25 @@ namespace Library.Controllers
 
         #region Library
 
-        //[HttpGet("count")]
-        //[MapToApiVersion("1.0")]
-        //[ProducesResponseType(typeof(LibraryDto), StatusCodes.Status200OK)]
-        //public async Task<IActionResult> GetAllCountAsync()
-        //{
-        //    _logger.LogInformation("GetAllCountAsync");
-        //    var members = await _service.GetMembersOnlyAsync(null, null, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue });
-        //    var books = await _service.GetBooksAsync(null, null, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue });
-        //    var loanBooks = await _service.GetLoanBooksAsync(null, null, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue });
-        //    var totalLoanedBooks = loanBooks.Count(x => x.ReturnedDate == null);
+        [HttpGet("count")]
+        [MapToApiVersion("1.0")]
+        [ProducesResponseType(typeof(LibraryDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllCountAsync()
+        {
+            _logger.LogInformation("GetAllCountAsync");
+            var members = await _service.GetMembersOnlyAsync(null, null, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue });
+            var books = await _service.GetBooksAsync(null, null, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue });
+            var loanBooks = await _service.GetLoanBooksAsync(null, null, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue });
+            var totalLoanedBooks = loanBooks.Count(x => x.ReturnedDate == null);
 
-        //    var libraryDto = new LibraryDto(
-        //        NoOfMembers: members.Count(),
-        //        TotalNumbersOfBooks: books.Sum(b => b.BookStocks.Sum(bs => bs.Quantity)),
-        //        TotalLoanedBooks: totalLoanedBooks
-        //    );
+            var libraryDto = new LibraryDto(
+                NoOfMembers: members.Count(),
+                TotalNumbersOfBooks: books.Sum(b => b.BookStocks.Sum(bs => bs.Quantity)),
+                TotalLoanedBooks: totalLoanedBooks
+            );
 
-        //    return Ok(libraryDto);
-        //}
+            return Ok(libraryDto);
+        }
 
         [HttpGet("count")]
         [MapToApiVersion("2.0")]

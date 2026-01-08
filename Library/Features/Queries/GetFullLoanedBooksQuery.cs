@@ -1,11 +1,12 @@
 using Library.Model;
+using Library.Model.Request;
 using Library.Repository;
 using Library.Repository.Specification;
 using MediatR;
 
 namespace Library.Features.Queries;
 
-public record GetFullLoanedBooksQuery(string? BookName, string? MemberName) : IRequest<IEnumerable<LoanBook>>;
+public record GetFullLoanedBooksQuery(string? BookName, string? MemberName, PaginationRequest Page) : IRequest<IEnumerable<LoanBook>>;
 
 public class GetFullLoanedBooksQueryHandler(IQueryRepo<LoanBook> queryRepo) : IRequestHandler<GetFullLoanedBooksQuery, IEnumerable<LoanBook>>
 {
@@ -14,6 +15,6 @@ public class GetFullLoanedBooksQueryHandler(IQueryRepo<LoanBook> queryRepo) : IR
     public async Task<IEnumerable<LoanBook>> Handle(GetFullLoanedBooksQuery command, CancellationToken cancellationToken)
     {
         var spec = new FullLoanedBookSpec(command.BookName, command.MemberName);
-        return await _memberQueryRepo.ListAsync(spec);
+        return await _memberQueryRepo.ListAsync(spec, command.Page);
     }
 }

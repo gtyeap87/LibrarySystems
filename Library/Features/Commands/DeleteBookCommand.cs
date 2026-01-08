@@ -1,16 +1,18 @@
 using Library.Model;
+using Library.Model.Request;
 using Library.Repository;
 using Library.Repository.Specification;
 using MediatR;
 
 namespace Library.Features.Commands
 {
-    public record DeleteBookCommand(Guid BookId) : IRequest;
+    public record DeleteBookCommand(Guid BookId, PaginationRequest Page) : IRequest;
 
     public class DeleteBookCommandHandler(
         ICommandRepo<Book> memberCommandRepo,
         IQueryRepo<Book> memberQueryRepo,
-        IQueryRepo<LoanBook> loanBookQueryRepo) : IRequestHandler<DeleteBookCommand>
+        IQueryRepo<LoanBook> loanBookQueryRepo
+        ) : IRequestHandler<DeleteBookCommand>
     {
         private readonly ICommandRepo<Book> _memberCommandRepo = memberCommandRepo;
         private readonly IQueryRepo<Book> _memberQueryRepo = memberQueryRepo;
@@ -22,7 +24,7 @@ namespace Library.Features.Commands
                 ?? throw new KeyNotFoundException($"Book with ID {command.BookId} not found.");
 
             var spec = new FullLoanedBookSpec(null, member.Name);
-            var activeLoans = await _loanBookQueryRepo.ListAsync(spec);
+            var activeLoans = await _loanBookQueryRepo.ListAsync(spec, command.Page);
 
             if (activeLoans.Any())
             {

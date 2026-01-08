@@ -2,10 +2,11 @@ using MediatR;
 using Library.Model;
 using Library.Repository;
 using Library.Repository.Specification;
+using Library.Model.Request;
 
 namespace Library.Features.Queries;
 
-public record GetBooksQuery(Genre? Genre, string? Name) : IRequest<IEnumerable<Book>>;
+public record GetBooksQuery(Genre? Genre, string? Name, PaginationRequest Page) : IRequest<IEnumerable<Book>>;
 
 public class GetBooksQueryHandler(IQueryRepo<Book> queryRepo) : IRequestHandler<GetBooksQuery, IEnumerable<Book>>
 {
@@ -14,6 +15,6 @@ public class GetBooksQueryHandler(IQueryRepo<Book> queryRepo) : IRequestHandler<
     public async Task<IEnumerable<Book>> Handle(GetBooksQuery query, CancellationToken cancellationToken)
     {
         var spec = new BooksOnlySpec(query.Genre, query.Name);
-        return await _queryRepo.ListAsync(spec);
+        return await _queryRepo.ListAsync(spec, query.Page);
     }
 }
