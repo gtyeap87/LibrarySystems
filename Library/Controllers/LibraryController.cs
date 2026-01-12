@@ -43,7 +43,7 @@ namespace Library.Controllers
         }
 
         [HttpPost("book")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AddbookAsync([FromBody] BookRequest request)
@@ -56,14 +56,16 @@ namespace Library.Controllers
 
                 var newId = await _service.AddBookAsync(request);
 
-                _logger.LogInformation("Added {Qty} new book name {Name} with ID: {Id}", request.Qty, request.Book.Name, newId);
+                if (_logger.IsEnabled(LogLevel.Information))
+                    _logger.LogInformation("Added {Qty} new book name {Name} with ID: {Id}", request.Qty, request.Book.Name, newId);
+
+                return StatusCode(StatusCodes.Status201Created, newId);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while adding new weather forecast");
+                return BadRequest();
             }
-
-            return NoContent();
         }
 
         /// <summary>
@@ -90,13 +92,14 @@ namespace Library.Controllers
                         _logger.LogInformation("Added new book name {Name}", book.Book.Name);
                     }
                 }
+
+                return NoContent();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while adding new member");
                 return BadRequest();
             }
-            return NoContent();
         }
 
         [HttpPatch("book/{id}")]
@@ -182,6 +185,7 @@ namespace Library.Controllers
         /// <param name="member"></param>
         /// <returns></returns>
         [HttpPost("member")]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -191,7 +195,11 @@ namespace Library.Controllers
             {
                 _logger.LogInformation("Add new member to library");
                 var newId = await _service.AddMemberAsync(request);
-                _logger.LogInformation("Added new member name {Name} with ID: {Id}", request.Member.Name, newId);
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                    _logger.LogInformation("Added new member name {Name} with ID: {Id}", request.Member.Name, newId);
+
+                return StatusCode(StatusCodes.Status201Created, newId);
             }
             catch (Exception ex)
             {
@@ -332,14 +340,17 @@ namespace Library.Controllers
             {
                 _logger.LogInformation("Add new loan book record");
                 var newId = await _service.AddLoanBookAsync(request);
-                _logger.LogInformation("Added new loan book record with ID: {Id}", newId);
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                    _logger.LogInformation("Added new loan book record with ID: {Id}", newId);
+
+                return StatusCode(StatusCodes.Status201Created, newId);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while adding new loan book");
                 return BadRequest();
             }
-            return NoContent();
         }
 
         [HttpPatch("loan-book/{id}")]
