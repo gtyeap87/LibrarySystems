@@ -41,21 +41,24 @@ V1
 - ~API Versioning~
 - ~Mediatr~
 - Authorization and Authentication
-- React
-- Pagination
+- React (Web)
+- ~Pagination~
 - Unit Test
 - Redis Cache
 
 V2
 - Container
 - Microservice
-- Blazor
+- Blazor (Web)
 
 V3
 - Desktop version
 - Minimal API
-- Vue.js (Web)
-- Mobile 
 
 V4
 - Angular (Web)
+- Vue.js (Web)
+- Mobile
+
+V5
+- Clean Architecture
