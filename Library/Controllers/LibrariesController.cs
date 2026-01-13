@@ -9,14 +9,14 @@ using RestWebApi.Dto;
 namespace Library.Controllers
 {
     [ApiController]
-    [Route("api/v{version:apiVersion}/library")]
+    [Route("api/v{version:apiVersion}/libraries")]
     [ApiVersion("1.0")]
     [ApiVersion("2.0")]
-    public class LibraryController(
-        ILogger<LibraryController> logger,
+    public class LibrariesController(
+        ILogger<LibrariesController> logger,
         ILibraryService service) : ControllerBase
     {
-        private readonly ILogger<LibraryController> _logger = logger;
+        private readonly ILogger<LibrariesController> _logger = logger;
         private readonly ILibraryService _service = service;
 
         #region Book
