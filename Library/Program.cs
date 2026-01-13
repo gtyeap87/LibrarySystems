@@ -1,9 +1,12 @@
 ﻿using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Library.Data;
+using Library.Data.Identity;
 using Library.Features.Queries;
 using Library.Repository;
 using Library.Service;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.RateLimiting;
@@ -15,6 +18,7 @@ builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddUserSecrets<Program>()
     .AddEnvironmentVariables(); // for Azure or CI/CD overrides
 
 // Add services to the container.
@@ -24,6 +28,47 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<LibraryContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add Asp.net Identity Core
+builder.Services
+    .AddIdentity<ApplicationUser, IdentityRole>(options =>
+    {
+        // Password settings
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequiredLength = 8;
+        options.Password.RequiredUniqueChars = 1;
+
+        // Lockout settings
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.AllowedForNewUsers = true;
+
+        // User settings
+        options.User.RequireUniqueEmail = true;
+    })
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters.ValidIssuer = builder.Configuration["Jwt:Issuer"];
+        options.TokenValidationParameters.ValidAudience = builder.Configuration["Jwt:Audience"];
+        options.TokenValidationParameters.IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
+            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!));
+    });
+
+builder.Services.AddAuthorization();
+
 // Register Mediatr commands, repositories and services
 builder.Services.AddScoped<ILibraryQueryRepository, LibraryRepository>();
 builder.Services.AddScoped<ILibraryCommandRepository, LibraryRepository>();
@@ -32,6 +77,7 @@ builder.Services.AddScoped(typeof(IQueryRepo<>), typeof(EfQueryRepo<>));
 builder.Services.AddScoped(typeof(ICommandRepo<>), typeof(EfCommandRepo<>));
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(GetBooksQueryHandler).Assembly));
+builder.Services.AddScoped<IUserService, UserService>();
 
 // Add logging
 builder.Logging.AddConsole();
@@ -105,13 +151,33 @@ if (app.Environment.IsDevelopment())
             options.SwaggerEndpoint($"/swagger/{version}/swagger.json", $"Library API {version.ToUpperInvariant()}");
         });
     });
+
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await dbContext.Database.MigrateAsync();
+
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    if (!await roleManager.RoleExistsAsync(Roles.Admin))
+    {
+        await roleManager.CreateAsync(new IdentityRole(Roles.Admin));
+    }
+
+    if (!await roleManager.RoleExistsAsync(Roles.Librarian))
+    {
+        await roleManager.CreateAsync(new IdentityRole(Roles.Librarian));
+    }
+
+    if (!await roleManager.RoleExistsAsync(Roles.Member))
+    {
+        await roleManager.CreateAsync(new IdentityRole(Roles.Member));
+    }
 }
 
 app.UseHttpsRedirection();
 
 // Enable rate limiting globally
 app.UseRateLimiter();
-
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers()
    .RequireRateLimiting("FixedPolicy");

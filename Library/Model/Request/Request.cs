@@ -1,4 +1,6 @@
-﻿namespace Library.Model.Request
+﻿using Library.Data.Identity;
+
+namespace Library.Model.Request
 {
     public class BookRequest
     {
@@ -25,4 +27,25 @@
     {
         public required LoanBook LoanBook { get; set; }
     }
+
+    public record RegisterUserRequest(
+        string FirstName,
+        string SecondName,
+        string Email,
+        string Initials,
+        string Password,
+        bool EnableNotification = false,
+        bool TwoFactorAuthentication = false,
+        string Role = Roles.Librarian
+        );
+
+    public record DeleteUserRequest(
+        string LoginId,
+        string DeleteId
+        );
+
+    public record LoginUserRequest(
+        string Email,
+        string Password
+        );
 }
