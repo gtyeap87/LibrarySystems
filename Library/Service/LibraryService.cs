@@ -3,7 +3,6 @@ using Library.Features.Commands;
 using Library.Features.Queries;
 using Library.Model;
 using Library.Model.Request;
-using Library.Repository;
 using MediatR;
 
 namespace Library.Service
@@ -45,6 +44,13 @@ namespace Library.Service
             await _mediator.Send(new CreateBooksCommand(books));
         }
 
+        public async Task CreateBulkBooksAsync(BooksRequest request)
+        {
+            var bookRequests = request.Books;
+            var books = bookRequests.Select(br => (br.Book, br.Qty));
+            await _mediator.Send(new CreateBulkBooksCommand(books));
+        }
+
         public async Task<Book> UpdateBookAsync(BookRequest request)
         {
             var updatedBook = await _mediator.Send(new UpdateBookCommand(request.Book));
@@ -83,16 +89,17 @@ namespace Library.Service
             return await _mediator.Send(new ReadFullMembersQuery(name, date, page));
         }
 
-        public async Task<Guid> ReadMemberAsync(MemberRequest request)
+        public async Task<Guid> CreateMemberAsync(MemberRequest request)
         {
             var member = request.Member;
             var newMemberId = await _mediator.Send(new CreateMemberCommand(member));
             return newMemberId;
         }
 
-        public async Task ReadBulkMemberAsync(MembersRequest request)
+        public async Task CreateBulkMembersAsync(MembersRequest request)
         {
-            throw new NotImplementedException($"Method {nameof(ReadBulkMemberAsync)} is not yet implemented.");
+            var members = request.Members;
+            await _mediator.Send(new CreateBulkMembersCommand(members));
         }
 
         public async Task CreateMembersAsync(MembersRequest request)

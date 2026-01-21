@@ -11,10 +11,8 @@ public class LoanBook : Root
     public Guid BookId { get; set; }
     public Book? Book { get; set; }
     public Guid MemberId { get; set; }
-
     public Member? Member { get; set; }
     public DateOnly LoanedDate { get; set; }
-
     public DateOnly? ReturnedDate { get; set; }
 
     [Timestamp]

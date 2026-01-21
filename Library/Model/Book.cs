@@ -1,3 +1,4 @@
+using Library.Factory;
 using System.ComponentModel.DataAnnotations;
 
 namespace Library.Model;
@@ -5,7 +6,7 @@ namespace Library.Model;
 /// <summary>
 /// Represents available book data in the library system
 /// </summary>
-public class Book : Root
+public class Book : Root, IRoot
 {
     public Guid Id { get; set; }
     public Guid LibraryId { get; set; }

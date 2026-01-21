@@ -1,5 +1,6 @@
 ﻿using EFCore.BulkExtensions;
 using Library.Data;
+using Library.Factory;
 
 namespace Library.Repository
 {
@@ -54,13 +55,18 @@ namespace Library.Repository
             }
         }
 
-        public async Task BulkInsertAsync(IEnumerable<T> entities)
+        public async Task BulkInsertAsync<K>(IEnumerable<K> entities) where K : class, IRoot
         {
-            _logger.LogInformation("Bulk inserting {Count} {EntityName} records", entities.Count(), typeof(T).Name);
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Bulk inserting {Count} {EntityName} records", entities.Count(), typeof(T).Name);
 
-            await _context.BulkInsertAsync(entities);
+            var list = entities.ToList();
+            BulkRootFactory.Initialize(list);
 
-            _logger.LogInformation("Successfully bulk inserted {Count} {EntityName} records", entities.Count(), typeof(T).Name);
+            await _context.BulkInsertAsync(list);
+
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Successfully bulk inserted {Count} {EntityName} records", entities.Count(), typeof(T).Name);
         }
 
         public async Task<T> UpdateAsync(T entity)

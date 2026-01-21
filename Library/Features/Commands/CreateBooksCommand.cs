@@ -6,7 +6,10 @@ namespace Library.Features.Commands;
 
 public record CreateBooksCommand(IEnumerable<(Book book, int qty)> Books) : IRequest;
 
-public class AddBooksCommandHandler(ICommandRepo<Book> bookCommandRepo, ICommandRepo<BookStock> bookStockCommandRepo) : IRequestHandler<CreateBooksCommand>
+public class CreateBooksCommandHandler(
+    ICommandRepo<Book> bookCommandRepo,
+    ICommandRepo<BookStock> bookStockCommandRepo
+    ) : IRequestHandler<CreateBooksCommand>
 {
     private readonly ICommandRepo<Book> _bookCommandRepo = bookCommandRepo;
     private readonly ICommandRepo<BookStock> _bookStockCommandRepo = bookStockCommandRepo;

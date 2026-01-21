@@ -85,6 +85,7 @@ namespace Library.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("books")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -96,6 +97,42 @@ namespace Library.Controllers
                 _logger.LogInformation("Add new books to library");
 
                 await _service.CreateBooksAsync(request);
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    foreach (var book in request.Books)
+                    {
+                        _logger.LogInformation("Added new book name {Name}", book.Book.Name);
+                    }
+                }
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while adding new member");
+                return BadRequest();
+            }
+        }
+
+        /// <summary>
+        /// Add new books bulk insert method
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("books")]
+        [MapToApiVersion("2.0")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [RequirePermission(Permissions.CreateBooks)]
+        public async Task<IActionResult> CreateBulkBooksAsync([FromBody] BooksRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("Add new books to library");
+
+                await _service.CreateBulkBooksAsync(request);
 
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
@@ -224,7 +261,7 @@ namespace Library.Controllers
             try
             {
                 _logger.LogInformation("Add new member to library");
-                var newId = await _service.ReadMemberAsync(request);
+                var newId = await _service.CreateMemberAsync(request);
 
                 if (_logger.IsEnabled(LogLevel.Information))
                     _logger.LogInformation("Added new member name {Name} with ID: {Id}", request.Member.Name, newId);
@@ -244,6 +281,7 @@ namespace Library.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("members")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -255,6 +293,42 @@ namespace Library.Controllers
                 _logger.LogInformation("Add new members to library");
 
                 await _service.CreateMembersAsync(request);
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    foreach (var member in request.Members)
+                    {
+                        _logger.LogInformation("Added new member name {Name}", member.Name);
+                    }
+                }
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while adding new member");
+                return BadRequest();
+            }
+        }
+
+        /// <summary>
+        /// Add multiple members bulk insert method
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("members")]
+        [MapToApiVersion("2.0")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [RequirePermission(Permissions.CreateMembers)]
+        public async Task<IActionResult> CreateBulkMembersAsync(MembersRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("Add new members to library");
+
+                await _service.CreateBulkMembersAsync(request);
 
                 if (_logger.IsEnabled(LogLevel.Information))
                 {

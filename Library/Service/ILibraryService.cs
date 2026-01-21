@@ -9,7 +9,7 @@ namespace Library.Service
 
         Task<Guid> CreateLoanBookAsync(LoanBookRequest request);
 
-        Task<Guid> ReadMemberAsync(MemberRequest request);
+        Task<Guid> CreateMemberAsync(MemberRequest request);
 
         Task DeleteBookAsync(Guid bookId);
 
@@ -21,7 +21,7 @@ namespace Library.Service
 
         Task<Member> UpdateMemberAsync(MemberRequest request);
 
-        Task ReadBulkMemberAsync(MembersRequest request);
+        Task CreateBulkMembersAsync(MembersRequest request);
 
         Task<IEnumerable<Book>> ReadBooksAsync(Genre? genre, string? name, PaginationRequest page);
 
@@ -36,5 +36,7 @@ namespace Library.Service
         Task CreateMembersAsync(MembersRequest request);
 
         Task CreateBooksAsync(BooksRequest request);
+
+        Task CreateBulkBooksAsync(BooksRequest request);
     }
 }

@@ -1,5 +1,4 @@
-﻿using Library.Model;
-using Library.Repository.Specification;
+﻿using Library.Factory;
 
 namespace Library.Repository
 {
@@ -9,7 +8,7 @@ namespace Library.Repository
 
         Task AddRangeAsync(IEnumerable<T> entities);
 
-        Task BulkInsertAsync(IEnumerable<T> entities);
+        Task BulkInsertAsync<K>(IEnumerable<K> entities) where K : class, IRoot;
 
         Task DeleteAsync(T entity);
 
