@@ -13,7 +13,7 @@ namespace Library.Controllers
     [Route("api/v{version:apiVersion}/libraries")]
     [ApiVersion("1.0")]
     [ApiVersion("2.0")]
-    public class LibrariesController(
+    public partial class LibrariesController(
         ILogger<LibrariesController> logger,
         ILibraryService service) : ControllerBase
     {
