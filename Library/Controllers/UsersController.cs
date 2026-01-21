@@ -1,4 +1,6 @@
 ﻿using Asp.Versioning;
+using Library.Authorization;
+using Library.Dto.Identity;
 using Library.Model.Request;
 using Library.Service;
 using Microsoft.AspNetCore.Identity;
@@ -25,18 +27,69 @@ namespace Library.Controllers
         /// <returns></returns>
         [HttpPost("register")]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
-        public async Task<IActionResult> RegisterAsync(RegisterUserRequest request)
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status400BadRequest)]
+        [RequirePermission(Permissions.CreateUsers)]
+        public async Task<IActionResult> RegisterUserAsync(RegisterUserRequest request)
         {
             try
             {
                 _logger.LogInformation("Register user");
 
-                var newId = await _userService.RegisterAsync(request);
+                var newId = await _userService.RegisterUserAsync(request);
 
-                if (_logger.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Information))
+                if (_logger.IsEnabled(LogLevel.Information))
                     _logger.LogInformation("User registered with id: {UserId}", newId);
 
                 return StatusCode(StatusCodes.Status201Created, newId);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                if (_logger.IsEnabled(LogLevel.Error))
+                    _logger.LogError(ex, "Unauthorized login attempt for user: {LoginId}", request.Email);
+
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while registering new user");
+
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status400BadRequest)]
+        [RequirePermission(Permissions.ReadUsers)]
+        public async Task<IActionResult> ReadUserAsync(Guid id)
+        {
+            try
+            {
+                _logger.LogInformation("Read user");
+
+                var result = await _userService.ReadUserAsync(id);
+                var user = result.User;
+                var roles = result.Roles;
+
+                var userDto =
+                    new UserDto(
+                        Id: new Guid(user.Id),
+                        FirstName: user.FirstName,
+                        LastName: user.LastName,
+                        Email: user.Email!,
+                        Initials: user.Initials!,
+                        EnableNotifications: user.EnableNotifications,
+                        TwoFactorEnabled: user.TwoFactorEnabled,
+                        UserName: user.UserName!,
+                        LockoutEnabled: user.LockoutEnabled,
+                        Roles: roles
+                    );
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                    _logger.LogInformation("User with id: {Id} has get user data", id);
+
+                return Ok(userDto);
             }
             catch (Exception ex)
             {
@@ -52,17 +105,21 @@ namespace Library.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [HttpDelete]
-        public async Task<IActionResult> DeleteAsync(DeleteUserRequest request)
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status400BadRequest)]
+        [RequirePermission(Permissions.DeleteUsers)]
+        public async Task<IActionResult> DeleteUserAsync(Guid id)
         {
             try
             {
                 _logger.LogInformation("deleting user");
 
-                await _userService.DeleteAsync(request);
+                await _userService.DeleteUserAsync(id);
 
                 if (_logger.IsEnabled(LogLevel.Information))
-                    _logger.LogInformation("User with id: {LoginId} has deleted user with id {DeleteId}", request.LoginId, request.DeleteId);
+                    _logger.LogInformation("Deleted user with id {DeleteId}", id);
 
                 return NoContent();
             }
@@ -75,7 +132,7 @@ namespace Library.Controllers
         }
 
         /// <summary>
-        /// Login users
+        /// Login user
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -83,13 +140,13 @@ namespace Library.Controllers
         [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> LoginAsync(LoginUserRequest request)
+        public async Task<IActionResult> LoginUserAsync(LoginUserRequest request)
         {
             try
             {
                 _logger.LogInformation("login user");
 
-                var accessToken = await _userService.LoginAsync(request);
+                var accessToken = await _userService.LoginUserAsync(request);
 
                 if (_logger.IsEnabled(LogLevel.Information))
                     _logger.LogInformation("user with email {Email} has successfully logged in", request.Email);
@@ -106,6 +163,81 @@ namespace Library.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while login user");
+
+                return BadRequest();
+            }
+        }
+
+        /// <summary>
+        /// Update user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPatch("{id}")]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status400BadRequest)]
+        [RequirePermission(Permissions.UpdateUsers)]
+        public async Task<IActionResult> UpdateUserAsync(Guid id, UpdateUserRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("Update user");
+
+                await _userService.UpdateUserAsync(id, request);
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                    _logger.LogInformation("User with id: {Id} has updated user", id);
+
+                return NoContent();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                if (_logger.IsEnabled(LogLevel.Error))
+                    _logger.LogError(ex, "Unauthorized attempt for user: {LoginId}", id);
+
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while updating user");
+
+                return BadRequest();
+            }
+        }
+
+        /// <summary>
+        /// Change user password
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("change-password")]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status400BadRequest)]
+        [RequirePermission(Permissions.ChangePasswordUsers)]
+        public async Task<IActionResult> ChangePasswordAsync(ChangePasswordRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("Change user password");
+
+                await _userService.ChangePasswordAsync(request);
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                    _logger.LogInformation("User with email: {Email} has changed password", request.Email);
+
+                return Ok();
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "password doesnt meet criterias");
+
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while changing password");
 
                 return BadRequest();
             }

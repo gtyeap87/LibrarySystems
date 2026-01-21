@@ -1,13 +1,20 @@
-﻿using Library.Model.Request;
+﻿using Library.Data.Identity;
+using Library.Model.Request;
 
 namespace Library.Service
 {
     public interface IUserService
     {
-        Task DeleteAsync(DeleteUserRequest request);
+        Task ChangePasswordAsync(ChangePasswordRequest request);
 
-        Task<string> LoginAsync(LoginUserRequest request);
+        Task DeleteUserAsync(Guid deleteUserId);
 
-        Task<Guid> RegisterAsync(RegisterUserRequest request);
+        Task<string> LoginUserAsync(LoginUserRequest request);
+
+        Task<(ApplicationUser User, IList<string> Roles)> ReadUserAsync(Guid id);
+
+        Task<Guid> RegisterUserAsync(RegisterUserRequest request);
+
+        Task UpdateUserAsync(Guid id, UpdateUserRequest request);
     }
 }

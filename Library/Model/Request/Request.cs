@@ -30,7 +30,7 @@ namespace Library.Model.Request
 
     public record RegisterUserRequest(
         string FirstName,
-        string SecondName,
+        string LastName,
         string Email,
         string Initials,
         string Password,
@@ -48,4 +48,21 @@ namespace Library.Model.Request
         string Email,
         string Password
         );
+
+    public record UpdateUserRequest(
+        string? FirstName,
+        string? SecondName,
+        string? Initials,
+        bool? EnableNotification,
+        bool? TwoFactorAuthentication,
+        string? PhoneNumber,
+        bool? LockoutEnabled,
+        bool? LockoutEnd
+        );
+
+    public record ChangePasswordRequest(
+        string Email,
+        string Password,
+        string NewPassword
+        ) : LoginUserRequest(Email, Password);
 }

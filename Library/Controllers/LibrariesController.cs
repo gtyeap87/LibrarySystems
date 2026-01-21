@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using Library.Authorization;
 using Library.Dto;
 using Library.Model;
 using Library.Model.Request;
@@ -28,6 +29,7 @@ namespace Library.Controllers
         /// <returns></returns>
         [HttpGet("books")]
         [ProducesResponseType(typeof(IEnumerable<BookDto>), StatusCodes.Status200OK)]
+        [RequirePermission(Permissions.ReadBooks)]
         public async Task<IActionResult> GetBooksAsync([FromQuery] Genre? genre, string? name, int pageSize, int pageNumber)
         {
             _logger.LogInformation("GetBooksAsync");
@@ -46,6 +48,7 @@ namespace Library.Controllers
         [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [RequirePermission(Permissions.CreateBooks)]
         public async Task<IActionResult> AddbookAsync([FromBody] BookRequest request)
         {
             try
@@ -77,6 +80,7 @@ namespace Library.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [RequirePermission(Permissions.CreateBooks)]
         public async Task<IActionResult> AddBooksAsync([FromBody] BooksRequest request)
         {
             try
@@ -106,6 +110,7 @@ namespace Library.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [RequirePermission(Permissions.UpdateBooks)]
         public async Task<IActionResult> UpdatebookAsync(Guid id, [FromBody] BookRequest request)
         {
             try
@@ -133,6 +138,7 @@ namespace Library.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [RequirePermission(Permissions.DeleteBooks)]
         public async Task<IActionResult> DeleteBookAsync(Guid id)
         {
             try
@@ -165,6 +171,7 @@ namespace Library.Controllers
         /// <returns></returns>
         [HttpGet("members")]
         [ProducesResponseType(typeof(IEnumerable<MemberDto>), StatusCodes.Status200OK)]
+        [RequirePermission(Permissions.ReadMembers)]
         public async Task<IActionResult> GetMembersAsync([FromQuery] string? name, DateOnly? date, int pageSize, int pageNumber)
         {
             _logger.LogInformation("GetMembersAsync");
@@ -189,6 +196,7 @@ namespace Library.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [RequirePermission(Permissions.CreateMembers)]
         public async Task<IActionResult> AddMemberAsync(MemberRequest request)
         {
             try
@@ -217,6 +225,7 @@ namespace Library.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [RequirePermission(Permissions.CreateMembers)]
         public async Task<IActionResult> AddMembersAsync(MembersRequest request)
         {
             try
@@ -245,6 +254,7 @@ namespace Library.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [RequirePermission(Permissions.UpdateMembers)]
         public async Task<IActionResult> UpdateMemberAsync(Guid id, [FromBody] MemberRequest request)
         {
             try
@@ -272,6 +282,7 @@ namespace Library.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [RequirePermission(Permissions.DeleteMembers)]
         public async Task<IActionResult> DeleteMemberAsync(Guid id)
         {
             try
@@ -294,7 +305,7 @@ namespace Library.Controllers
 
         #endregion Member
 
-        #region Loan Member
+        #region Loan Books
 
         /// <summary>
         ///
@@ -304,6 +315,7 @@ namespace Library.Controllers
         /// <returns></returns>
         [HttpGet("loan-books")]
         [ProducesResponseType(typeof(IEnumerable<MemberDto>), StatusCodes.Status200OK)]
+        [RequirePermission(Permissions.ReadLoanBooks)]
         public async Task<IActionResult> GetLoanBooksAsync([FromQuery] string? bookName, string? memberName, int pageSize, int pageNumber)
         {
             _logger.LogInformation("GetLoanBooksAsync");
@@ -334,6 +346,7 @@ namespace Library.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [RequirePermission(Permissions.CreateLoanBooks)]
         public async Task<IActionResult> AddLoanBookAsync(LoanBookRequest request)
         {
             try
@@ -357,6 +370,7 @@ namespace Library.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [RequirePermission(Permissions.UpdateLoanBooks)]
         public async Task<IActionResult> UpdateLoanedBookReturnedDateAsync(Guid id, [FromBody] LoanBookRequest request)
         {
             try
@@ -384,7 +398,7 @@ namespace Library.Controllers
             return NoContent();
         }
 
-        #endregion Loan Member
+        #endregion Loan Books
 
         #region Library
 

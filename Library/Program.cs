@@ -1,11 +1,14 @@
 ﻿using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
+using Library.Authorization;
 using Library.Data;
 using Library.Data.Identity;
 using Library.Features.Queries;
 using Library.Repository;
 using Library.Service;
+using Library.Strategies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
@@ -18,8 +21,12 @@ builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
-    .AddUserSecrets<Program>()
     .AddEnvironmentVariables(); // for Azure or CI/CD overrides
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -69,6 +76,10 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
+// Register custom policy provider and handler to support [Authorize(Policy = "Permission:...")]
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+
 // Register Mediatr commands, repositories and services
 builder.Services.AddScoped<ILibraryQueryRepository, LibraryRepository>();
 builder.Services.AddScoped<ILibraryCommandRepository, LibraryRepository>();
@@ -78,6 +89,11 @@ builder.Services.AddScoped(typeof(ICommandRepo<>), typeof(EfCommandRepo<>));
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(GetBooksQueryHandler).Assembly));
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IStrategyHandler, StrategyHandler>();
+
+// Register strategies (Business Logic)
+builder.Services.AddScoped<IMemberStrategy, NormalMember>();
+builder.Services.AddScoped<IMemberStrategy, PremiumMember>();
 
 // Add logging
 builder.Logging.AddConsole();
@@ -152,34 +168,15 @@ if (app.Environment.IsDevelopment())
         });
     });
 
-    using var scope = app.Services.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    await dbContext.Database.MigrateAsync();
-
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    if (!await roleManager.RoleExistsAsync(Roles.Admin))
-    {
-        await roleManager.CreateAsync(new IdentityRole(Roles.Admin));
-    }
-
-    if (!await roleManager.RoleExistsAsync(Roles.Librarian))
-    {
-        await roleManager.CreateAsync(new IdentityRole(Roles.Librarian));
-    }
-
-    if (!await roleManager.RoleExistsAsync(Roles.Member))
-    {
-        await roleManager.CreateAsync(new IdentityRole(Roles.Member));
-    }
+    await app.ApplyMigrations();
+    await app.SeedRolesAndPermissions();
+    await app.SeedAdminUser();
 }
 
 app.UseHttpsRedirection();
-
-// Enable rate limiting globally
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers()
-   .RequireRateLimiting("FixedPolicy");
+app.MapControllers().RequireRateLimiting("FixedPolicy");
 
 await app.RunAsync();

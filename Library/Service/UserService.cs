@@ -1,7 +1,10 @@
-﻿using Library.Data;
+﻿using Library.Authorization;
+using Library.Data;
 using Library.Data.Identity;
 using Library.Model.Request;
+using Library.Strategies;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
@@ -11,14 +14,16 @@ namespace Library.Service
     public class UserService(
         UserManager<ApplicationUser> userManager,
         ApplicationDbContext dbContext,
-        IConfiguration configuration
+        IConfiguration configuration,
+        IStrategyHandler strategyHandler
         ) : IUserService
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly ApplicationDbContext _dbContext = dbContext;
         private readonly IConfiguration _configuration = configuration;
+        private readonly IStrategyHandler _strategyHandler = strategyHandler;
 
-        public async Task<Guid> RegisterAsync(RegisterUserRequest request)
+        public async Task<Guid> RegisterUserAsync(RegisterUserRequest request)
         {
             #region Validation
 
@@ -30,7 +35,7 @@ namespace Library.Service
             var user = new ApplicationUser()
             {
                 FirstName = request.FirstName,
-                LastName = request.SecondName,
+                LastName = request.LastName,
                 UserName = request.Email,
                 Email = request.Email,
                 Initials = request.Initials,
@@ -38,14 +43,7 @@ namespace Library.Service
                 TwoFactorEnabled = request.TwoFactorAuthentication
             };
 
-            var passwordValidator = new PasswordValidator<ApplicationUser>();
-            var passwordValidationResult = await passwordValidator.ValidateAsync(_userManager, user, request.Password);
-
-            if (!passwordValidationResult.Succeeded)
-            {
-                var errors = string.Join(", ", passwordValidationResult.Errors.Select(e => e.Description));
-                throw new ArgumentException($"Password validation failed: {errors}");
-            }
+            await ValidatePassword(user, request.Password);
 
             #endregion Validation
 
@@ -68,6 +66,9 @@ namespace Library.Service
                 throw new InvalidOperationException($"role creation failed: {errors}");
             }
 
+            //apply strategies
+            await _strategyHandler.HandleAsync(request);
+
             await transaction.CommitAsync();
 
             return Guid.Parse(user.Id);
@@ -75,19 +76,19 @@ namespace Library.Service
             #endregion Execute
         }
 
-        public async Task DeleteAsync(DeleteUserRequest request)
+        public async Task<(ApplicationUser User, IList<string> Roles)> ReadUserAsync(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString()) ?? throw new InvalidOperationException("User not found.");
+            var roles = await _userManager.GetRolesAsync(user) ?? [];
+
+            return (user, roles);
+        }
+
+        public async Task DeleteUserAsync(Guid deleteUserId)
         {
             using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
-            //check if the user is admin
-            var loginUser = await _userManager.FindByIdAsync(request.LoginId) ?? throw new ArgumentException("Login user not found.");
-            var users = await _userManager.GetRolesAsync(loginUser);
-            if (!users.Contains(Roles.Admin))
-            {
-                throw new UnauthorizedAccessException("Only admin users can delete users.");
-            }
-
-            var deleteUser = await _userManager.FindByIdAsync(request.DeleteId) ?? throw new ArgumentException("Delete user not found.");
+            var deleteUser = await _userManager.FindByIdAsync(deleteUserId.ToString()) ?? throw new ArgumentException("Delete user not found.");
             var deleteResult = await _userManager.DeleteAsync(deleteUser);
             if (!deleteResult.Succeeded)
             {
@@ -98,7 +99,7 @@ namespace Library.Service
             await transaction.CommitAsync();
         }
 
-        public async Task<string> LoginAsync(LoginUserRequest request)
+        public async Task<string> LoginUserAsync(LoginUserRequest request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
 
@@ -113,13 +114,23 @@ namespace Library.Service
             var signingKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretkey));
             var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
+            var permissions = await (
+                from role in _dbContext.Roles
+                join claim in _dbContext.RoleClaims on role.Id equals claim.RoleId
+                where roles.Contains(role.Name!) && claim.ClaimType == CustomClaimTypes.Permissions
+                select claim.ClaimValue
+                )
+                .Distinct()
+                .ToArrayAsync();
+
             List<Claim> claims =
             [
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email!),
                 new Claim("firstName", user.FirstName ?? string.Empty),
                 new Claim("lastName", user.LastName ?? string.Empty),
-                ..roles.Select(role => new Claim(ClaimTypes.Role, role))
+                ..roles.Select(role => new Claim(ClaimTypes.Role, role)),
+                ..permissions.Select(permission => new Claim(CustomClaimTypes.Permissions, permission))
             ];
 
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -135,6 +146,98 @@ namespace Library.Service
             string accessToken = tokenHandler.CreateToken(tokenDescriptor);
 
             return accessToken;
+        }
+
+        public async Task UpdateUserAsync(Guid id, UpdateUserRequest request)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString()) ?? throw new InvalidOperationException("User not found.");
+
+            user.FirstName = request.FirstName switch
+            {
+                not null => request.FirstName,
+                _ => user.FirstName
+            };
+
+            user.LastName = request.SecondName switch
+            {
+                not null => request.SecondName,
+                _ => user.LastName
+            };
+
+            user.Initials = request.Initials switch
+            {
+                not null => request.Initials,
+                _ => user.Initials
+            };
+
+            user.EnableNotifications = request.EnableNotification switch
+            {
+                not null => request.EnableNotification.Value,
+                _ => user.EnableNotifications
+            };
+
+            user.TwoFactorEnabled = request.TwoFactorAuthentication switch
+            {
+                not null => request.TwoFactorAuthentication.Value,
+                _ => user.TwoFactorEnabled
+            };
+
+            user.PhoneNumber = request.PhoneNumber switch
+            {
+                not null => request.PhoneNumber,
+                _ => user.PhoneNumber
+            };
+
+            user.LockoutEnabled = request.LockoutEnabled switch
+            {
+                not null => request.LockoutEnabled.Value,
+                _ => user.LockoutEnabled
+            };
+
+            if (request.LockoutEnd is not null)
+                user.LockoutEnd = DateTime.UtcNow.AddYears(1);
+
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new InvalidOperationException($"User update failed: {errors}");
+            }
+
+            await transaction.CommitAsync();
+        }
+
+        public async Task ChangePasswordAsync(ChangePasswordRequest request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email) ?? throw new UnauthorizedAccessException();
+
+            if (!await _userManager.CheckPasswordAsync(user, request.Password))
+            {
+                throw new InvalidOperationException("Wrong old password");
+            }
+
+            await ValidatePassword(user, request.NewPassword);
+
+            var result = await _userManager.ChangePasswordAsync(user, request.Password, request.NewPassword);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new InvalidOperationException($"User change password failed: {errors}");
+            }
+        }
+
+        private async Task ValidatePassword(ApplicationUser user, string newPasword)
+        {
+            var passwordValidator = new PasswordValidator<ApplicationUser>();
+            var passwordValidationResult = await passwordValidator.ValidateAsync(_userManager, user, newPasword);
+
+            if (!passwordValidationResult.Succeeded)
+            {
+                var errors = string.Join(", ", passwordValidationResult.Errors.Select(e => e.Description));
+                throw new ArgumentException($"Password validation failed: {errors}");
+            }
         }
     }
 }
