@@ -30,10 +30,10 @@ namespace Library.Controllers
         [HttpGet("books")]
         [ProducesResponseType(typeof(IEnumerable<BookDto>), StatusCodes.Status200OK)]
         [RequirePermission(Permissions.ReadBooks)]
-        public async Task<IActionResult> GetBooksAsync([FromQuery] Genre? genre, string? name, int pageSize, int pageNumber)
+        public async Task<IActionResult> ReadBooksAsync([FromQuery] Genre? genre, string? name, int pageSize, int pageNumber)
         {
             _logger.LogInformation("GetBooksAsync");
-            var books = await _service.GetFullBooksAsync(genre, name, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
+            var books = await _service.ReadFullBooksAsync(genre, name, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
             var bookDtos = books.Select(b => new BookDto
             {
                 Genre = b.Genre,
@@ -49,7 +49,7 @@ namespace Library.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [RequirePermission(Permissions.CreateBooks)]
-        public async Task<IActionResult> AddbookAsync([FromBody] BookRequest request)
+        public async Task<IActionResult> ReadBookAsync([FromBody] BookRequest request)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace Library.Controllers
                 if (request.Qty <= 0)
                     return BadRequest("Quantity must be greater than zero.");
 
-                var newId = await _service.AddBookAsync(request);
+                var newId = await _service.CreateBookAsync(request);
 
                 if (_logger.IsEnabled(LogLevel.Information))
                     _logger.LogInformation("Added {Qty} new book name {Name} with ID: {Id}", request.Qty, request.Book.Name, newId);
@@ -81,13 +81,13 @@ namespace Library.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [RequirePermission(Permissions.CreateBooks)]
-        public async Task<IActionResult> AddBooksAsync([FromBody] BooksRequest request)
+        public async Task<IActionResult> CreateBooksAsync([FromBody] BooksRequest request)
         {
             try
             {
                 _logger.LogInformation("Add new books to library");
 
-                await _service.AddBooksAsync(request);
+                await _service.CreateBooksAsync(request);
 
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
@@ -172,11 +172,11 @@ namespace Library.Controllers
         [HttpGet("members")]
         [ProducesResponseType(typeof(IEnumerable<MemberDto>), StatusCodes.Status200OK)]
         [RequirePermission(Permissions.ReadMembers)]
-        public async Task<IActionResult> GetMembersAsync([FromQuery] string? name, DateOnly? date, int pageSize, int pageNumber)
+        public async Task<IActionResult> ReadMembersAsync([FromQuery] string? name, DateOnly? date, int pageSize, int pageNumber)
         {
             _logger.LogInformation("GetMembersAsync");
 
-            var members2 = await _service.GetMembersOnlyAsync(name, date, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
+            var members2 = await _service.ReadMembersOnlyAsync(name, date, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
 
             var membersDto = members2.Select(m => new MemberDto
             {
@@ -197,12 +197,12 @@ namespace Library.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [RequirePermission(Permissions.CreateMembers)]
-        public async Task<IActionResult> AddMemberAsync(MemberRequest request)
+        public async Task<IActionResult> CreateMemberAsync(MemberRequest request)
         {
             try
             {
                 _logger.LogInformation("Add new member to library");
-                var newId = await _service.AddMemberAsync(request);
+                var newId = await _service.ReadMemberAsync(request);
 
                 if (_logger.IsEnabled(LogLevel.Information))
                     _logger.LogInformation("Added new member name {Name} with ID: {Id}", request.Member.Name, newId);
@@ -226,13 +226,13 @@ namespace Library.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [RequirePermission(Permissions.CreateMembers)]
-        public async Task<IActionResult> AddMembersAsync(MembersRequest request)
+        public async Task<IActionResult> CreateMembersAsync(MembersRequest request)
         {
             try
             {
                 _logger.LogInformation("Add new members to library");
 
-                await _service.AddMembersAsync(request);
+                await _service.CreateMembersAsync(request);
 
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
@@ -316,10 +316,10 @@ namespace Library.Controllers
         [HttpGet("loan-books")]
         [ProducesResponseType(typeof(IEnumerable<MemberDto>), StatusCodes.Status200OK)]
         [RequirePermission(Permissions.ReadLoanBooks)]
-        public async Task<IActionResult> GetLoanBooksAsync([FromQuery] string? bookName, string? memberName, int pageSize, int pageNumber)
+        public async Task<IActionResult> ReadLoanBooksAsync([FromQuery] string? bookName, string? memberName, int pageSize, int pageNumber)
         {
             _logger.LogInformation("GetLoanBooksAsync");
-            var loanBooks = await _service.GetLoanBooksAsync(bookName, memberName, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
+            var loanBooks = await _service.ReadLoanBooksAsync(bookName, memberName, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
             var loanBookDtos = loanBooks.Select(lb => new LoanBookDto
             {
                 BookName = lb.Book.Name,
@@ -331,12 +331,12 @@ namespace Library.Controllers
             var loanBooksDetailsDto = new LoanBooksDetailsDto
             {
                 LoanBooks = loanBookDtos,
-                LoanedOutBooksQuantity = GetLoanedOutBooksQuantity(loanBooks)
+                LoanedOutBooksQuantity = ReadLoanedOutBooksQuantity(loanBooks)
             };
             return Ok(loanBooksDetailsDto);
         }
 
-        private static int GetLoanedOutBooksQuantity(IEnumerable<LoanBook> loanBooks)
+        private static int ReadLoanedOutBooksQuantity(IEnumerable<LoanBook> loanBooks)
         {
             var totalQty = loanBooks.Count(lb => lb.ReturnedDate == null);
             return totalQty;
@@ -347,12 +347,12 @@ namespace Library.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [RequirePermission(Permissions.CreateLoanBooks)]
-        public async Task<IActionResult> AddLoanBookAsync(LoanBookRequest request)
+        public async Task<IActionResult> CreateLoanBookAsync(LoanBookRequest request)
         {
             try
             {
                 _logger.LogInformation("Add new loan book record");
-                var newId = await _service.AddLoanBookAsync(request);
+                var newId = await _service.CreateLoanBookAsync(request);
 
                 if (_logger.IsEnabled(LogLevel.Information))
                     _logger.LogInformation("Added new loan book record with ID: {Id}", newId);
@@ -405,12 +405,12 @@ namespace Library.Controllers
         [HttpGet("count")]
         [MapToApiVersion("1.0")]
         [ProducesResponseType(typeof(LibraryDto), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllCountAsync()
+        public async Task<IActionResult> ReadAllCountAsync()
         {
             _logger.LogInformation("GetAllCountAsync");
-            var members = await _service.GetMembersOnlyAsync(null, null, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue });
-            var books = await _service.GetBooksAsync(null, null, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue });
-            var loanBooks = await _service.GetLoanBooksAsync(null, null, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue });
+            var members = await _service.ReadMembersOnlyAsync(null, null, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue });
+            var books = await _service.ReadBooksAsync(null, null, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue });
+            var loanBooks = await _service.ReadLoanBooksAsync(null, null, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue });
             var totalLoanedBooks = loanBooks.Count(x => x.ReturnedDate == null);
 
             var libraryDto = new LibraryDto(
@@ -425,7 +425,7 @@ namespace Library.Controllers
         [HttpGet("count")]
         [MapToApiVersion("2.0")]
         [ProducesResponseType(typeof(LibraryDto), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllCount2Async()
+        public async Task<IActionResult> ReadAllCount2Async()
         {
             _logger.LogInformation("GetAllCount2Async");
 

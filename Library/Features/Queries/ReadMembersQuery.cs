@@ -6,13 +6,13 @@ using MediatR;
 
 namespace Library.Features.Queries;
 
-public record GetMembersQuery(string? Name, DateOnly? Date, PaginationRequest Page) : IRequest<IEnumerable<Member>>;
+public record ReadMembersQuery(string? Name, DateOnly? Date, PaginationRequest Page) : IRequest<IEnumerable<Member>>;
 
-public class GetMembersQueryHandler(IQueryRepo<Member> queryRepo) : IRequestHandler<GetMembersQuery, IEnumerable<Member>>
+public class GetMembersQueryHandler(IQueryRepo<Member> queryRepo) : IRequestHandler<ReadMembersQuery, IEnumerable<Member>>
 {
     private readonly IQueryRepo<Member> _queryRepo = queryRepo;
 
-    public async Task<IEnumerable<Member>> Handle(GetMembersQuery command, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Member>> Handle(ReadMembersQuery command, CancellationToken cancellationToken)
     {
         var spec = new MembersOnlySpec(command.Name, command.Date);
         return await _queryRepo.ListAsync(spec, command.Page);

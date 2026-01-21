@@ -44,7 +44,7 @@ namespace Library.Strategies
                         LibraryId = Guid.Parse(_configuration["Library:Id"]!)
                     }
                 };
-                var newId = await _libraryService.AddMemberAsync(memberRequest);
+                var newId = await _libraryService.ReadMemberAsync(memberRequest);
 
                 if (_logger.IsEnabled(LogLevel.Information))
                     _logger.LogInformation("Added new premium member name {Name} with ID: {Id}", $"{request.FirstName}{request.LastName}", newId);

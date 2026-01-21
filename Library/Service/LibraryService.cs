@@ -20,36 +20,36 @@ namespace Library.Service
 
         #region Book
 
-        public async Task<IEnumerable<Book>> GetBooksAsync(Genre? genre, string? name, PaginationRequest page)
+        public async Task<IEnumerable<Book>> ReadBooksAsync(Genre? genre, string? name, PaginationRequest page)
         {
-            return await _mediator.Send(new GetBooksQuery(genre, name, page));
+            return await _mediator.Send(new ReadBooksQuery(genre, name, page));
         }
 
-        public async Task<IEnumerable<Book>> GetFullBooksAsync(Genre? genre, string? name, PaginationRequest page)
+        public async Task<IEnumerable<Book>> ReadFullBooksAsync(Genre? genre, string? name, PaginationRequest page)
         {
-            return await _mediator.Send(new GetFullBooksQuery(genre, name, page));
+            return await _mediator.Send(new ReadFullBooksQuery(genre, name, page));
         }
 
-        public async Task<Guid> AddBookAsync(BookRequest request)
+        public async Task<Guid> CreateBookAsync(BookRequest request)
         {
             var book = request.Book;
             var qty = request.Qty;
-            var newBookId = await _mediator.Send(new AddBookCommand(book, qty));
+            var newBookId = await _mediator.Send(new CreateBookCommand(book, qty));
             return newBookId;
         }
 
-        public async Task AddBooksAsync(BooksRequest request)
+        public async Task CreateBooksAsync(BooksRequest request)
         {
             var bookRequests = request.Books;
             var books = bookRequests.Select(br => (br.Book, br.Qty));
-            await _mediator.Send(new AddBooksCommand(books));
+            await _mediator.Send(new CreateBooksCommand(books));
         }
 
         public async Task<Book> UpdateBookAsync(BookRequest request)
         {
             var updatedBook = await _mediator.Send(new UpdateBookCommand(request.Book));
 
-            var existingBook = (await _mediator.Send(new GetFullBooksQuery(updatedBook.Genre, updatedBook.Name,
+            var existingBook = (await _mediator.Send(new ReadFullBooksQuery(updatedBook.Genre, updatedBook.Name,
                 new PaginationRequest()
                 {
                     PageNumber = 1,
@@ -73,32 +73,32 @@ namespace Library.Service
 
         #region Member
 
-        public async Task<IEnumerable<Member>> GetMembersOnlyAsync(string? name, DateOnly? date, PaginationRequest page)
+        public async Task<IEnumerable<Member>> ReadMembersOnlyAsync(string? name, DateOnly? date, PaginationRequest page)
         {
-            return await _mediator.Send(new GetMembersQuery(name, date, page));
+            return await _mediator.Send(new ReadMembersQuery(name, date, page));
         }
 
-        public async Task<IEnumerable<Member>> GetFullMembersAsync(string? name, DateOnly? date, PaginationRequest page)
+        public async Task<IEnumerable<Member>> ReadFullMembersAsync(string? name, DateOnly? date, PaginationRequest page)
         {
-            return await _mediator.Send(new GetFullMembersQuery(name, date, page));
+            return await _mediator.Send(new ReadFullMembersQuery(name, date, page));
         }
 
-        public async Task<Guid> AddMemberAsync(MemberRequest request)
+        public async Task<Guid> ReadMemberAsync(MemberRequest request)
         {
             var member = request.Member;
-            var newMemberId = await _mediator.Send(new AddMemberCommand(member));
+            var newMemberId = await _mediator.Send(new CreateMemberCommand(member));
             return newMemberId;
         }
 
-        public async Task AddBulkMemberAsync(MembersRequest request)
+        public async Task ReadBulkMemberAsync(MembersRequest request)
         {
-            throw new NotImplementedException($"Method {nameof(AddBulkMemberAsync)} is not yet implemented.");
+            throw new NotImplementedException($"Method {nameof(ReadBulkMemberAsync)} is not yet implemented.");
         }
 
-        public async Task AddMembersAsync(MembersRequest request)
+        public async Task CreateMembersAsync(MembersRequest request)
         {
             var members = request.Members;
-            await _mediator.Send(new AddMembersCommand(members));
+            await _mediator.Send(new CreateMembersCommand(members));
         }
 
         public async Task<Member> UpdateMemberAsync(MemberRequest request)
@@ -116,15 +116,15 @@ namespace Library.Service
 
         #region Loan Book
 
-        public async Task<IEnumerable<LoanBook>> GetLoanBooksAsync(string? bookName, string? memberName, PaginationRequest page)
+        public async Task<IEnumerable<LoanBook>> ReadLoanBooksAsync(string? bookName, string? memberName, PaginationRequest page)
         {
-            return await _mediator.Send(new GetFullLoanedBooksQuery(bookName, memberName, page));
+            return await _mediator.Send(new ReadFullLoanedBooksQuery(bookName, memberName, page));
         }
 
-        public async Task<Guid> AddLoanBookAsync(LoanBookRequest request)
+        public async Task<Guid> CreateLoanBookAsync(LoanBookRequest request)
         {
             var loanBook = request.LoanBook;
-            var newLoanedBookId = await _mediator.Send(new AddLoanedBookCommand(loanBook));
+            var newLoanedBookId = await _mediator.Send(new CreateLoanedBookCommand(loanBook));
             return newLoanedBookId;
         }
 

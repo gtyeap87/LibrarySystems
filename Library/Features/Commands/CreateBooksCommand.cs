@@ -4,14 +4,14 @@ using MediatR;
 
 namespace Library.Features.Commands;
 
-public record AddBooksCommand(IEnumerable<(Book book, int qty)> Books) : IRequest;
+public record CreateBooksCommand(IEnumerable<(Book book, int qty)> Books) : IRequest;
 
-public class AddBooksCommandHandler(ICommandRepo<Book> bookCommandRepo, ICommandRepo<BookStock> bookStockCommandRepo) : IRequestHandler<AddBooksCommand>
+public class AddBooksCommandHandler(ICommandRepo<Book> bookCommandRepo, ICommandRepo<BookStock> bookStockCommandRepo) : IRequestHandler<CreateBooksCommand>
 {
     private readonly ICommandRepo<Book> _bookCommandRepo = bookCommandRepo;
     private readonly ICommandRepo<BookStock> _bookStockCommandRepo = bookStockCommandRepo;
 
-    public async Task Handle(AddBooksCommand command, CancellationToken cancellationToken)
+    public async Task Handle(CreateBooksCommand command, CancellationToken cancellationToken)
     {
         var books = command.Books.Select(b => b.book);
         await _bookCommandRepo.AddRangeAsync(books);

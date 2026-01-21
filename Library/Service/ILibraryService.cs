@@ -5,11 +5,11 @@ namespace Library.Service
 {
     public interface ILibraryService
     {
-        Task<Guid> AddBookAsync(BookRequest request);
+        Task<Guid> CreateBookAsync(BookRequest request);
 
-        Task<Guid> AddLoanBookAsync(LoanBookRequest request);
+        Task<Guid> CreateLoanBookAsync(LoanBookRequest request);
 
-        Task<Guid> AddMemberAsync(MemberRequest request);
+        Task<Guid> ReadMemberAsync(MemberRequest request);
 
         Task DeleteBookAsync(Guid bookId);
 
@@ -21,20 +21,20 @@ namespace Library.Service
 
         Task<Member> UpdateMemberAsync(MemberRequest request);
 
-        Task AddBulkMemberAsync(MembersRequest request);
+        Task ReadBulkMemberAsync(MembersRequest request);
 
-        Task<IEnumerable<Book>> GetBooksAsync(Genre? genre, string? name, PaginationRequest page);
+        Task<IEnumerable<Book>> ReadBooksAsync(Genre? genre, string? name, PaginationRequest page);
 
-        Task<IEnumerable<Member>> GetMembersOnlyAsync(string? name, DateOnly? date, PaginationRequest page);
+        Task<IEnumerable<Member>> ReadMembersOnlyAsync(string? name, DateOnly? date, PaginationRequest page);
 
-        Task<IEnumerable<Book>> GetFullBooksAsync(Genre? genre, string? name, PaginationRequest page);
+        Task<IEnumerable<Book>> ReadFullBooksAsync(Genre? genre, string? name, PaginationRequest page);
 
-        Task<IEnumerable<LoanBook>> GetLoanBooksAsync(string? bookName, string? memberName, PaginationRequest page);
+        Task<IEnumerable<LoanBook>> ReadLoanBooksAsync(string? bookName, string? memberName, PaginationRequest page);
 
-        Task<IEnumerable<Member>> GetFullMembersAsync(string? name, DateOnly? date, PaginationRequest page);
+        Task<IEnumerable<Member>> ReadFullMembersAsync(string? name, DateOnly? date, PaginationRequest page);
 
-        Task AddMembersAsync(MembersRequest request);
+        Task CreateMembersAsync(MembersRequest request);
 
-        Task AddBooksAsync(BooksRequest request);
+        Task CreateBooksAsync(BooksRequest request);
     }
 }
