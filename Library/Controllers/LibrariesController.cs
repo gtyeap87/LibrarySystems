@@ -32,16 +32,24 @@ namespace Library.Controllers
         [RequirePermission(Permissions.ReadBooks)]
         public async Task<IActionResult> ReadBooksAsync([FromQuery] Genre? genre, string? name, int pageSize, int pageNumber)
         {
-            _logger.LogInformation("GetBooksAsync");
-            var books = await _service.ReadFullBooksAsync(genre, name, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
-            var bookDtos = books.Select(b => new BookDto
+            try
             {
-                Genre = b.Genre,
-                Name = b.Name,
-                AvailableQuantity = b.BookStocks.Sum(bs => bs.Quantity)
-            });
+                _logger.LogInformation("GetBooksAsync");
+                var books = await _service.ReadFullBooksAsync(genre, name, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
+                var bookDtos = books.Select(b => new BookDto
+                {
+                    Genre = b.Genre,
+                    Name = b.Name,
+                    AvailableQuantity = b.BookStocks.Sum(bs => bs.Quantity)
+                });
 
-            return Ok(bookDtos);
+                return Ok(bookDtos);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while reading books");
+                return BadRequest();
+            }
         }
 
         [HttpPost("book")]
@@ -49,7 +57,7 @@ namespace Library.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [RequirePermission(Permissions.CreateBooks)]
-        public async Task<IActionResult> ReadBookAsync([FromBody] BookRequest request)
+        public async Task<IActionResult> CreateBookAsync([FromBody] BookRequest request)
         {
             try
             {
@@ -66,7 +74,7 @@ namespace Library.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while adding new weather forecast");
+                _logger.LogError(ex, "Error occurred while adding book");
                 return BadRequest();
             }
         }
@@ -124,14 +132,16 @@ namespace Library.Controllers
 
                 var newId = await _service.UpdateBookAsync(request);
 
-                _logger.LogInformation("Update {Qty} new book name {Name} with ID: {Id}", request.Qty, request.Book.Name, newId);
+                if (_logger.IsEnabled(LogLevel.Information))
+                    _logger.LogInformation("Update {Qty} new book name {Name} with ID: {Id}", request.Qty, request.Book.Name, newId);
+
+                return NoContent();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while adding new weather forecast");
+                _logger.LogError(ex, "Error occurred while updating book");
+                return BadRequest();
             }
-
-            return NoContent();
         }
 
         [HttpDelete("book/{id}")]
@@ -150,13 +160,16 @@ namespace Library.Controllers
 
                 await _service.DeleteBookAsync(id);
 
-                _logger.LogInformation("Deleted book with ID: {Id}", id);
+                if (_logger.IsEnabled(LogLevel.Information))
+                    _logger.LogInformation("Deleted book with ID: {Id}", id);
+
+                return NoContent();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while deleting book");
+                return BadRequest();
             }
-            return NoContent();
         }
 
         #endregion Book
@@ -174,16 +187,25 @@ namespace Library.Controllers
         [RequirePermission(Permissions.ReadMembers)]
         public async Task<IActionResult> ReadMembersAsync([FromQuery] string? name, DateOnly? date, int pageSize, int pageNumber)
         {
-            _logger.LogInformation("GetMembersAsync");
-
-            var members2 = await _service.ReadMembersOnlyAsync(name, date, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
-
-            var membersDto = members2.Select(m => new MemberDto
+            try
             {
-                Name = m.Name,
-                JoinedDate = m.JoinedDate
-            });
-            return Ok(membersDto);
+                _logger.LogInformation("GetMembersAsync");
+
+                var members2 = await _service.ReadMembersOnlyAsync(name, date, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
+
+                var membersDto = members2.Select(m => new MemberDto
+                {
+                    Name = m.Name,
+                    JoinedDate = m.JoinedDate
+                });
+
+                return Ok(membersDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while reading members");
+                return BadRequest();
+            }
         }
 
         /// <summary>
@@ -241,13 +263,14 @@ namespace Library.Controllers
                         _logger.LogInformation("Added new member name {Name}", member.Name);
                     }
                 }
+
+                return NoContent();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while adding new member");
                 return BadRequest();
             }
-            return NoContent();
         }
 
         [HttpPatch("member/{id}")]
@@ -268,14 +291,18 @@ namespace Library.Controllers
 
                 var updatedMember = await _service.UpdateMemberAsync(request);
 
-                _logger.LogInformation("Update member name {Name} with ID: {Id}", updatedMember.Name, id);
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Update member name {Name} with ID: {Id}", updatedMember.Name, id);
+                }
+
+                return NoContent();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while updating member");
+                return BadRequest();
             }
-
-            return NoContent();
         }
 
         [HttpDelete("member/{id}")]
@@ -294,14 +321,28 @@ namespace Library.Controllers
 
                 await _service.DeleteMemberAsync(id);
 
-                _logger.LogInformation("Deleted member with ID: {Id}", id);
+                LogDeleted(id);
+
+                return NoContent();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while deleting member");
+                return BadRequest();
             }
-            return NoContent();
         }
+
+        [LoggerMessage(
+            EventId = 1003,
+            Level = LogLevel.Information,
+            Message = "Deleted ID: {Id}")]
+        private partial void LogDeleted(Guid id);
+
+        [LoggerMessage(
+            EventId = 1004,
+            Level = LogLevel.Information,
+            Message = "Updated ID: {Id}")]
+        private partial void LogUpdated(Guid id);
 
         #endregion Member
 
@@ -318,22 +359,30 @@ namespace Library.Controllers
         [RequirePermission(Permissions.ReadLoanBooks)]
         public async Task<IActionResult> ReadLoanBooksAsync([FromQuery] string? bookName, string? memberName, int pageSize, int pageNumber)
         {
-            _logger.LogInformation("GetLoanBooksAsync");
-            var loanBooks = await _service.ReadLoanBooksAsync(bookName, memberName, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
-            var loanBookDtos = loanBooks.Select(lb => new LoanBookDto
+            try
             {
-                BookName = lb.Book.Name,
-                MemberName = lb.Member.Name,
-                LoanedDate = lb.LoanedDate,
-                ReturnedDate = lb.ReturnedDate,
-            });
+                _logger.LogInformation("GetLoanBooksAsync");
+                var loanBooks = await _service.ReadLoanBooksAsync(bookName, memberName, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
+                var loanBookDtos = loanBooks.Select(lb => new LoanBookDto
+                {
+                    BookName = lb?.Book?.Name!,
+                    MemberName = lb?.Member?.Name!,
+                    LoanedDate = lb.LoanedDate,
+                    ReturnedDate = lb.ReturnedDate,
+                });
 
-            var loanBooksDetailsDto = new LoanBooksDetailsDto
+                var loanBooksDetailsDto = new LoanBooksDetailsDto
+                {
+                    LoanBooks = loanBookDtos,
+                    LoanedOutBooksQuantity = ReadLoanedOutBooksQuantity(loanBooks)
+                };
+                return Ok(loanBooksDetailsDto);
+            }
+            catch (Exception ex)
             {
-                LoanBooks = loanBookDtos,
-                LoanedOutBooksQuantity = ReadLoanedOutBooksQuantity(loanBooks)
-            };
-            return Ok(loanBooksDetailsDto);
+                _logger.LogError(ex, "Error occurred while read loan books");
+                return BadRequest();
+            }
         }
 
         private static int ReadLoanedOutBooksQuantity(IEnumerable<LoanBook> loanBooks)
@@ -387,15 +436,17 @@ namespace Library.Controllers
                 if (updatedLoanedBook == null)
                     return BadRequest("No loan book record found to update returned date.");
 
-                _logger.LogInformation("Update book name {Name} returned by member named {MemberName} on {ReturnedDate}",
-                    updatedLoanedBook?.Book?.Name, updatedLoanedBook?.Member?.Name, DateTime.Now.Date);
+                if (_logger.IsEnabled(LogLevel.Information))
+                    _logger.LogInformation("Update book name {Name} returned by member named {MemberName} on {ReturnedDate}",
+                        updatedLoanedBook?.Book?.Name, updatedLoanedBook?.Member?.Name, DateTime.Now.Date);
+
+                return NoContent();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while updating member");
+                return BadRequest();
             }
-
-            return NoContent();
         }
 
         #endregion Loan Books
@@ -407,19 +458,27 @@ namespace Library.Controllers
         [ProducesResponseType(typeof(LibraryDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> ReadAllCountAsync()
         {
-            _logger.LogInformation("GetAllCountAsync");
-            var members = await _service.ReadMembersOnlyAsync(null, null, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue });
-            var books = await _service.ReadBooksAsync(null, null, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue });
-            var loanBooks = await _service.ReadLoanBooksAsync(null, null, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue });
-            var totalLoanedBooks = loanBooks.Count(x => x.ReturnedDate == null);
+            try
+            {
+                _logger.LogInformation("GetAllCountAsync");
+                var members = await _service.ReadMembersOnlyAsync(null, null, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue });
+                var books = await _service.ReadBooksAsync(null, null, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue });
+                var loanBooks = await _service.ReadLoanBooksAsync(null, null, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue });
+                var totalLoanedBooks = loanBooks.Count(x => x.ReturnedDate == null);
 
-            var libraryDto = new LibraryDto(
-                NoOfMembers: members.Count(),
-                TotalNumbersOfBooks: books.Sum(b => b.BookStocks.Sum(bs => bs.Quantity)),
-                TotalLoanedBooks: totalLoanedBooks
-            );
+                var libraryDto = new LibraryDto(
+                    NoOfMembers: members.Count(),
+                    TotalNumbersOfBooks: books.Sum(b => b.BookStocks.Sum(bs => bs.Quantity)),
+                    TotalLoanedBooks: totalLoanedBooks
+                );
 
-            return Ok(libraryDto);
+                return Ok(libraryDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while read all count");
+                return BadRequest();
+            }
         }
 
         [HttpGet("count")]

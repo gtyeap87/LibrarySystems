@@ -14,10 +14,10 @@ public class LibraryContext(DbContextOptions<LibraryContext> options) : DbContex
     /// <summary>
     /// Configure entity relationships and constraints
     /// </summary>
-    /// <param name="builder"></param>
-    protected override void OnModelCreating(ModelBuilder builder)
+    /// <param name="modelBuilder"></param>
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        builder.Entity<Book>(entity =>
+        modelBuilder.Entity<Book>(entity =>
         {
             entity.HasKey(e => e.Id);
 
@@ -44,7 +44,7 @@ public class LibraryContext(DbContextOptions<LibraryContext> options) : DbContex
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
-        builder.Entity<BookStock>(entity =>
+        modelBuilder.Entity<BookStock>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Quantity)
@@ -58,7 +58,7 @@ public class LibraryContext(DbContextOptions<LibraryContext> options) : DbContex
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
-        builder.Entity<Member>(entity =>
+        modelBuilder.Entity<Member>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name)
@@ -79,7 +79,7 @@ public class LibraryContext(DbContextOptions<LibraryContext> options) : DbContex
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
-        builder.Entity<Model.Library>(entity =>
+        modelBuilder.Entity<Model.Library>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Location)
@@ -96,7 +96,7 @@ public class LibraryContext(DbContextOptions<LibraryContext> options) : DbContex
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
-        builder.Entity<LoanBook>(entity =>
+        modelBuilder.Entity<LoanBook>(entity =>
         {
             entity.HasKey(e => e.Id);
 
@@ -127,7 +127,7 @@ public class LibraryContext(DbContextOptions<LibraryContext> options) : DbContex
                   .AutoInclude();
         });
 
-        builder.HasDefaultSchema("lib");
+        modelBuilder.HasDefaultSchema("lib");
     }
 
     /// <summary>
