@@ -89,9 +89,9 @@ builder.Services.AddScoped(typeof(ICommandRepo<>), typeof(EfCommandRepo<>));
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(GetBooksQueryHandler).Assembly));
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IStrategyHandler, StrategyHandler>();
 
 // Register strategies (Business Logic)
+builder.Services.AddScoped<IStrategyHandler, StrategyHandler>();
 builder.Services.AddScoped<IMemberStrategy, NormalMember>();
 builder.Services.AddScoped<IMemberStrategy, PremiumMember>();
 
