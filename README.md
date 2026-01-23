@@ -1,6 +1,6 @@
 # Library Systems
 Description
-- Basically REST API and model design practise project.
+- Basically prototype project to explore new idea or improving existing implementation.
 
 Note
 - For model, endpoints and architecture design, no AI assitance is used. The AI usage is mainly use in realizing the code design.
