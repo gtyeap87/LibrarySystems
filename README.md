@@ -1,6 +1,6 @@
 # Library Systems
 Description
-- Basically REST API and model design practise project.
+- Basically prototype project to explore new idea or improving existing implementation.
 
 Note
 - For model, endpoints and architecture design, no AI assitance is used. The AI usage is mainly use in realizing the code design.
@@ -28,6 +28,7 @@ Log
 Repository design
   1. Traditional Repository
   2. Specification and generic query and command
+  3. Mediatr
  
 API Perfomarnce implentation
 - Rate Limiting
@@ -37,10 +38,10 @@ API Perfomarnce implentation
   
 Future implemention
 V1
-- Batch insert for bulk insert
+- Bulk CUD
 - ~API Versioning~
 - ~Mediatr~
-- Authorization and Authentication
+- ~Authorization and Authentication~
 - React (Web)
 - ~Pagination~
 - Unit Test
@@ -58,7 +59,7 @@ V3
 V4
 - Angular (Web)
 - Vue.js (Web)
-- Mobile
+- Mobile (Maui?)
 
 V5
 - Clean Architecture
