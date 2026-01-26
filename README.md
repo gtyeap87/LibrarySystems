@@ -38,7 +38,7 @@ API Perfomarnce implentation
   
 Future implemention
 V1
-- Bulk CUD
+- ~Bulk CUD~
 - ~API Versioning~
 - ~Mediatr~
 - ~Authorization and Authentication~
