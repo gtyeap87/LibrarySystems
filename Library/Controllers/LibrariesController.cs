@@ -524,7 +524,7 @@ namespace Library.Controllers
         }
 
         [HttpPost("loan-book")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [RequirePermission(Permissions.CreateLoanBooks)]
@@ -543,6 +543,31 @@ namespace Library.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while adding new loan book");
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("loan-books")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [RequirePermission(Permissions.CreateLoanBooks)]
+        public async Task<IActionResult> CreateBulkLoanBooksAsync(LoanBooksRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("Add new loan books record");
+
+                await _service.CreateBulkLoanBooksAsync(request);
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                    _logger.LogInformation("Added new loan books");
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while adding new loan books");
                 return BadRequest();
             }
         }
@@ -581,7 +606,7 @@ namespace Library.Controllers
             }
         }
 
-        [HttpPut("loan-book")]
+        [HttpPut("loan-books")]
         [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
