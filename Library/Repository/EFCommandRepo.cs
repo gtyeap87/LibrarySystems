@@ -104,6 +104,19 @@ namespace Library.Repository
             return existingEntity;
         }
 
+        public async Task BulkUpdateAsync<K>(IEnumerable<K> entities, BulkConfig bulkConfig) where K : class, IRoot
+        {
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Bulk updating {Count} {EntityName} records", entities.Count(), typeof(T).Name);
+
+            var list = entities.ToList();
+            BulkRootFactory.Initialize(list, BulkRootFactory.TranscationType.Update);
+            await _context.BulkUpdateAsync(list, bulkConfig);
+
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Successfully bulk updated {Count} {EntityName} records", entities.Count(), typeof(T).Name);
+        }
+
         public async Task DeleteAsync(T entity)
         {
             _logger.LogInformation("Deleting {EntityName} from the library", typeof(T).Name);

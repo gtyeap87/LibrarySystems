@@ -53,6 +53,7 @@ namespace Library.Service
 
         public async Task<Book> UpdateBookAsync(BookRequest request)
         {
+            //todo: optimze this update by utilizing getbyidaysnc in command handler
             var updatedBook = await _mediator.Send(new UpdateBookCommand(request.Book));
 
             var existingBook = (await _mediator.Send(new ReadFullBooksQuery(updatedBook.Genre, updatedBook.Name,
@@ -68,6 +69,12 @@ namespace Library.Service
             await _mediator.Send(new UpdateBookStockCommand(bookStock));
 
             return updatedBook;
+        }
+
+        public async Task UpdateBulkBooksAsync(BooksRequest request)
+        {
+            var books = request.Books.Select(br => (br.Book, br.Qty));
+            await _mediator.Send(new UpdateBulkBooksCommand(books));
         }
 
         public async Task DeleteBookAsync(Guid bookId)
@@ -112,6 +119,12 @@ namespace Library.Service
         {
             var updatedMember = await _mediator.Send(new UpdateMemberCommand(request.Member));
             return updatedMember;
+        }
+
+        public async Task UpdateBulkMembersAsync(MembersRequest request)
+        {
+            var members = request.Members;
+            await _mediator.Send(new UpdateBulkMembersCommand(members));
         }
 
         public async Task DeleteMemberAsync(Guid memberId)

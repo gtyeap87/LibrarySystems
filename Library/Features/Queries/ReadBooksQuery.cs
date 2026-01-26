@@ -1,8 +1,8 @@
-using MediatR;
 using Library.Model;
-using Library.Repository;
-using Library.Repository.Specification;
 using Library.Model.Request;
+using Library.Repository;
+using Library.Specification;
+using MediatR;
 
 namespace Library.Features.Queries;
 

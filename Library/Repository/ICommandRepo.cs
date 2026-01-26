@@ -1,4 +1,5 @@
-﻿using Library.Factory;
+﻿using EFCore.BulkExtensions;
+using Library.Factory;
 
 namespace Library.Repository
 {
@@ -9,6 +10,8 @@ namespace Library.Repository
         Task AddRangeAsync(IEnumerable<T> entities);
 
         Task BulkInsertAsync<K>(IEnumerable<K> entities) where K : class, IRoot;
+
+        Task BulkUpdateAsync<K>(IEnumerable<K> entities, BulkConfig bulkConfig) where K : class, IRoot;
 
         Task DeleteAsync(T entity);
 

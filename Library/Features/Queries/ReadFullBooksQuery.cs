@@ -1,7 +1,7 @@
 using Library.Model;
 using Library.Model.Request;
 using Library.Repository;
-using Library.Repository.Specification;
+using Library.Specification;
 using MediatR;
 
 namespace Library.Features.Queries;

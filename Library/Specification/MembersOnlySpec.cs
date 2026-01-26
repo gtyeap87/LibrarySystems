@@ -1,6 +1,6 @@
 ﻿using Library.Model;
 
-namespace Library.Repository.Specification
+namespace Library.Specification
 {
     public class MembersOnlySpec(string? name, DateOnly? date) : Specification<Member>
     {

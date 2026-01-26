@@ -7,5 +7,7 @@
     {
         Guid Id { get; set; }
         DateTime CreatedAt { get; set; }
+        DateTime? ModifiedAt { get; set; }
+        byte[]? RowVersion { get; set; }
     }
 }

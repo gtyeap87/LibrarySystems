@@ -1,4 +1,4 @@
-﻿namespace Library.Repository.Specification
+﻿namespace Library.Specification
 {
     public interface ISpecification<T>
     {

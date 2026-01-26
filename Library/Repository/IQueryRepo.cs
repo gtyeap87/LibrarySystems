@@ -1,5 +1,5 @@
 ﻿using Library.Model.Request;
-using Library.Repository.Specification;
+using Library.Specification;
 
 namespace Library.Repository
 {

@@ -1,7 +1,7 @@
 ﻿using Library.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace Library.Repository.Specification
+namespace Library.Specification
 {
     public class FullLoanedBookSpec(string? bookName, string? memberName) : Specification<LoanBook>
     {

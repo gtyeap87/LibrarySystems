@@ -156,7 +156,7 @@ namespace Library.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [RequirePermission(Permissions.UpdateBooks)]
-        public async Task<IActionResult> UpdatebookAsync(Guid id, [FromBody] BookRequest request)
+        public async Task<IActionResult> UpdateBookAsync(Guid id, [FromBody] BookRequest request)
         {
             try
             {
@@ -171,6 +171,35 @@ namespace Library.Controllers
 
                 if (_logger.IsEnabled(LogLevel.Information))
                     _logger.LogInformation("Update {Qty} new book name {Name} with ID: {Id}", request.Qty, request.Book.Name, newId);
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while updating book");
+                return BadRequest();
+            }
+        }
+
+        [HttpPut("books")]
+        [MapToApiVersion("2.0")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [RequirePermission(Permissions.UpdateBooks)]
+        public async Task<IActionResult> UpdateBulkBooksAsync([FromBody] BooksRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("update books information");
+
+                if (request == null)
+                    return BadRequest("no patch data.");
+
+                await _service.UpdateBulkBooksAsync(request);
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                    _logger.LogInformation("Books updated");
 
                 return NoContent();
             }
@@ -375,6 +404,35 @@ namespace Library.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while updating member");
+                return BadRequest();
+            }
+        }
+
+        [HttpPut("members")]
+        [MapToApiVersion("2.0")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [RequirePermission(Permissions.UpdateMembers)]
+        public async Task<IActionResult> UpdateBulkMembersAsync([FromBody] MembersRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("update members information");
+
+                if (request == null)
+                    return BadRequest("no patch data.");
+
+                await _service.UpdateBulkMembersAsync(request);
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                    _logger.LogInformation("Members updated");
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while updating members");
                 return BadRequest();
             }
         }

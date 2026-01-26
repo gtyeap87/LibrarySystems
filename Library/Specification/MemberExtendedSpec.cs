@@ -1,7 +1,7 @@
 ﻿using Library.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace Library.Repository.Specification
+namespace Library.Specification
 {
     public class MembersWithLoansSpec(string? name, DateOnly? date) : MembersOnlySpec(name, date)
     {

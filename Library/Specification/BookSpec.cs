@@ -1,6 +1,6 @@
 ﻿using Library.Model;
 
-namespace Library.Repository.Specification
+namespace Library.Specification
 {
     public class BooksOnlySpec(Genre? genre, string? name) : Specification<Book>
     {

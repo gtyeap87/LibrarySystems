@@ -38,5 +38,7 @@ namespace Library.Service
         Task CreateBooksAsync(BooksRequest request);
 
         Task CreateBulkBooksAsync(BooksRequest request);
+        Task UpdateBulkBooksAsync(BooksRequest request);
+        Task UpdateBulkMembersAsync(MembersRequest request);
     }
 }
