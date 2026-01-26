@@ -28,6 +28,11 @@ namespace Library.Model.Request
         public required LoanBook LoanBook { get; set; }
     }
 
+    public class LoanBooksRequest
+    {
+        public required IEnumerable<LoanBook> LoanBooks { get; set; }
+    }
+
     public record RegisterUserRequest(
         string FirstName,
         string LastName,

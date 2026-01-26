@@ -1,3 +1,4 @@
+using Library.Factory;
 using System.ComponentModel.DataAnnotations;
 
 namespace Library.Model;
@@ -5,7 +6,7 @@ namespace Library.Model;
 /// <summary>
 /// Represents Loan book where it keeps track member who borrows which book
 /// </summary>
-public class LoanBook : Root
+public class LoanBook : Root, IRoot
 {
     public Guid Id { get; set; }
     public Guid BookId { get; set; }

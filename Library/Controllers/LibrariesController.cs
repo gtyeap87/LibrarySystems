@@ -552,7 +552,7 @@ namespace Library.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [RequirePermission(Permissions.UpdateLoanBooks)]
-        public async Task<IActionResult> UpdateLoanedBookReturnedDateAsync(Guid id, [FromBody] LoanBookRequest request)
+        public async Task<IActionResult> UpdateLoanedBookAsync(Guid id, [FromBody] LoanBookRequest request)
         {
             try
             {
@@ -563,7 +563,7 @@ namespace Library.Controllers
                 if (request == null)
                     return BadRequest("no patch data.");
 
-                var updatedLoanedBook = await _service.UpdateLoanedBookReturnedDateAsync(request);
+                var updatedLoanedBook = await _service.UpdateLoanedBookAsync(request);
 
                 if (updatedLoanedBook == null)
                     return BadRequest("No loan book record found to update returned date.");
@@ -577,6 +577,35 @@ namespace Library.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while updating member");
+                return BadRequest();
+            }
+        }
+
+        [HttpPut("loan-book")]
+        [MapToApiVersion("2.0")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [RequirePermission(Permissions.UpdateLoanBooks)]
+        public async Task<IActionResult> UpdateBulkLoanBooksAsync([FromBody] LoanBooksRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("update loan books information");
+
+                if (request == null)
+                    return BadRequest("no patch data.");
+
+                await _service.UpdateBulkLoanedBooksAsync(request);
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                    _logger.LogInformation("Loan books updated");
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while updating loan books");
                 return BadRequest();
             }
         }

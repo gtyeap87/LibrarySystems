@@ -148,10 +148,16 @@ namespace Library.Service
             return newLoanedBookId;
         }
 
-        public async Task<LoanBook> UpdateLoanedBookReturnedDateAsync(LoanBookRequest request)
+        public async Task<LoanBook> UpdateLoanedBookAsync(LoanBookRequest request)
         {
             var updatedLoanedBook = await _mediator.Send(new UpdateLoanedBookCommand(request.LoanBook));
             return updatedLoanedBook;
+        }
+
+        public async Task UpdateBulkLoanedBooksAsync(LoanBooksRequest request)
+        {
+            var loanBooks = request.LoanBooks;
+            await _mediator.Send(new UpdateBulkLoanBooksCommand(loanBooks));
         }
 
         #endregion Loan Book

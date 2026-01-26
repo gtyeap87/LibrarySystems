@@ -17,7 +17,7 @@ namespace Library.Service
 
         Task<Book> UpdateBookAsync(BookRequest request);
 
-        Task<LoanBook> UpdateLoanedBookReturnedDateAsync(LoanBookRequest request);
+        Task<LoanBook> UpdateLoanedBookAsync(LoanBookRequest request);
 
         Task<Member> UpdateMemberAsync(MemberRequest request);
 
@@ -38,7 +38,10 @@ namespace Library.Service
         Task CreateBooksAsync(BooksRequest request);
 
         Task CreateBulkBooksAsync(BooksRequest request);
+
         Task UpdateBulkBooksAsync(BooksRequest request);
+
         Task UpdateBulkMembersAsync(MembersRequest request);
+        Task UpdateBulkLoanedBooksAsync(LoanBooksRequest request);
     }
 }
