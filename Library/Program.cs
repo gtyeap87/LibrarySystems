@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,9 +32,20 @@ if (builder.Environment.IsDevelopment())
 // Add services to the container.
 builder.Services.AddControllers();
 
+// Add logging
+builder.Services.AddLogging(logging =>
+{
+    logging.AddConsole();
+    logging.AddDebug();
+});
+
 // Add EF Core
 builder.Services.AddDbContext<LibraryContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    options
+        .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+        .EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
+});
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -94,10 +106,6 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IStrategyHandler, StrategyHandler>();
 builder.Services.AddScoped<IMemberStrategy, NormalMember>();
 builder.Services.AddScoped<IMemberStrategy, PremiumMember>();
-
-// Add logging
-builder.Logging.AddConsole();
-builder.Logging.AddDebug();
 
 // Add rate limiting policy
 builder.Services.AddRateLimiter(options =>
