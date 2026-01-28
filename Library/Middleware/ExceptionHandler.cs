@@ -7,6 +7,8 @@ namespace Library.Middleware
     {
         public static async Task UseGeneralExceptionHandler(this WebApplication app)
         {
+            var logger = app.Services.GetRequiredService<ILogger<Program>>();
+
             app.UseExceptionHandler(config =>
             {
                 config.Run(async context =>
@@ -27,11 +29,18 @@ namespace Library.Middleware
                         return;
                     }
 
+                    if (exception is InvalidOperationException ioex)
+                    {
+                        logger.LogError(ioex, "Not found");
+
+                        context.Response.StatusCode = StatusCodes.Status404NotFound;
+                        await context.Response.WriteAsync(ioex.Message);
+                        return;
+                    }
+
                     if (exception is Exception ex)
                     {
-                        //todo: It is still needed? Will need to test later
-                        var logger = app.Services.GetRequiredService<ILogger>();
-                        logger.LogError(ex, "Error occurred while adding new member");
+                        logger.LogError(ex, "Unexpected error");
 
                         return;
                     }
