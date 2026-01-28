@@ -20,7 +20,7 @@ namespace Library.Model.Request
 
     public class MembersRequest
     {
-        public required IEnumerable<Member> Members { get; set; }
+        public required IEnumerable<MemberRequest> Members { get; set; }
     }
 
     public class LoanBookRequest

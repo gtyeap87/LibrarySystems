@@ -42,7 +42,9 @@ namespace Library.Service
         Task UpdateBulkBooksAsync(BooksRequest request);
 
         Task UpdateBulkMembersAsync(MembersRequest request);
+
         Task UpdateBulkLoanedBooksAsync(LoanBooksRequest request);
+
         Task CreateBulkLoanBooksAsync(LoanBooksRequest request);
     }
 }

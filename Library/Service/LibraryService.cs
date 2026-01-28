@@ -105,13 +105,13 @@ namespace Library.Service
 
         public async Task CreateBulkMembersAsync(MembersRequest request)
         {
-            var members = request.Members;
+            var members = request.Members.Select(x => x.Member);
             await _mediator.Send(new CreateBulkMembersCommand(members));
         }
 
         public async Task CreateMembersAsync(MembersRequest request)
         {
-            var members = request.Members;
+            var members = request.Members.Select(x => x.Member);
             await _mediator.Send(new CreateMembersCommand(members));
         }
 
@@ -123,7 +123,7 @@ namespace Library.Service
 
         public async Task UpdateBulkMembersAsync(MembersRequest request)
         {
-            var members = request.Members;
+            var members = request.Members.Select(x => x.Member);
             await _mediator.Send(new UpdateBulkMembersCommand(members));
         }
 

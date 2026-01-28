@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using FluentValidation;
 using Library.Authorization;
 using Library.Dto;
 using Library.Model;
@@ -253,25 +254,17 @@ namespace Library.Controllers
         [RequirePermission(Permissions.ReadMembers)]
         public async Task<IActionResult> ReadMembersAsync([FromQuery] string? name, DateOnly? date, int pageSize, int pageNumber)
         {
-            try
+            _logger.LogInformation("GetMembersAsync");
+
+            var members2 = await _service.ReadMembersOnlyAsync(name, date, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
+
+            var membersDto = members2.Select(m => new MemberDto
             {
-                _logger.LogInformation("GetMembersAsync");
+                Name = m.Name,
+                JoinedDate = m.JoinedDate
+            });
 
-                var members2 = await _service.ReadMembersOnlyAsync(name, date, new PaginationRequest { PageSize = pageSize, PageNumber = pageNumber });
-
-                var membersDto = members2.Select(m => new MemberDto
-                {
-                    Name = m.Name,
-                    JoinedDate = m.JoinedDate
-                });
-
-                return Ok(membersDto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while reading members");
-                return BadRequest();
-            }
+            return Ok(membersDto);
         }
 
         /// <summary>
@@ -287,21 +280,13 @@ namespace Library.Controllers
         [RequirePermission(Permissions.CreateMembers)]
         public async Task<IActionResult> CreateMemberAsync(MemberRequest request)
         {
-            try
-            {
-                _logger.LogInformation("Add new member to library");
-                var newId = await _service.CreateMemberAsync(request);
+            _logger.LogInformation("Add new member to library");
+            var newId = await _service.CreateMemberAsync(request);
 
-                if (_logger.IsEnabled(LogLevel.Information))
-                    _logger.LogInformation("Added new member name {Name} with ID: {Id}", request.Member.Name, newId);
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Added new member name {Name} with ID: {Id}", request.Member.Name, newId);
 
-                return StatusCode(StatusCodes.Status201Created, newId);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while adding new member");
-            }
-            return NoContent();
+            return StatusCode(StatusCodes.Status201Created, newId);
         }
 
         /// <summary>
@@ -317,27 +302,19 @@ namespace Library.Controllers
         [RequirePermission(Permissions.CreateMembers)]
         public async Task<IActionResult> CreateMembersAsync(MembersRequest request)
         {
-            try
+            _logger.LogInformation("Add new members to library");
+
+            await _service.CreateMembersAsync(request);
+
+            if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Add new members to library");
-
-                await _service.CreateMembersAsync(request);
-
-                if (_logger.IsEnabled(LogLevel.Information))
+                foreach (var req in request.Members)
                 {
-                    foreach (var member in request.Members)
-                    {
-                        _logger.LogInformation("Added new member name {Name}", member.Name);
-                    }
+                    _logger.LogInformation("Added new member name {Name}", req.Member.Name);
                 }
+            }
 
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while adding new member");
-                return BadRequest();
-            }
+            return NoContent();
         }
 
         /// <summary>
@@ -353,27 +330,19 @@ namespace Library.Controllers
         [RequirePermission(Permissions.CreateMembers)]
         public async Task<IActionResult> CreateBulkMembersAsync(MembersRequest request)
         {
-            try
+            _logger.LogInformation("Add new members to library");
+
+            await _service.CreateBulkMembersAsync(request);
+
+            if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Add new members to library");
-
-                await _service.CreateBulkMembersAsync(request);
-
-                if (_logger.IsEnabled(LogLevel.Information))
+                foreach (var req in request.Members)
                 {
-                    foreach (var member in request.Members)
-                    {
-                        _logger.LogInformation("Added new member name {Name}", member.Name);
-                    }
+                    _logger.LogInformation("Added new member name {Name}", req.Member.Name);
                 }
+            }
 
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while adding new member");
-                return BadRequest();
-            }
+            return NoContent();
         }
 
         [HttpPatch("member/{id}")]
@@ -383,29 +352,16 @@ namespace Library.Controllers
         [RequirePermission(Permissions.UpdateMembers)]
         public async Task<IActionResult> UpdateMemberAsync(Guid id, [FromBody] MemberRequest request)
         {
-            try
+            _logger.LogInformation("update member information");
+
+            var updatedMember = await _service.UpdateMemberAsync(request);
+
+            if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("update member information");
-                if (id == Guid.Empty)
-                    return BadRequest("Id not valid.");
-
-                if (request == null)
-                    return BadRequest("no patch data.");
-
-                var updatedMember = await _service.UpdateMemberAsync(request);
-
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Update member name {Name} with ID: {Id}", updatedMember.Name, id);
-                }
-
-                return NoContent();
+                _logger.LogInformation("Update member name {Name} with ID: {Id}", updatedMember.Name, id);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while updating member");
-                return BadRequest();
-            }
+
+            return NoContent();
         }
 
         [HttpPut("members")]
@@ -416,25 +372,17 @@ namespace Library.Controllers
         [RequirePermission(Permissions.UpdateMembers)]
         public async Task<IActionResult> UpdateBulkMembersAsync([FromBody] MembersRequest request)
         {
-            try
-            {
-                _logger.LogInformation("update members information");
+            _logger.LogInformation("update members information");
 
-                if (request == null)
-                    return BadRequest("no patch data.");
+            if (request == null)
+                return BadRequest("no patch data.");
 
-                await _service.UpdateBulkMembersAsync(request);
+            await _service.UpdateBulkMembersAsync(request);
 
-                if (_logger.IsEnabled(LogLevel.Information))
-                    _logger.LogInformation("Members updated");
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Members updated");
 
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while updating members");
-                return BadRequest();
-            }
+            return NoContent();
         }
 
         [HttpDelete("member/{id}")]
@@ -444,24 +392,17 @@ namespace Library.Controllers
         [RequirePermission(Permissions.DeleteMembers)]
         public async Task<IActionResult> DeleteMemberAsync(Guid id)
         {
-            try
-            {
-                _logger.LogInformation("delete member information");
+            // Validator is not needed since it is only id checking
+            if (id == Guid.Empty)
+                return BadRequest("Id is required.");
 
-                if (id == Guid.Empty)
-                    return BadRequest("Id not valid.");
+            _logger.LogInformation("delete member information");
 
-                await _service.DeleteMemberAsync(id);
+            await _service.DeleteMemberAsync(id);
 
-                LogDeleted(id);
+            LogDeleted(id);
 
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while deleting member");
-                return BadRequest();
-            }
+            return NoContent();
         }
 
         [LoggerMessage(

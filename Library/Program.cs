@@ -165,8 +165,8 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 //// Add Fluent Validator
-//builder.Services.AddHttpContextAccessor();
-//builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
 
 var app = builder.Build();
 
