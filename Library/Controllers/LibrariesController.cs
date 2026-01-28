@@ -1,5 +1,4 @@
 using Asp.Versioning;
-using FluentValidation;
 using Library.Authorization;
 using Library.Dto;
 using Library.Model;
@@ -60,24 +59,14 @@ namespace Library.Controllers
         [RequirePermission(Permissions.CreateBooks)]
         public async Task<IActionResult> CreateBookAsync([FromBody] BookRequest request)
         {
-            try
-            {
-                _logger.LogInformation("Add new book to library");
-                if (request.Qty <= 0)
-                    return BadRequest("Quantity must be greater than zero.");
+            _logger.LogInformation("Add new book to library");
 
-                var newId = await _service.CreateBookAsync(request);
+            var newId = await _service.CreateBookAsync(request);
 
-                if (_logger.IsEnabled(LogLevel.Information))
-                    _logger.LogInformation("Added {Qty} new book name {Name} with ID: {Id}", request.Qty, request.Book.Name, newId);
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Added {Qty} new book name {Name} with ID: {Id}", request.Qty, request.Book.Name, newId);
 
-                return StatusCode(StatusCodes.Status201Created, newId);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while adding book");
-                return BadRequest();
-            }
+            return StatusCode(StatusCodes.Status201Created, newId);
         }
 
         /// <summary>
@@ -93,27 +82,19 @@ namespace Library.Controllers
         [RequirePermission(Permissions.CreateBooks)]
         public async Task<IActionResult> CreateBooksAsync([FromBody] BooksRequest request)
         {
-            try
+            _logger.LogInformation("Add new books to library");
+
+            await _service.CreateBooksAsync(request);
+
+            if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Add new books to library");
-
-                await _service.CreateBooksAsync(request);
-
-                if (_logger.IsEnabled(LogLevel.Information))
+                foreach (var book in request.Books)
                 {
-                    foreach (var book in request.Books)
-                    {
-                        _logger.LogInformation("Added new book name {Name}", book.Book.Name);
-                    }
+                    _logger.LogInformation("Added new book name {Name}", book.Book.Name);
                 }
+            }
 
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while adding new member");
-                return BadRequest();
-            }
+            return NoContent();
         }
 
         /// <summary>
@@ -129,57 +110,36 @@ namespace Library.Controllers
         [RequirePermission(Permissions.CreateBooks)]
         public async Task<IActionResult> CreateBulkBooksAsync([FromBody] BooksRequest request)
         {
-            try
+            _logger.LogInformation("Add new books to library");
+
+            await _service.CreateBulkBooksAsync(request);
+
+            if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Add new books to library");
-
-                await _service.CreateBulkBooksAsync(request);
-
-                if (_logger.IsEnabled(LogLevel.Information))
+                foreach (var book in request.Books)
                 {
-                    foreach (var book in request.Books)
-                    {
-                        _logger.LogInformation("Added new book name {Name}", book.Book.Name);
-                    }
+                    _logger.LogInformation("Added new book name {Name}", book.Book.Name);
                 }
+            }
 
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while adding new member");
-                return BadRequest();
-            }
+            return NoContent();
         }
 
-        [HttpPatch("book/{id}")]
+        [HttpPatch("book")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [RequirePermission(Permissions.UpdateBooks)]
-        public async Task<IActionResult> UpdateBookAsync(Guid id, [FromBody] BookRequest request)
+        public async Task<IActionResult> UpdateBookAsync([FromBody] BookRequest request)
         {
-            try
-            {
-                _logger.LogInformation("update book information");
-                if (id == Guid.Empty)
-                    return BadRequest("Id not valid.");
+            _logger.LogInformation("update book information");
 
-                if (request == null)
-                    return BadRequest("no patch data.");
+            var newId = await _service.UpdateBookAsync(request);
 
-                var newId = await _service.UpdateBookAsync(request);
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Update {Qty} new book name {Name} with ID: {Id}", request.Qty, request.Book.Name, newId);
 
-                if (_logger.IsEnabled(LogLevel.Information))
-                    _logger.LogInformation("Update {Qty} new book name {Name} with ID: {Id}", request.Qty, request.Book.Name, newId);
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while updating book");
-                return BadRequest();
-            }
+            return NoContent();
         }
 
         [HttpPut("books")]
@@ -190,25 +150,17 @@ namespace Library.Controllers
         [RequirePermission(Permissions.UpdateBooks)]
         public async Task<IActionResult> UpdateBulkBooksAsync([FromBody] BooksRequest request)
         {
-            try
-            {
-                _logger.LogInformation("update books information");
+            _logger.LogInformation("update books information");
 
-                if (request == null)
-                    return BadRequest("no patch data.");
+            if (request == null)
+                return BadRequest("no patch data.");
 
-                await _service.UpdateBulkBooksAsync(request);
+            await _service.UpdateBulkBooksAsync(request);
 
-                if (_logger.IsEnabled(LogLevel.Information))
-                    _logger.LogInformation("Books updated");
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Books updated");
 
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while updating book");
-                return BadRequest();
-            }
+            return NoContent();
         }
 
         [HttpDelete("book/{id}")]

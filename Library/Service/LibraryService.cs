@@ -31,30 +31,23 @@ namespace Library.Service
 
         public async Task<Guid> CreateBookAsync(BookRequest request)
         {
-            var book = request.Book;
-            var qty = request.Qty;
-            var newBookId = await _mediator.Send(new CreateBookCommand(book, qty));
+            var newBookId = await _mediator.Send(new CreateBookCommand(request));
             return newBookId;
         }
 
         public async Task CreateBooksAsync(BooksRequest request)
         {
-            var bookRequests = request.Books;
-            var books = bookRequests.Select(br => (br.Book, br.Qty));
-            await _mediator.Send(new CreateBooksCommand(books));
+            await _mediator.Send(new CreateBooksCommand(request));
         }
 
         public async Task CreateBulkBooksAsync(BooksRequest request)
         {
-            var bookRequests = request.Books;
-            var books = bookRequests.Select(br => (br.Book, br.Qty));
-            await _mediator.Send(new CreateBulkBooksCommand(books));
+            await _mediator.Send(new CreateBulkBooksCommand(request));
         }
 
         public async Task<Book> UpdateBookAsync(BookRequest request)
         {
-            //todo: optimze this update by utilizing getbyidaysnc in command handler
-            var updatedBook = await _mediator.Send(new UpdateBookCommand(request.Book));
+            var updatedBook = await _mediator.Send(new UpdateBookCommand(request));
 
             var existingBook = (await _mediator.Send(new ReadFullBooksQuery(updatedBook.Genre, updatedBook.Name,
                 new PaginationRequest()
@@ -62,9 +55,12 @@ namespace Library.Service
                     PageNumber = 1,
                     PageSize = int.MaxValue
                 })))
-                .FirstOrDefault(b => b.Id == request.Book.Id) ?? throw new InvalidOperationException($"Book with ID {request.Book.Id} not found");
+                .FirstOrDefault(b => b.Id == request.Book.Id)
+                ?? throw new InvalidOperationException($"Book with ID {request.Book.Id} not found");
 
-            var bookStock = existingBook.BookStocks.FirstOrDefault(bs => bs.BookId == updatedBook.Id) ?? throw new InvalidOperationException($"BookStock for Book ID {updatedBook.Id} not found");
+            var bookStock = existingBook.BookStocks.FirstOrDefault(bs => bs.BookId == updatedBook.Id)
+                ?? throw new InvalidOperationException($"BookStock for Book ID {updatedBook.Id} not found");
+
             bookStock.Quantity = request.Qty;
             await _mediator.Send(new UpdateBookStockCommand(bookStock));
 
@@ -73,8 +69,7 @@ namespace Library.Service
 
         public async Task UpdateBulkBooksAsync(BooksRequest request)
         {
-            var books = request.Books.Select(br => (br.Book, br.Qty));
-            await _mediator.Send(new UpdateBulkBooksCommand(books));
+            await _mediator.Send(new UpdateBulkBooksCommand(request));
         }
 
         public async Task DeleteBookAsync(Guid bookId)
