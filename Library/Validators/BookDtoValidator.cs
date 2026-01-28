@@ -13,6 +13,8 @@ namespace Library.Validators
             _httpContextAccessor = httpContextAccessor;
 
             // Always validate these
+            RuleFor(x => x).NotNull();
+
             RuleFor(x => x.Book.LibraryId).NotEqual(Guid.Empty)
                 .WithMessage($"{nameof(Book.LibraryId)} is required");
 
