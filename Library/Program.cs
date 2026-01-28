@@ -1,9 +1,11 @@
 ﻿using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
+using FluentValidation;
 using Library.Authorization;
 using Library.Data;
 using Library.Data.Identity;
 using Library.Features.Queries;
+using Library.Middleware;
 using Library.Repository;
 using Library.Service;
 using Library.Strategies;
@@ -12,7 +14,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,8 +30,11 @@ if (builder.Environment.IsDevelopment())
     builder.Configuration.AddUserSecrets<Program>();
 }
 
-// Add services to the container.
-builder.Services.AddControllers();
+// Add controller to the container.
+builder.Services.AddControllers(options =>
+{
+    options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+});
 
 // Add logging
 builder.Services.AddLogging(logging =>
@@ -160,6 +164,10 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+//// Add Fluent Validator
+//builder.Services.AddHttpContextAccessor();
+//builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
+
 var app = builder.Build();
 
 // --- Configure Swagger ---
@@ -180,6 +188,8 @@ if (app.Environment.IsDevelopment())
     await app.SeedRolesAndPermissions();
     await app.SeedAdminUser();
 }
+
+await app.UseGeneralExceptionHandler();
 
 app.UseHttpsRedirection();
 app.UseRateLimiter();
