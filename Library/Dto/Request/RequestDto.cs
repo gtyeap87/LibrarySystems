@@ -1,6 +1,7 @@
 ﻿using Library.Data.Identity;
+using Library.Model;
 
-namespace Library.Model.Request
+namespace Library.Dto.Request
 {
     public class BookRequest
     {

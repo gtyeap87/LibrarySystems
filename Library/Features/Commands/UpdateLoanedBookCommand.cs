@@ -1,17 +1,31 @@
+using FluentValidation;
+using Library.Model;
 using Library.Repository;
 using MediatR;
 
 namespace Library.Features.Commands
 {
-    public record UpdateLoanedBookCommand(Model.LoanBook LoanedBook) : IRequest<Model.LoanBook>;
+    public record UpdateLoanedBookCommand(LoanBook LoanBook) : IRequest<LoanBook>;
 
-    public class UpdateLoanedBookCommandHandler(ICommandRepo<Model.LoanBook> memberCommandRepo) : IRequestHandler<UpdateLoanedBookCommand, Model.LoanBook>
+    public class UpdateLoanedBookCommandHandler(
+        ICommandRepo<LoanBook> memberCommandRepo,
+        IValidator<LoanBook> validator
+        ) : IRequestHandler<UpdateLoanedBookCommand, LoanBook>
     {
-        private readonly ICommandRepo<Model.LoanBook> _memberCommandRepo = memberCommandRepo;
+        private readonly ICommandRepo<LoanBook> _memberCommandRepo = memberCommandRepo;
+        private readonly IValidator<LoanBook> _validator = validator;
 
-        public async Task<Model.LoanBook> Handle(UpdateLoanedBookCommand command, CancellationToken cancellationToken)
+        public async Task<LoanBook> Handle(UpdateLoanedBookCommand command, CancellationToken cancellationToken)
         {
-            return await _memberCommandRepo.UpdateAsync(command.LoanedBook);
+            var loanBook = command.LoanBook;
+
+            var result = await _validator.ValidateAsync(loanBook, cancellationToken);
+            if (!result.IsValid)
+            {
+                throw new ValidationException(result.Errors);
+            }
+
+            return await _memberCommandRepo.UpdateAsync(loanBook);
         }
     }
 }

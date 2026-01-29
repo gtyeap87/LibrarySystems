@@ -1,7 +1,7 @@
 ﻿using Library.Authorization;
 using Library.Data;
 using Library.Data.Identity;
-using Library.Model.Request;
+using Library.Dto.Request;
 using Library.Strategies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

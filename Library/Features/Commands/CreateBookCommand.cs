@@ -1,5 +1,5 @@
 using FluentValidation;
-using Library.Model.Request;
+using Library.Dto.Request;
 using Library.Repository;
 using MediatR;
 

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
+using Library.Dto.Request;
 using Library.Model;
-using Library.Model.Request;
 
 namespace Library.Validators
 {

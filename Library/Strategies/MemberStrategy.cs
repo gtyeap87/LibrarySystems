@@ -1,6 +1,6 @@
 ﻿using Library.Data.Identity;
+using Library.Dto.Request;
 using Library.Model;
-using Library.Model.Request;
 using Library.Service;
 
 namespace Library.Strategies

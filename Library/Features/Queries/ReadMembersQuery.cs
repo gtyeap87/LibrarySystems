@@ -1,12 +1,12 @@
+using Library.Dto.Request;
 using Library.Model;
-using Library.Model.Request;
 using Library.Repository;
 using Library.Specification;
 using MediatR;
 
 namespace Library.Features.Queries;
 
-public record ReadMembersQuery(string? Name, DateOnly? Date, PaginationRequest Page) : IRequest<IEnumerable<Member>>;
+public record ReadMembersQuery(string? Name, DateOnly? Date, PaginationRequestDto Page) : IRequest<IEnumerable<Member>>;
 
 public class GetMembersQueryHandler(IQueryRepo<Member> queryRepo) : IRequestHandler<ReadMembersQuery, IEnumerable<Member>>
 {

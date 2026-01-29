@@ -1,5 +1,5 @@
-﻿using Library.Model;
-using Library.Model.Request;
+﻿using Library.Dto.Request;
+using Library.Model;
 
 namespace Library.Service
 {
@@ -23,15 +23,15 @@ namespace Library.Service
 
         Task CreateBulkMembersAsync(MembersRequest request);
 
-        Task<IEnumerable<Book>> ReadBooksAsync(Genre? genre, string? name, PaginationRequest page);
+        Task<IEnumerable<Book>> ReadBooksAsync(Genre? genre, string? name, PaginationRequestDto page);
 
-        Task<IEnumerable<Member>> ReadMembersOnlyAsync(string? name, DateOnly? date, PaginationRequest page);
+        Task<IEnumerable<Member>> ReadMembersOnlyAsync(string? name, DateOnly? date, PaginationRequestDto page);
 
-        Task<IEnumerable<Book>> ReadFullBooksAsync(Genre? genre, string? name, PaginationRequest page);
+        Task<IEnumerable<Book>> ReadFullBooksAsync(Genre? genre, string? name, PaginationRequestDto page);
 
-        Task<IEnumerable<LoanBook>> ReadLoanBooksAsync(string? bookName, string? memberName, PaginationRequest page);
+        Task<IEnumerable<LoanBook>> ReadLoanBooksAsync(string? bookName, string? memberName, PaginationRequestDto page);
 
-        Task<IEnumerable<Member>> ReadFullMembersAsync(string? name, DateOnly? date, PaginationRequest page);
+        Task<IEnumerable<Member>> ReadFullMembersAsync(string? name, DateOnly? date, PaginationRequestDto page);
 
         Task CreateMembersAsync(MembersRequest request);
 

@@ -1,12 +1,12 @@
+using Library.Dto.Request;
 using Library.Model;
-using Library.Model.Request;
 using Library.Repository;
 using Library.Specification;
 using MediatR;
 
 namespace Library.Features.Commands
 {
-    public record DeleteBookCommand(Guid BookId, PaginationRequest Page) : IRequest;
+    public record DeleteBookCommand(Guid BookId, PaginationRequestDto Page) : IRequest;
 
     public class DeleteBookCommandHandler(
         ICommandRepo<Book> memberCommandRepo,

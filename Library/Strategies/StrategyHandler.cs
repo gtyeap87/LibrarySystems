@@ -1,4 +1,4 @@
-﻿using Library.Model.Request;
+﻿using Library.Dto.Request;
 
 namespace Library.Strategies
 {

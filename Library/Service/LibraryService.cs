@@ -1,8 +1,8 @@
 ﻿using Library.Commands.Member;
+using Library.Dto.Request;
 using Library.Features.Commands;
 using Library.Features.Queries;
 using Library.Model;
-using Library.Model.Request;
 using MediatR;
 
 namespace Library.Service
@@ -19,12 +19,12 @@ namespace Library.Service
 
         #region Book
 
-        public async Task<IEnumerable<Book>> ReadBooksAsync(Genre? genre, string? name, PaginationRequest page)
+        public async Task<IEnumerable<Book>> ReadBooksAsync(Genre? genre, string? name, PaginationRequestDto page)
         {
             return await _mediator.Send(new ReadBooksQuery(genre, name, page));
         }
 
-        public async Task<IEnumerable<Book>> ReadFullBooksAsync(Genre? genre, string? name, PaginationRequest page)
+        public async Task<IEnumerable<Book>> ReadFullBooksAsync(Genre? genre, string? name, PaginationRequestDto page)
         {
             return await _mediator.Send(new ReadFullBooksQuery(genre, name, page));
         }
@@ -50,7 +50,7 @@ namespace Library.Service
             var updatedBook = await _mediator.Send(new UpdateBookCommand(request));
 
             var existingBook = (await _mediator.Send(new ReadFullBooksQuery(updatedBook.Genre, updatedBook.Name,
-                new PaginationRequest()
+                new PaginationRequestDto()
                 {
                     PageNumber = 1,
                     PageSize = int.MaxValue
@@ -74,19 +74,19 @@ namespace Library.Service
 
         public async Task DeleteBookAsync(Guid bookId)
         {
-            await _mediator.Send(new DeleteBookCommand(bookId, new PaginationRequest() { PageNumber = 1, PageSize = int.MaxValue }));
+            await _mediator.Send(new DeleteBookCommand(bookId, new PaginationRequestDto() { PageNumber = 1, PageSize = int.MaxValue }));
         }
 
         #endregion Book
 
         #region Member
 
-        public async Task<IEnumerable<Member>> ReadMembersOnlyAsync(string? name, DateOnly? date, PaginationRequest page)
+        public async Task<IEnumerable<Member>> ReadMembersOnlyAsync(string? name, DateOnly? date, PaginationRequestDto page)
         {
             return await _mediator.Send(new ReadMembersQuery(name, date, page));
         }
 
-        public async Task<IEnumerable<Member>> ReadFullMembersAsync(string? name, DateOnly? date, PaginationRequest page)
+        public async Task<IEnumerable<Member>> ReadFullMembersAsync(string? name, DateOnly? date, PaginationRequestDto page)
         {
             return await _mediator.Send(new ReadFullMembersQuery(name, date, page));
         }
@@ -124,14 +124,14 @@ namespace Library.Service
 
         public async Task DeleteMemberAsync(Guid memberId)
         {
-            await _mediator.Send(new DeleteMemberCommand(memberId, new PaginationRequest() { PageSize = int.MaxValue }));
+            await _mediator.Send(new DeleteMemberCommand(memberId, new PaginationRequestDto() { PageSize = int.MaxValue }));
         }
 
         #endregion Member
 
         #region Loan Book
 
-        public async Task<IEnumerable<LoanBook>> ReadLoanBooksAsync(string? bookName, string? memberName, PaginationRequest page)
+        public async Task<IEnumerable<LoanBook>> ReadLoanBooksAsync(string? bookName, string? memberName, PaginationRequestDto page)
         {
             return await _mediator.Send(new ReadFullLoanedBooksQuery(bookName, memberName, page));
         }

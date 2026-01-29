@@ -1,12 +1,12 @@
+using Library.Dto.Request;
 using Library.Model;
-using Library.Model.Request;
 using Library.Repository;
 using Library.Specification;
 using MediatR;
 
 namespace Library.Features.Queries;
 
-public record ReadFullBooksQuery(Genre? Genre, string? Name, PaginationRequest Page) : IRequest<IEnumerable<Book>>;
+public record ReadFullBooksQuery(Genre? Genre, string? Name, PaginationRequestDto Page) : IRequest<IEnumerable<Book>>;
 
 public class GetFullBooksQueryHandler(IQueryRepo<Book> queryRepo) : IRequestHandler<ReadFullBooksQuery, IEnumerable<Book>>
 {

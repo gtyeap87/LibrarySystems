@@ -1,7 +1,7 @@
 ﻿using Asp.Versioning;
 using Library.Authorization;
 using Library.Dto.Identity;
-using Library.Model.Request;
+using Library.Dto.Request;
 using Library.Service;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

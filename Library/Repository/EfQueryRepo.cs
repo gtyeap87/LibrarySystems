@@ -1,5 +1,5 @@
 ﻿using Library.Data;
-using Library.Model.Request;
+using Library.Dto.Request;
 using Library.Specification;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +9,7 @@ namespace Library.Repository
     {
         private readonly LibraryContext _context = context;
 
-        public async Task<IEnumerable<T>> ListAsync(ISpecification<T> spec, PaginationRequest page)
+        public async Task<IEnumerable<T>> ListAsync(ISpecification<T> spec, PaginationRequestDto page)
         {
             var query = spec.Apply(_context.Set<T>().AsQueryable());
 
