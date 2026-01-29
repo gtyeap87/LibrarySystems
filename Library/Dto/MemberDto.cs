@@ -1,12 +1,13 @@
-using Library.Model;
+namespace Library.Dto;
 
-namespace RestWebApi.Dto;
-
-/// <summary>
-/// Represents weather forecast data with support for both v1 and v2 API features
-/// </summary>
 public class MemberDto
 {
     public required string Name { get; set; }
     public DateOnly JoinedDate { get; set; }
 }
+
+public record CsvMemberDto(
+    Guid LibraryId,
+    string Name,
+    DateOnly JoinedDate
+    );

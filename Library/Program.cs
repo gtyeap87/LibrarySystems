@@ -6,6 +6,7 @@ using Library.Data;
 using Library.Data.Identity;
 using Library.Features.Queries;
 using Library.Middleware;
+using Library.Prototypes;
 using Library.Repository;
 using Library.Service;
 using Library.Strategies;
@@ -190,6 +191,7 @@ if (app.Environment.IsDevelopment())
 }
 
 await app.UseGeneralExceptionHandler();
+await app.SetUpTestMinimalApi();
 
 app.UseHttpsRedirection();
 app.UseRateLimiter();
