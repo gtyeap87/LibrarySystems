@@ -4,6 +4,8 @@ using Library.Model.Request;
 
 namespace Library.Validators
 {
+    #region Book
+
     internal sealed class BookDtoValidator : AbstractValidator<BookRequest>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -57,6 +59,8 @@ namespace Library.Validators
             RuleForEach(req => req.Books).SetValidator(new BookDtoValidator(httpContextAccessor));
         }
     }
+
+    #endregion Book
 
     #region Book Stock
 
