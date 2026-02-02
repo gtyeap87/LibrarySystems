@@ -2,5 +2,6 @@
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
   </Folder>
+  <Project Path="Library.Test/Library.Test.csproj" Id="2055389e-fcc6-4a67-9b11-dabbb9fe2a75" />
   <Project Path="Library/Library.csproj" />
 </Solution>
