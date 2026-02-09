@@ -1,5 +1,4 @@
 using EFCore.BulkExtensions;
-using FluentValidation;
 using Library.Dto.Request;
 using Library.Repository;
 using MediatR;
@@ -10,22 +9,14 @@ namespace Library.Features.Book.Commands
 
     public class UpdateBulkBooksCommandHandler(
         ICommandRepo<Model.Book> bookCommandRepo,
-        ICommandRepo<Model.BookStock> bookStockCommandRepo,
-        IValidator<BooksRequest> validator
+        ICommandRepo<Model.BookStock> bookStockCommandRepo
         ) : IRequestHandler<UpdateBulkBooksCommand>
     {
         private readonly ICommandRepo<Model.Book> _bookCommandRepo = bookCommandRepo;
         private readonly ICommandRepo<Model.BookStock> _bookStockCommandRepo = bookStockCommandRepo;
-        private readonly IValidator<BooksRequest> _validator = validator;
 
         public async Task Handle(UpdateBulkBooksCommand command, CancellationToken cancellationToken)
         {
-            var result = await _validator.ValidateAsync(command.Request, cancellationToken);
-            if (!result.IsValid)
-            {
-                throw new ValidationException(result.Errors);
-            }
-
             var books = command.Request.Books.Select(x => x.Book);
 
             List<string> includeBookProps = [nameof(Model.Book.Genre), nameof(Model.Book.Name), nameof(Model.Root.ModifiedAt)];

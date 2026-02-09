@@ -1,4 +1,3 @@
-using FluentValidation;
 using Library.Dto.Request;
 using Library.Repository;
 using MediatR;
@@ -8,21 +7,13 @@ namespace Library.Features.Book.Commands
     public record UpdateBookCommand(BookRequest Request) : IRequest<Model.Book>;
 
     public class UpdateBookCommandHandler(
-        ICommandRepo<Model.Book> bookCommandRepo,
-        IValidator<BookRequest> validator
+        ICommandRepo<Model.Book> bookCommandRepo
         ) : IRequestHandler<UpdateBookCommand, Model.Book>
     {
         private readonly ICommandRepo<Model.Book> _memberCommandRepo = bookCommandRepo;
-        private readonly IValidator<BookRequest> _validator = validator;
 
         public async Task<Model.Book> Handle(UpdateBookCommand command, CancellationToken cancellationToken)
         {
-            var result = await _validator.ValidateAsync(command.Request, cancellationToken);
-            if (!result.IsValid)
-            {
-                throw new ValidationException(result.Errors);
-            }
-
             return await _memberCommandRepo.UpdateAsync(command.Request.Book);
         }
     }

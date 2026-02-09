@@ -1,4 +1,3 @@
-using FluentValidation;
 using Library.Dto.Request;
 using Library.Model;
 using Library.Repository;
@@ -10,22 +9,14 @@ namespace Library.Features.Book.Commands
 
     public class CreateBulkBooksCommandHandler(
         ICommandRepo<Model.Book> bookCommandRepo,
-        ICommandRepo<BookStock> bookStockCommandRepo,
-        IValidator<BooksRequest> validator
+        ICommandRepo<BookStock> bookStockCommandRepo
         ) : IRequestHandler<CreateBulkBooksCommand>
     {
         private readonly ICommandRepo<Model.Book> _bookCommandRepo = bookCommandRepo;
         private readonly ICommandRepo<BookStock> _bookStockCommandRepo = bookStockCommandRepo;
-        private readonly IValidator<BooksRequest> _validator = validator;
 
         public async Task Handle(CreateBulkBooksCommand command, CancellationToken cancellationToken)
         {
-            var result = await _validator.ValidateAsync(command.Request, cancellationToken);
-            if (!result.IsValid)
-            {
-                throw new ValidationException(result.Errors);
-            }
-
             var books = command.Request.Books.Select(b => b.Book);
             await _bookCommandRepo.BulkInsertAsync(books);
 

@@ -10,6 +10,8 @@ using Library.Prototypes;
 using Library.Repository;
 using Library.Service;
 using Library.Strategies;
+using Library.Validators;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -103,8 +105,6 @@ builder.Services.AddScoped<ILibraryCommandRepository, LibraryRepository>();
 builder.Services.AddScoped<ILibraryService, LibraryService>();
 builder.Services.AddScoped(typeof(IQueryRepo<>), typeof(EfQueryRepo<>));
 builder.Services.AddScoped(typeof(ICommandRepo<>), typeof(EfCommandRepo<>));
-builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(typeof(GetBooksQueryHandler).Assembly));
 builder.Services.AddScoped<IUserService, UserService>();
 
 // Register strategies (Business Logic)
@@ -167,7 +167,13 @@ builder.Services.AddSwaggerGen(options =>
 
 //// Add Fluent Validator
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(GetBooksQueryHandler).Assembly);
+});
+builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(FluentValidationHandler<,>));
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
+builder.Services.AddCustomValidators();
 
 var app = builder.Build();
 
