@@ -1,19 +1,18 @@
 using FluentValidation;
-using Library.Model;
 using Library.Repository;
 using MediatR;
 
-namespace Library.Features.Commands
+namespace Library.Features.Member.Commands
 {
-    public record CreateMembersCommand(IEnumerable<Member> Members) : IRequest;
+    public record CreateMembersCommand(IEnumerable<Model.Member> Members) : IRequest;
 
     public class AddMembersCommandHandler(
-        ICommandRepo<Member> commandRepo,
-        IValidator<IEnumerable<Member>> validator
+        ICommandRepo<Model.Member> commandRepo,
+        IValidator<IEnumerable<Model.Member>> validator
         ) : IRequestHandler<CreateMembersCommand>
     {
-        private readonly ICommandRepo<Member> _commandRepo = commandRepo;
-        private readonly IValidator<IEnumerable<Member>> _validator = validator;
+        private readonly ICommandRepo<Model.Member> _commandRepo = commandRepo;
+        private readonly IValidator<IEnumerable<Model.Member>> _validator = validator;
 
         public async Task Handle(CreateMembersCommand command, CancellationToken cancellationToken)
         {

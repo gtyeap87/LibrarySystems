@@ -1,22 +1,21 @@
 using Library.Dto.Request;
-using Library.Model;
 using Library.Repository;
 using Library.Specification;
 using MediatR;
 
-namespace Library.Features.Commands
+namespace Library.Features.Book.Commands
 {
     public record DeleteBookCommand(Guid BookId, PaginationRequestDto Page) : IRequest;
 
     public class DeleteBookCommandHandler(
-        ICommandRepo<Book> memberCommandRepo,
-        IQueryRepo<Book> memberQueryRepo,
-        IQueryRepo<LoanBook> loanBookQueryRepo
+        ICommandRepo<Model.Book> memberCommandRepo,
+        IQueryRepo<Model.Book> memberQueryRepo,
+        IQueryRepo<Model.LoanBook> loanBookQueryRepo
         ) : IRequestHandler<DeleteBookCommand>
     {
-        private readonly ICommandRepo<Book> _memberCommandRepo = memberCommandRepo;
-        private readonly IQueryRepo<Book> _memberQueryRepo = memberQueryRepo;
-        private readonly IQueryRepo<LoanBook> _loanBookQueryRepo = loanBookQueryRepo;
+        private readonly ICommandRepo<Model.Book> _memberCommandRepo = memberCommandRepo;
+        private readonly IQueryRepo<Model.Book> _memberQueryRepo = memberQueryRepo;
+        private readonly IQueryRepo<Model.LoanBook> _loanBookQueryRepo = loanBookQueryRepo;
 
         public async Task Handle(DeleteBookCommand command, CancellationToken cancellationToken)
         {

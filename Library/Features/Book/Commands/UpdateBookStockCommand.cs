@@ -3,7 +3,7 @@ using Library.Model;
 using Library.Repository;
 using MediatR;
 
-namespace Library.Features.Commands
+namespace Library.Features.Book.Commands
 {
     public record UpdateBookStockCommand(BookStock BookStock) : IRequest<BookStock>;
 

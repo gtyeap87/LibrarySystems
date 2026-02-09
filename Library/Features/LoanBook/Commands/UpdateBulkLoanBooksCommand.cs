@@ -4,17 +4,17 @@ using Library.Model;
 using Library.Repository;
 using MediatR;
 
-namespace Library.Features.Commands
+namespace Library.Features.LoanBook.Commands
 {
-    public record UpdateBulkLoanBooksCommand(IEnumerable<LoanBook> LoanBooks) : IRequest;
+    public record UpdateBulkLoanBooksCommand(IEnumerable<Model.LoanBook> LoanBooks) : IRequest;
 
     public class UpdateBulkLoanBooksCommandHandler(
-        ICommandRepo<LoanBook> loanBookCommandRepo,
-        IValidator<IEnumerable<LoanBook>> validator
+        ICommandRepo<Model.LoanBook> loanBookCommandRepo,
+        IValidator<IEnumerable<Model.LoanBook>> validator
         ) : IRequestHandler<UpdateBulkLoanBooksCommand>
     {
-        private readonly ICommandRepo<LoanBook> _loanBookCommandRepo = loanBookCommandRepo;
-        private readonly IValidator<IEnumerable<LoanBook>> _validator = validator;
+        private readonly ICommandRepo<Model.LoanBook> _loanBookCommandRepo = loanBookCommandRepo;
+        private readonly IValidator<IEnumerable<Model.LoanBook>> _validator = validator;
 
         public async Task Handle(UpdateBulkLoanBooksCommand command, CancellationToken cancellationToken)
         {
@@ -27,11 +27,11 @@ namespace Library.Features.Commands
             }
 
             List<string> includeLoanBookProps = [
-                nameof(LoanBook.Id),
-                nameof(LoanBook.MemberId),
-                nameof(LoanBook.BookId),
-                nameof(LoanBook.LoanedDate),
-                nameof(LoanBook.ReturnedDate),
+                nameof(Model.LoanBook.Id),
+                nameof(Model.LoanBook.MemberId),
+                nameof(Model.LoanBook.BookId),
+                nameof(Model.LoanBook.LoanedDate),
+                nameof(Model.LoanBook.ReturnedDate),
                 nameof(Root.ModifiedAt)
             ];
             var options = new BulkConfig() { PropertiesToIncludeOnUpdate = includeLoanBookProps };

@@ -4,17 +4,17 @@ using Library.Model;
 using Library.Repository;
 using MediatR;
 
-namespace Library.Features.Commands
+namespace Library.Features.Book.Commands
 {
     public record CreateBulkBooksCommand(BooksRequest Request) : IRequest;
 
     public class CreateBulkBooksCommandHandler(
-        ICommandRepo<Book> bookCommandRepo,
+        ICommandRepo<Model.Book> bookCommandRepo,
         ICommandRepo<BookStock> bookStockCommandRepo,
         IValidator<BooksRequest> validator
         ) : IRequestHandler<CreateBulkBooksCommand>
     {
-        private readonly ICommandRepo<Book> _bookCommandRepo = bookCommandRepo;
+        private readonly ICommandRepo<Model.Book> _bookCommandRepo = bookCommandRepo;
         private readonly ICommandRepo<BookStock> _bookStockCommandRepo = bookStockCommandRepo;
         private readonly IValidator<BooksRequest> _validator = validator;
 

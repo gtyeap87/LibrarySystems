@@ -4,8 +4,8 @@ using EFCore.BulkExtensions;
 using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
-using Library.Features.Commands;
-using Library.Features.Queries;
+using Library.Features.Member.Commands;
+using Library.Features.Member.Queries;
 using Library.Model;
 using Library.Repository;
 using Library.Service;
@@ -279,5 +279,7 @@ namespace Library.Test
 
             Assert.Null(exception);
         }
+
+        //todo: create fluent validation pipeline unit test once it is implemented.
     }
 }

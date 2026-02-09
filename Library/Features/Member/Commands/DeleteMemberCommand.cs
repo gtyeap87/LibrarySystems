@@ -1,10 +1,9 @@
 using Library.Dto.Request;
-using Library.Model;
 using Library.Repository;
 using Library.Specification;
 using MediatR;
 
-namespace Library.Commands.Member
+namespace Library.Features.Member.Commands
 {
     public record DeleteMemberCommand(Guid MemberId, PaginationRequestDto Page) : IRequest;
 
@@ -12,12 +11,12 @@ namespace Library.Commands.Member
     {
         private readonly ICommandRepo<Model.Member> _memberCommandRepo;
         private readonly IQueryRepo<Model.Member> _memberQueryRepo;
-        private readonly IQueryRepo<LoanBook> _loanBookQueryRepo;
+        private readonly IQueryRepo<Model.LoanBook> _loanBookQueryRepo;
 
         public DeleteMemberCommandHandler(
             ICommandRepo<Model.Member> memberCommandRepo,
             IQueryRepo<Model.Member> memberQueryRepo,
-            IQueryRepo<LoanBook> loanBookQueryRepo
+            IQueryRepo<Model.LoanBook> loanBookQueryRepo
             )
         {
             _memberCommandRepo = memberCommandRepo;

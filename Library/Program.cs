@@ -4,7 +4,7 @@ using FluentValidation;
 using Library.Authorization;
 using Library.Data;
 using Library.Data.Identity;
-using Library.Features.Queries;
+using Library.Features.Book.Queries;
 using Library.Middleware;
 using Library.Prototypes;
 using Library.Repository;

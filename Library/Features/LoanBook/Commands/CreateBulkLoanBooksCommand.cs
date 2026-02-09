@@ -1,19 +1,18 @@
 using FluentValidation;
-using Library.Model;
 using Library.Repository;
 using MediatR;
 
-namespace Library.Features.Commands
+namespace Library.Features.LoanBook.Commands
 {
-    public record CreateBulkLoanBooksCommand(IEnumerable<LoanBook> LoanBooks) : IRequest;
+    public record CreateBulkLoanBooksCommand(IEnumerable<Model.LoanBook> LoanBooks) : IRequest;
 
     public class CreateBulkLoanBooksCommandHandler(
-        ICommandRepo<LoanBook> loanBookCommandRepo,
-        IValidator<IEnumerable<LoanBook>> validator
+        ICommandRepo<Model.LoanBook> loanBookCommandRepo,
+        IValidator<IEnumerable<Model.LoanBook>> validator
         ) : IRequestHandler<CreateBulkLoanBooksCommand>
     {
-        private readonly ICommandRepo<LoanBook> _loanBookCommandRepo = loanBookCommandRepo;
-        private readonly IValidator<IEnumerable<LoanBook>> _validator = validator;
+        private readonly ICommandRepo<Model.LoanBook> _loanBookCommandRepo = loanBookCommandRepo;
+        private readonly IValidator<IEnumerable<Model.LoanBook>> _validator = validator;
 
         public async Task Handle(CreateBulkLoanBooksCommand command, CancellationToken cancellationToken)
         {
