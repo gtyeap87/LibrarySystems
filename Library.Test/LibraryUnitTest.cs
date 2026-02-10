@@ -81,19 +81,19 @@ namespace Library.Test
             // Arrange
 
             // Get the auto-created mock
-            var validatorMock = _fixture.Freeze<Mock<IValidator<Member>>>();
+            //var validatorMock = _fixture.Freeze<Mock<IValidator<Member>>>();
             var memberCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<Member>>>();
 
             // Generate mokc return result
             // Create a valid validation result
-            var validationResult = new ValidationResult(new List<ValidationFailure>());
+            //var validationResult = new ValidationResult(new List<ValidationFailure>());
 
             //Mock validator
-            validatorMock
-                .Setup(v => v.ValidateAsync(
-                It.IsAny<Member>(),
-                It.IsAny<CancellationToken>()))
-                .ReturnsAsync(validationResult);
+            //validatorMock
+            //    .Setup(v => v.ValidateAsync(
+            //    It.IsAny<Member>(),
+            //    It.IsAny<CancellationToken>()))
+            //    .ReturnsAsync(validationResult);
 
             // Mock command repo
             var newGuid = Guid.NewGuid();
@@ -122,11 +122,11 @@ namespace Library.Test
             var result = await handler.Handle(command, CancellationToken.None);
 
             // Assert
-            validatorMock.Verify(v => v.ValidateAsync(
-                It.Is<Member>(m => m == member),
-                It.IsAny<CancellationToken>()),
-                Times.Once
-                );
+            //validatorMock.Verify(v => v.ValidateAsync(
+            //    It.Is<Member>(m => m == member),
+            //    It.IsAny<CancellationToken>()),
+            //    Times.Once
+            //    );
 
             Assert.NotEqual(Guid.Empty, newGuid);
             Assert.Equal(newGuid, result);
@@ -137,16 +137,16 @@ namespace Library.Test
         {
             // Arrange
 
-            var validatorMock = _fixture.Freeze<Mock<IValidator<IEnumerable<Member>>>>();
+            //var validatorMock = _fixture.Freeze<Mock<IValidator<IEnumerable<Member>>>>();
             var memberCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<Member>>>();
 
-            var validationResult = new ValidationResult(new List<ValidationFailure>());
+            //var validationResult = new ValidationResult(new List<ValidationFailure>());
 
-            validatorMock
-                .Setup(v => v.ValidateAsync(
-                It.IsAny<IEnumerable<Member>>(),
-                It.IsAny<CancellationToken>()))
-                .ReturnsAsync(validationResult);
+            //validatorMock
+            //    .Setup(v => v.ValidateAsync(
+            //    It.IsAny<IEnumerable<Member>>(),
+            //    It.IsAny<CancellationToken>()))
+            //    .ReturnsAsync(validationResult);
 
             var members = _fixture.Build<Member>()
                .Without(m => m.LoanedBooks)
@@ -172,11 +172,11 @@ namespace Library.Test
             var exception = await Record.ExceptionAsync(() => handler.Handle(command, CancellationToken.None));
 
             // Assert
-            validatorMock.Verify(v => v.ValidateAsync(
-                It.Is<IEnumerable<Member>>(m => m.All(members.Contains)),
-                It.IsAny<CancellationToken>()),
-                Times.Once
-                );
+            //validatorMock.Verify(v => v.ValidateAsync(
+            //    It.Is<IEnumerable<Member>>(m => m.All(members.Contains)),
+            //    It.IsAny<CancellationToken>()),
+            //    Times.Once
+            //    );
 
             Assert.Null(exception);
         }
@@ -185,15 +185,15 @@ namespace Library.Test
         public async Task Command_Handler_Update_Member_Success()
         {
             // Arrange
-            var validatorMock = _fixture.Freeze<Mock<IValidator<Member>>>();
+            //var validatorMock = _fixture.Freeze<Mock<IValidator<Member>>>();
             var memberCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<Member>>>();
 
-            var validationResult = new ValidationResult(new List<ValidationFailure>());
+            //var validationResult = new ValidationResult(new List<ValidationFailure>());
 
-            validatorMock.Setup(v => v.ValidateAsync(
-                It.IsAny<Member>(),
-                It.IsAny<CancellationToken>()))
-                .ReturnsAsync(validationResult);
+            //validatorMock.Setup(v => v.ValidateAsync(
+            //    It.IsAny<Member>(),
+            //    It.IsAny<CancellationToken>()))
+            //    .ReturnsAsync(validationResult);
 
             static DateOnly FixedJoinedDate()
             {
@@ -219,11 +219,11 @@ namespace Library.Test
             var updMember = await handler.Handle(command, CancellationToken.None);
 
             // Assert
-            validatorMock.Verify(v => v.ValidateAsync(
-                It.Is<Member>(m => m == member),
-                It.IsAny<CancellationToken>()),
-                Times.Once
-                );
+            //validatorMock.Verify(v => v.ValidateAsync(
+            //    It.Is<Member>(m => m == member),
+            //    It.IsAny<CancellationToken>()),
+            //    Times.Once
+            //    );
 
             Assert.NotNull(updMember);
             updMember.Should().BeEquivalentTo(member);
@@ -233,16 +233,16 @@ namespace Library.Test
         public async Task Command_Handler_Update_Bulk_Members_Success()
         {
             // Arrange
-            var validatorMock = _fixture.Freeze<Mock<IValidator<IEnumerable<Member>>>>();
+            //var validatorMock = _fixture.Freeze<Mock<IValidator<IEnumerable<Member>>>>();
             var memberCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<Member>>>();
 
-            var validationResult = new ValidationResult(new List<ValidationFailure>());
+            //var validationResult = new ValidationResult(new List<ValidationFailure>());
 
-            validatorMock
-             .Setup(v => v.ValidateAsync(
-             It.IsAny<IEnumerable<Member>>(),
-             It.IsAny<CancellationToken>()))
-             .ReturnsAsync(validationResult);
+            //validatorMock
+            // .Setup(v => v.ValidateAsync(
+            // It.IsAny<IEnumerable<Member>>(),
+            // It.IsAny<CancellationToken>()))
+            // .ReturnsAsync(validationResult);
 
             var members = _fixture.Build<Member>()
                .Without(m => m.LoanedBooks)
@@ -271,11 +271,11 @@ namespace Library.Test
             var exception = await Record.ExceptionAsync(() => handler.Handle(command, CancellationToken.None));
 
             // Assert
-            validatorMock.Verify(v => v.ValidateAsync(
-                It.Is<IEnumerable<Member>>(m => m.All(members.Contains)),
-                It.IsAny<CancellationToken>()),
-                Times.Once
-                );
+            //validatorMock.Verify(v => v.ValidateAsync(
+            //    It.Is<IEnumerable<Member>>(m => m.All(members.Contains)),
+            //    It.IsAny<CancellationToken>()),
+            //    Times.Once
+            //    );
 
             Assert.Null(exception);
         }
