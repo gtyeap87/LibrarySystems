@@ -2,6 +2,8 @@
 using AutoFixture.AutoMoq;
 using EFCore.BulkExtensions;
 using FluentAssertions;
+using Library.Dto.Request;
+using Library.Features.Book.Commands;
 using Library.Features.Member.Commands;
 using Library.Features.Member.Queries;
 using Library.Model;
@@ -24,6 +26,8 @@ namespace Library.Test
                 ConfigureMembers = true
             });
         }
+
+        #region Member
 
         /// <summary>
         /// This is just example for writing read unit test. But it is not recommended to write read unit test
@@ -218,5 +222,161 @@ namespace Library.Test
 
             Assert.Null(exception);
         }
+
+        #endregion Member
+
+        #region Book
+
+        [Fact]
+        public async Task Command_Handler_Create_Book_Success()
+        {
+            // Arrange
+
+            // Get the auto-created mock
+            var bookCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<Book>>>();
+            var bookStockCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<BookStock>>>();
+
+            // Mock command repo
+            var newBookId = Guid.NewGuid();
+            bookCommandRepoMock.Setup(x => x.AddAsync(
+                It.IsAny<Book>()))
+                .ReturnsAsync(newBookId);
+
+            bookStockCommandRepoMock.Setup(x => x.AddAsync(
+               It.IsAny<BookStock>()));
+
+            var book = _fixture.Build<Book>()
+                .Without(b => b.BookStocks)
+                .With(b => b.Id, newBookId)
+                .Create();
+
+            var bookRequest = new BookRequest
+            {
+                Book = book,
+                Qty = 5
+            };
+
+            var handler = _fixture.Create<CreateBookCommandHandler>();
+            var command = new CreateBookCommand(bookRequest);
+
+            // Act
+            var result = await handler.Handle(command, CancellationToken.None);
+
+            // Assert
+
+            Assert.NotEqual(Guid.Empty, newBookId);
+            Assert.Equal(newBookId, result);
+        }
+
+        [Fact]
+        public async Task Command_Handler_Create_Bulk_Books_Success()
+        {
+            // Arrange
+
+            var bookCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<Book>>>();
+            var bookStockCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<BookStock>>>();
+
+            var books = _fixture.Build<Book>()
+               .Without(m => m.BookStocks)
+               .CreateMany(5);
+
+            var booksRequest = books.Select(book => new BookRequest() { Book = book, Qty = _fixture.Build<int>().Create() });
+            var req = new BooksRequest
+            {
+                Books = booksRequest
+            };
+
+            bookCommandRepoMock.Setup(x => x.BulkInsertAsync(
+                It.IsAny<IEnumerable<Book>>()));
+            bookStockCommandRepoMock.Setup(x => x.BulkInsertAsync(
+                It.IsAny<IEnumerable<BookStock>>()));
+
+            var handler = _fixture.Create<CreateBulkBooksCommandHandler>();
+            var command = new CreateBulkBooksCommand(req);
+
+            // Act
+            var exception = await Record.ExceptionAsync(() => handler.Handle(command, CancellationToken.None));
+
+            // Assert
+            Assert.Null(exception);
+        }
+
+        [Fact]
+        public async Task Command_Handler_Update_Book_Success()
+        {
+            // Arrange
+            var bookCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<Book>>>();
+
+            var bookId = Guid.NewGuid();
+            var book = _fixture.Build<Book>()
+                .Without(b => b.BookStocks)
+                .With(b => b.Id, bookId)
+                .Create();
+
+            var bookRequest = new BookRequest
+            {
+                Book = book,
+                Qty = 5
+            };
+
+            bookCommandRepoMock.Setup(x => x.UpdateAsync(
+                It.IsAny<Book>()))
+                .ReturnsAsync(book);
+
+            var handler = _fixture.Create<UpdateBookCommandHandler>();
+            var command = new UpdateBookCommand(bookRequest);
+
+            // Act
+            var updBook = await handler.Handle(command, CancellationToken.None);
+
+            // Assert
+
+            Assert.NotNull(updBook);
+            updBook.Should().BeEquivalentTo(book);
+        }
+
+        [Fact]
+        public async Task Command_Handler_Update_Bulk_Books_Success()
+        {
+            // Arrange
+
+            var bookCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<Book>>>();
+            var bookStockCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<BookStock>>>();
+
+            var books = _fixture.Build<Book>()
+               .Without(m => m.BookStocks)
+               .CreateMany(5);
+
+            var booksRequest = books.Select(book => new BookRequest() { Book = book, Qty = _fixture.Build<int>().Create() });
+            var req = new BooksRequest
+            {
+                Books = booksRequest
+            };
+
+            bookCommandRepoMock.Setup(x => x.BulkUpdateAsync(
+                It.IsAny<IEnumerable<Book>>(),
+                It.IsAny<BulkConfig>()
+                ));
+            bookStockCommandRepoMock.Setup(x => x.BulkUpdateAsync(
+                It.IsAny<IEnumerable<BookStock>>(),
+                It.IsAny<BulkConfig>()
+                ));
+
+            var handler = _fixture.Create<UpdateBulkBooksCommandHandler>();
+            var command = new UpdateBulkBooksCommand(req);
+
+            // Act
+            var exception = await Record.ExceptionAsync(() => handler.Handle(command, CancellationToken.None));
+
+            // Assert
+
+            Assert.Null(exception);
+        }
+
+        #endregion Book
+
+        #region Loan Book
+
+        #endregion Loan Book
     }
 }
