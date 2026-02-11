@@ -17,7 +17,7 @@ namespace Library.Validators
             RuleFor(x => x.BookId).NotEqual(Guid.Empty)
                 .WithMessage($"{nameof(LoanBook.BookId)} is required");
 
-            RuleFor(x => x.MemberId).NotNull().NotEmpty()
+            RuleFor(x => x.MemberId).NotEqual(Guid.Empty)
                 .WithMessage($"{nameof(LoanBook.MemberId)} is required");
 
             RuleFor(x => x.LoanedDate).NotEqual(DateOnly.MinValue)
