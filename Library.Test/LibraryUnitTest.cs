@@ -4,6 +4,7 @@ using EFCore.BulkExtensions;
 using FluentAssertions;
 using Library.Dto.Request;
 using Library.Features.Book.Commands;
+using Library.Features.LoanBook.Commands;
 using Library.Features.Member.Commands;
 using Library.Features.Member.Queries;
 using Library.Model;
@@ -42,17 +43,10 @@ namespace Library.Test
             var mediatorMock = _fixture.Freeze<Mock<IMediator>>();
 
             // Generate mokc return result
-            DateOnly RandomJoinedDate()
-            {
-                var start = DateTime.UtcNow.AddYears(-5);
-                var range = (DateTime.UtcNow - start).Days;
-
-                return DateOnly.FromDateTime(start.AddDays(_fixture.Create<int>() % range));
-            }
 
             var members = _fixture.Build<Member>()
                 .Without(m => m.LoanedBooks)
-                .With(m => m.JoinedDate, RandomJoinedDate())
+                .With(m => m.JoinedDate, RandomDate())
                 .CreateMany(5);
 
             //Mock mediator
@@ -93,17 +87,9 @@ namespace Library.Test
 
             var handler = _fixture.Create<AddMemberCommandHandler>();
 
-            DateOnly RandomJoinedDate()
-            {
-                var start = DateTime.UtcNow.AddYears(-5);
-                var range = (DateTime.UtcNow - start).Days;
-
-                return DateOnly.FromDateTime(start.AddDays(_fixture.Create<int>() % range));
-            }
-
             var member = _fixture.Build<Member>()
                 .Without(m => m.LoanedBooks)
-                .With(m => m.JoinedDate, RandomJoinedDate())
+                .With(m => m.JoinedDate, RandomDate())
                 .Create();
 
             var command = new CreateMemberCommand(member);
@@ -126,21 +112,13 @@ namespace Library.Test
 
             var members = _fixture.Build<Member>()
                .Without(m => m.LoanedBooks)
-               .With(m => m.JoinedDate, RandomJoinedDate())
+               .With(m => m.JoinedDate, RandomDate())
                .CreateMany(5);
 
             memberCommandRepoMock.Setup(x => x.BulkInsertAsync(
                 It.IsAny<IEnumerable<Member>>()));
 
             var handler = _fixture.Create<CreateBulkMembersCommandHandler>();
-
-            DateOnly RandomJoinedDate()
-            {
-                var start = DateTime.UtcNow.AddYears(-5);
-                var range = (DateTime.UtcNow - start).Days;
-
-                return DateOnly.FromDateTime(start.AddDays(_fixture.Create<int>() % range));
-            }
 
             var command = new CreateBulkMembersCommand(members);
 
@@ -194,7 +172,7 @@ namespace Library.Test
 
             var members = _fixture.Build<Member>()
                .Without(m => m.LoanedBooks)
-               .With(m => m.JoinedDate, RandomJoinedDate())
+               .With(m => m.JoinedDate, RandomDate())
                .CreateMany(5);
 
             memberCommandRepoMock.Setup(x => x.BulkUpdateAsync(
@@ -204,14 +182,6 @@ namespace Library.Test
                 ));
 
             var handler = _fixture.Create<UpdateBulkMembersCommandHandler>();
-
-            DateOnly RandomJoinedDate()
-            {
-                var start = DateTime.UtcNow.AddYears(-5);
-                var range = (DateTime.UtcNow - start).Days;
-
-                return DateOnly.FromDateTime(start.AddDays(_fixture.Create<int>() % range));
-            }
 
             var command = new UpdateBulkMembersCommand(members);
 
@@ -377,6 +347,137 @@ namespace Library.Test
 
         #region Loan Book
 
+        [Fact]
+        public async Task Command_Handler_Create_Loaned_Book_Success()
+        {
+            // Arrange
+
+            // Get the auto-created mock
+            var loanBookCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<LoanBook>>>();
+
+            // Mock command repo
+
+            var newId = Guid.NewGuid();
+
+            loanBookCommandRepoMock.Setup(x => x.AddAsync(
+                It.IsAny<LoanBook>()))
+                .ReturnsAsync(newId);
+
+            var loanBook = _fixture.Build<LoanBook>()
+                .Without(lb => lb.Book)
+                .Without(lb => lb.Member)
+                .Without(lb => lb.ReturnedDate)
+                .With(lb => lb.LoanedDate, RandomDate())
+                .With(lb => lb.Id, newId)
+                .Create();
+
+            var handler = _fixture.Create<AddLoanedBookCommandHandler>();
+            var command = new CreateLoanedBookCommand(loanBook);
+
+            // Act
+            var result = await handler.Handle(command, CancellationToken.None);
+
+            // Assert
+
+            Assert.NotEqual(Guid.Empty, newId);
+            Assert.Equal(newId, result);
+        }
+
+        [Fact]
+        public async Task Command_Handler_Create_Bulk_Loaned_Books_Success()
+        {
+            // Arrange
+
+            var loanBookCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<LoanBook>>>();
+
+            var books = _fixture.Build<LoanBook>()
+                .Without(lb => lb.Book)
+                .Without(lb => lb.Member)
+                .Without(lb => lb.ReturnedDate)
+                .With(lb => lb.LoanedDate, RandomDate())
+                .CreateMany(5);
+
+            loanBookCommandRepoMock.Setup(x => x.BulkInsertAsync(
+                It.IsAny<IEnumerable<LoanBook>>()));
+
+            var handler = _fixture.Create<CreateBulkLoanBooksCommandHandler>();
+            var command = new CreateBulkLoanBooksCommand(books);
+
+            // Act
+            var exception = await Record.ExceptionAsync(() => handler.Handle(command, CancellationToken.None));
+
+            // Assert
+            Assert.Null(exception);
+        }
+
+        [Fact]
+        public async Task Command_Handler_Update_Loan_Book_Success()
+        {
+            // Arrange
+            var loanBookCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<LoanBook>>>();
+
+            var id = Guid.NewGuid();
+            var loanBook = _fixture.Build<LoanBook>()
+                .Without(lb => lb.Book)
+                .Without(lb => lb.Member)
+                .Without(lb => lb.ReturnedDate)
+                .With(lb => lb.LoanedDate, RandomDate())
+                .With(lb => lb.Id, id)
+                .Create();
+
+            loanBookCommandRepoMock.Setup(x => x.UpdateAsync(
+                It.IsAny<LoanBook>()))
+                .ReturnsAsync(loanBook);
+
+            var handler = _fixture.Create<UpdateLoanedBookCommandHandler>();
+            var command = new UpdateLoanedBookCommand(loanBook);
+
+            // Act
+            var updLoanBook = await handler.Handle(command, CancellationToken.None);
+
+            // Assert
+
+            Assert.NotNull(updLoanBook);
+            updLoanBook.Should().BeEquivalentTo(loanBook);
+        }
+
+        [Fact]
+        public async Task Command_Handler_Update_Bulk_Loan_Books_Success()
+        {
+            // Arrange
+
+            var loanBookCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<LoanBook>>>();
+
+            var loanBooks = _fixture.Build<LoanBook>()
+                .Without(lb => lb.Book)
+                .Without(lb => lb.Member)
+                .Without(lb => lb.ReturnedDate)
+                .With(lb => lb.LoanedDate, RandomDate())
+                .CreateMany(5);
+
+            loanBookCommandRepoMock.Setup(x => x.BulkUpdateAsync(
+                It.IsAny<IEnumerable<LoanBook>>(),
+                It.IsAny<BulkConfig>()
+                ));
+
+            var handler = _fixture.Create<UpdateBulkLoanBooksCommandHandler>();
+            var command = new UpdateBulkLoanBooksCommand(loanBooks);
+
+            // Act
+            var exception = await Record.ExceptionAsync(() => handler.Handle(command, CancellationToken.None));
+
+            // Assert
+
+            Assert.Null(exception);
+        }
+
         #endregion Loan Book
+
+        private DateOnly RandomDate()
+        {
+            var start = DateTime.UtcNow.AddYears(-5);
+            var range = (DateTime.UtcNow - start).Days;
+            return DateOnly.FromDateTime(start.AddDays(_fixture.Create<int>() % range));
+        }
     }
 }
