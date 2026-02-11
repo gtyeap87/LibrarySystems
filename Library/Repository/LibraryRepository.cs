@@ -7,6 +7,7 @@ namespace Library.Repository;
 /// <summary>
 /// Repository for managing library data with logging capabilities
 /// </summary>
+[Obsolete(message: "this repository is has been deprecated, please use create spec class")]
 public class LibraryRepository(
     LibraryContext context,
     ILogger<LibraryRepository> logger) : ILibraryQueryRepository, ILibraryCommandRepository
