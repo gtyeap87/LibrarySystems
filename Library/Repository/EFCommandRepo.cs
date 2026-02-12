@@ -11,7 +11,7 @@ namespace Library.Repository
 
         public async Task<Guid> AddAsync(T entity)
         {
-            _logger.LogInformation("Adding a new {EntityName} to the library", typeof(T).Name);
+            _logger.LogDebug("Adding a new {EntityName} to the library", typeof(T).Name);
             // Add the entity to the DbSet<T>
             _context.Set<T>().Add(entity);
 
@@ -25,7 +25,8 @@ namespace Library.Repository
                 var idValue = idProperty.GetValue(entity);
                 if (idValue is Guid id)
                 {
-                    _logger.LogInformation("Successfully added {EntityName} with ID {Id}", typeof(T).Name, id);
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                        _logger.LogDebug("Successfully added {EntityName} with ID {Id}", typeof(T).Name, id);
                     return id;
                 }
             }
@@ -57,16 +58,16 @@ namespace Library.Repository
 
         public async Task BulkInsertAsync<K>(IEnumerable<K> entities) where K : class, IRoot
         {
-            if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Bulk inserting {Count} {EntityName} records", entities.Count(), typeof(T).Name);
+            if (_logger.IsEnabled(LogLevel.Debug))
+                _logger.LogDebug("Bulk inserting {Count} {EntityName} records", entities.Count(), typeof(T).Name);
 
             var list = entities.ToList();
             BulkRootFactory.Initialize(list);
 
             await _context.BulkInsertAsync(list);
 
-            if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Successfully bulk inserted {Count} {EntityName} records", entities.Count(), typeof(T).Name);
+            if (_logger.IsEnabled(LogLevel.Debug))
+                _logger.LogDebug("Successfully bulk inserted {Count} {EntityName} records", entities.Count(), typeof(T).Name);
         }
 
         public async Task<T> UpdateAsync(T entity)
@@ -99,30 +100,35 @@ namespace Library.Repository
             _context.Entry(existingEntity).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Successfully updated {EntityName} with ID {Id}", typeof(T).Name, id);
+            if (_logger.IsEnabled(LogLevel.Debug))
+                _logger.LogDebug("Successfully updated {EntityName} with ID {Id}", typeof(T).Name, id);
 
             return existingEntity;
         }
 
         public async Task BulkUpdateAsync<K>(IEnumerable<K> entities, BulkConfig bulkConfig) where K : class, IRoot
         {
-            if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Bulk updating {Count} {EntityName} records", entities.Count(), typeof(T).Name);
+            if (_logger.IsEnabled(LogLevel.Debug))
+                _logger.LogDebug("Bulk updating {Count} {EntityName} records", entities.Count(), typeof(T).Name);
 
             var list = entities.ToList();
             BulkRootFactory.Initialize(list, BulkRootFactory.TranscationType.Update);
             await _context.BulkUpdateAsync(list, bulkConfig);
 
-            if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Successfully bulk updated {Count} {EntityName} records", entities.Count(), typeof(T).Name);
+            if (_logger.IsEnabled(LogLevel.Debug))
+                _logger.LogDebug("Successfully bulk updated {Count} {EntityName} records", entities.Count(), typeof(T).Name);
         }
 
         public async Task DeleteAsync(T entity)
         {
-            _logger.LogInformation("Deleting {EntityName} from the library", typeof(T).Name);
+            if (_logger.IsEnabled(LogLevel.Debug))
+                _logger.LogDebug("Deleting {EntityName} from the library", typeof(T).Name);
+
             _context.Set<T>().Remove(entity);
             await _context.SaveChangesAsync();
-            _logger.LogInformation("Successfully deleted {EntityName}", typeof(T).Name);
+
+            if (_logger.IsEnabled(LogLevel.Debug))
+                _logger.LogDebug("Successfully deleted {EntityName}", typeof(T).Name);
         }
     }
 }

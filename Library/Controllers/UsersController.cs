@@ -46,8 +46,7 @@ namespace Library.Controllers
             {
                 if (_logger.IsEnabled(LogLevel.Error))
                 {
-                    var email = request.Email.Replace(Environment.NewLine, string.Empty);
-                    _logger.LogError(ex, "Unauthorized login attempt for user: {LoginId}", email);
+                    _logger.LogError(ex, "Unauthorized login attempt by user");
                 }
 
                 return Unauthorized();
@@ -152,8 +151,7 @@ namespace Library.Controllers
 
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    var email = request.Email.Replace(Environment.NewLine, string.Empty);
-                    _logger.LogInformation("user with email {Email} has successfully logged in", email);
+                    _logger.LogInformation("user has successfully logged in");
                 }
 
                 return Ok(accessToken);
@@ -162,8 +160,7 @@ namespace Library.Controllers
             {
                 if (_logger.IsEnabled(LogLevel.Error))
                 {
-                    var email = request.Email.Replace(Environment.NewLine, string.Empty);
-                    _logger.LogError(ex, "Unauthorized login attempt for user: {LoginId}", email);
+                    _logger.LogError(ex, "Unauthorized login attempt for user");
                 }
 
                 return Unauthorized();
@@ -234,8 +231,7 @@ namespace Library.Controllers
 
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    var email = request.Email.Replace(Environment.NewLine, string.Empty);
-                    _logger.LogInformation("User with email: {Email} has changed password", email);
+                    _logger.LogInformation("User has changed the password");
                 }
 
                 return Ok();
