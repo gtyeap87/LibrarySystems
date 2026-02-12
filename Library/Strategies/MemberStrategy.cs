@@ -47,7 +47,10 @@ namespace Library.Strategies
                 var newId = await _libraryService.CreateMemberAsync(memberRequest);
 
                 if (_logger.IsEnabled(LogLevel.Information))
-                    _logger.LogInformation("Added new premium member name {Name} with ID: {Id}", $"{request.FirstName}{request.LastName}", newId);
+                {
+                    var name = $"{request.FirstName}{request.LastName}".Replace(Environment.NewLine, string.Empty);
+                    _logger.LogInformation("Added new premium member name {Name} with ID: {Id}", name, newId);
+                }
 
                 return newId;
             }

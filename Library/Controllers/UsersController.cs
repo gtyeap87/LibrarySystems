@@ -3,7 +3,6 @@ using Library.Authorization;
 using Library.Dto.Identity;
 using Library.Dto.Request;
 using Library.Service;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Library.Controllers
@@ -46,7 +45,10 @@ namespace Library.Controllers
             catch (UnauthorizedAccessException ex)
             {
                 if (_logger.IsEnabled(LogLevel.Error))
-                    _logger.LogError(ex, "Unauthorized login attempt for user: {LoginId}", request.Email);
+                {
+                    var email = request.Email.Replace(Environment.NewLine, string.Empty);
+                    _logger.LogError(ex, "Unauthorized login attempt for user: {LoginId}", email);
+                }
 
                 return Unauthorized();
             }
@@ -149,14 +151,20 @@ namespace Library.Controllers
                 var accessToken = await _userService.LoginUserAsync(request);
 
                 if (_logger.IsEnabled(LogLevel.Information))
-                    _logger.LogInformation("user with email {Email} has successfully logged in", request.Email);
+                {
+                    var email = request.Email.Replace(Environment.NewLine, string.Empty);
+                    _logger.LogInformation("user with email {Email} has successfully logged in", email);
+                }
 
                 return Ok(accessToken);
             }
             catch (UnauthorizedAccessException ex)
             {
                 if (_logger.IsEnabled(LogLevel.Error))
-                    _logger.LogError(ex, "Unauthorized login attempt for user: {LoginId}", request.Email);
+                {
+                    var email = request.Email.Replace(Environment.NewLine, string.Empty);
+                    _logger.LogError(ex, "Unauthorized login attempt for user: {LoginId}", email);
+                }
 
                 return Unauthorized();
             }
@@ -225,7 +233,10 @@ namespace Library.Controllers
                 await _userService.ChangePasswordAsync(request);
 
                 if (_logger.IsEnabled(LogLevel.Information))
-                    _logger.LogInformation("User with email: {Email} has changed password", request.Email);
+                {
+                    var email = request.Email.Replace(Environment.NewLine, string.Empty);
+                    _logger.LogInformation("User with email: {Email} has changed password", email);
+                }
 
                 return Ok();
             }
