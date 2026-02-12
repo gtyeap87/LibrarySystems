@@ -10,7 +10,8 @@ Architecure
 - N-tier
 -- Controller
 -- Service
--- Repository
+-- ~Repositor~ (Already replaced by specification)
+-- Future (Clean architecture/Vertical slice?)
 
 Model
 - Model for database design
@@ -26,7 +27,7 @@ Log
 - Build-in Logging
 
 Repository design
-  1. Traditional Repository
+  1. ~Traditional Repository~
   2. Specification and generic query and command
   3. Mediatr
  
