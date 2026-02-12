@@ -50,7 +50,7 @@ V1
 - ~Authorization and Authentication~
 - React (Web)
 - ~Pagination~
-- Unit Test
+- ~Unit Test~
 - Redis Cache
 
 V2
