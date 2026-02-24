@@ -1,8 +1,4 @@
 ﻿namespace Library.Dto.Request
 {
-    public class PaginationRequestDto
-    {
-        public int PageNumber { get; set; } = 1;
-        public int PageSize { get; set; } = 10;
-    }
+    public record PaginationRequestDto(int PageNumber = 1, int PageSize = 10);
 }

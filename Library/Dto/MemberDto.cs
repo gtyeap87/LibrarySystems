@@ -1,10 +1,6 @@
 namespace Library.Dto;
 
-public class MemberDto
-{
-    public required string Name { get; set; }
-    public DateOnly JoinedDate { get; set; }
-}
+public record MemberDto(string Name, DateOnly JoinedDate);
 
 public record CsvMemberDto(
     Guid LibraryId,

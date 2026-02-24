@@ -220,11 +220,7 @@ namespace Library.Test
                 .With(b => b.Id, newBookId)
                 .Create();
 
-            var bookRequest = new BookRequest
-            {
-                Book = book,
-                Qty = 5
-            };
+            var bookRequest = new BookRequest(book, 5);
 
             var handler = _fixture.Create<CreateBookCommandHandler>();
             var command = new CreateBookCommand(bookRequest);
@@ -250,11 +246,8 @@ namespace Library.Test
                .Without(m => m.BookStocks)
                .CreateMany(5);
 
-            var booksRequest = books.Select(book => new BookRequest() { Book = book, Qty = _fixture.Build<int>().Create() });
-            var req = new BooksRequest
-            {
-                Books = booksRequest
-            };
+            var booksRequest = books.Select(book => new BookRequest(book, _fixture.Build<int>().Create()));
+            var req = new BooksRequest(booksRequest);
 
             bookCommandRepoMock.Setup(x => x.BulkInsertAsync(
                 It.IsAny<IEnumerable<Book>>()));
@@ -283,11 +276,7 @@ namespace Library.Test
                 .With(b => b.Id, bookId)
                 .Create();
 
-            var bookRequest = new BookRequest
-            {
-                Book = book,
-                Qty = 5
-            };
+            var bookRequest = new BookRequest(book, 5);
 
             bookCommandRepoMock.Setup(x => x.UpdateAsync(
                 It.IsAny<Book>()))
@@ -317,11 +306,8 @@ namespace Library.Test
                .Without(m => m.BookStocks)
                .CreateMany(5);
 
-            var booksRequest = books.Select(book => new BookRequest() { Book = book, Qty = _fixture.Build<int>().Create() });
-            var req = new BooksRequest
-            {
-                Books = booksRequest
-            };
+            var booksRequest = books.Select(book => new BookRequest(book, _fixture.Build<int>().Create()));
+            var req = new BooksRequest(booksRequest);
 
             bookCommandRepoMock.Setup(x => x.BulkUpdateAsync(
                 It.IsAny<IEnumerable<Book>>(),

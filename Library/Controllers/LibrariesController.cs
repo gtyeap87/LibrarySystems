@@ -36,11 +36,11 @@ namespace Library.Controllers
                 _logger.LogInformation("GetBooksAsync");
                 var books = await _service.ReadFullBooksAsync(genre, name, new PaginationRequestDto { PageSize = pageSize, PageNumber = pageNumber });
                 var bookDtos = books.Select(b => new BookDto
-                {
-                    Genre = b.Genre,
-                    Name = b.Name,
-                    AvailableQuantity = b.BookStocks.Sum(bs => bs.Quantity)
-                });
+                (
+                    b.Genre,
+                    b.Name,
+                    AvailableQuantity: b.BookStocks.Sum(bs => bs.Quantity)
+                ));
 
                 return Ok(bookDtos);
             }
@@ -210,10 +210,10 @@ namespace Library.Controllers
             var members2 = await _service.ReadMembersOnlyAsync(name, date, new PaginationRequestDto { PageSize = pageSize, PageNumber = pageNumber });
 
             var membersDto = members2.Select(m => new MemberDto
-            {
-                Name = m.Name,
-                JoinedDate = m.JoinedDate
-            });
+            (
+                m.Name,
+                m.JoinedDate
+            ));
 
             return Ok(membersDto);
         }
@@ -388,18 +388,18 @@ namespace Library.Controllers
                 _logger.LogInformation("GetLoanBooksAsync");
                 var loanBooks = await _service.ReadLoanBooksAsync(bookName, memberName, new PaginationRequestDto { PageSize = pageSize, PageNumber = pageNumber });
                 var loanBookDtos = loanBooks.Select(lb => new LoanBookDto
-                {
-                    BookName = lb?.Book?.Name!,
-                    MemberName = lb?.Member?.Name!,
-                    LoanedDate = lb.LoanedDate,
-                    ReturnedDate = lb.ReturnedDate,
-                });
+                (
+                    lb?.Book?.Name!,
+                    lb?.Member?.Name!,
+                    lb.LoanedDate,
+                    lb.ReturnedDate
+                ));
 
                 var loanBooksDetailsDto = new LoanBooksDetailsDto
-                {
-                    LoanBooks = loanBookDtos,
-                    LoanedOutBooksQuantity = ReadLoanedOutBooksQuantity(loanBooks)
-                };
+                (
+                    loanBookDtos,
+                    ReadLoanedOutBooksQuantity(loanBooks)
+                );
                 return Ok(loanBooksDetailsDto);
             }
             catch (Exception ex)

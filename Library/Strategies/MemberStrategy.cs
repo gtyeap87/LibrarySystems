@@ -35,15 +35,14 @@ namespace Library.Strategies
             {
                 _logger.LogInformation("Add new premium member to library");
 
-                var memberRequest = new MemberRequest
-                {
-                    Member = new Member()
-                    {
-                        Name = $"{request.FirstName} {request.LastName}",
-                        JoinedDate = DateOnly.FromDateTime(DateTime.UtcNow),
-                        LibraryId = Guid.Parse(_configuration["Library:Id"]!)
-                    }
-                };
+                var memberRequest = new MemberRequest(
+                  new Member()
+                  {
+                      Name = $"{request.FirstName} {request.LastName}",
+                      JoinedDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                      LibraryId = Guid.Parse(_configuration["Library:Id"]!)
+                  }
+                );
                 var newId = await _libraryService.CreateMemberAsync(memberRequest);
 
                 if (_logger.IsEnabled(LogLevel.Information))

@@ -3,36 +3,17 @@ using Library.Model;
 
 namespace Library.Dto.Request
 {
-    public class BookRequest
-    {
-        public required Book Book { get; set; }
-        public int Qty { get; set; }
-    }
+    public record BookRequest(Book Book, int Qty);
 
-    public class BooksRequest
-    {
-        public required IEnumerable<BookRequest> Books { get; set; } = [];
-    }
+    public record BooksRequest(IEnumerable<BookRequest> Books);
 
-    public class MemberRequest
-    {
-        public required Member Member { get; set; }
-    }
+    public record MemberRequest(Member Member);
 
-    public class MembersRequest
-    {
-        public required IEnumerable<MemberRequest> Members { get; set; }
-    }
+    public record MembersRequest(IEnumerable<MemberRequest> Members);
 
-    public class LoanBookRequest
-    {
-        public required LoanBook LoanBook { get; set; }
-    }
+    public record LoanBookRequest(LoanBook LoanBook);
 
-    public class LoanBooksRequest
-    {
-        public required IEnumerable<LoanBook> LoanBooks { get; set; }
-    }
+    public record LoanBooksRequest(IEnumerable<LoanBook> LoanBooks);
 
     public record RegisterUserRequest(
         string FirstName,

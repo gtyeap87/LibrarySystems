@@ -142,11 +142,7 @@ namespace Library.Test
                 .Without(m => m.BookStocks)
                 .Create();
 
-            var bookRequest = new BookRequest
-            {
-                Book = book,
-                Qty = 5
-            };
+            var bookRequest = new BookRequest(book, 5);
 
             // Act
             var result = await validatorMock.Object.ValidateAsync(bookRequest);
@@ -184,11 +180,7 @@ namespace Library.Test
                 .With(m => m.LibraryId, Guid.Empty)
                 .Create();
 
-            var bookRequest = new BookRequest
-            {
-                Book = book,
-                Qty = 0
-            };
+            var bookRequest = new BookRequest(book, 0);
 
             // Act
             var result = await validatorMock.Object.ValidateAsync(bookRequest);

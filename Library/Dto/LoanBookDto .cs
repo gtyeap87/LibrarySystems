@@ -5,25 +5,21 @@ namespace Library.Dto;
 /// <summary>
 /// Represents weather forecast data with support for both v1 and v2 API features
 /// </summary>
-public class LoanBookDto
+
+public record LoanBookDto(
+    string MemberName,
+    string BookName,
+    DateOnly LoanedDate,
+    DateOnly? ReturnedDate
+    )
 {
-    public required string MemberName { get; set; }
-    public required string BookName { get; set; }
-    public DateOnly LoanedDate { get; set; }
-    public DateOnly? ReturnedDate { get; set; }
+    public bool IsBookReturned => ReturnedDate != null;
+};
 
-    public bool IsBookReturned
-    {
-        get => ReturnedDate != null;
-    }
-}
-
-public class LoanBooksDetailsDto
-{
-    public required IEnumerable<LoanBookDto> LoanBooks { get; set; }
-
-    /// <summary>
-    /// To get total number of books loaned in one transaction
-    /// </summary>
-    public int LoanedOutBooksQuantity { get; set; }
-}
+//    /// <summary>
+//    /// To get total number of books loaned in one transaction
+//    /// </summary>
+public record LoanBooksDetailsDto(
+    IEnumerable<LoanBookDto> LoanBooks,
+    int LoanedOutBooksQuantity
+    );
