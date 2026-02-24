@@ -1,5 +1,4 @@
-﻿using Library.Data.Identity;
-using Library.Dto.Request;
+﻿using Library.Dto.Request;
 using Library.Model;
 using Library.Service;
 
@@ -7,8 +6,6 @@ namespace Library.Strategies
 {
     public class NormalMember : IMemberStrategy
     {
-        public bool CanHandle(string role) => role != Roles.Member;
-
         public async Task<Guid> AddMemberAsync(RegisterUserRequest request)
         {
             // normal member logic
@@ -26,8 +23,6 @@ namespace Library.Strategies
         private readonly ILibraryService _libraryService = libraryService;
         private readonly ILogger<PremiumMember> _logger = logger;
         private readonly IConfiguration _configuration = configuration;
-
-        public bool CanHandle(string role) => role == Roles.Member;
 
         public async Task<Guid> AddMemberAsync(RegisterUserRequest request)
         {

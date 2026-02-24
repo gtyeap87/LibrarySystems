@@ -108,6 +108,7 @@ builder.Services.AddScoped(typeof(ICommandRepo<>), typeof(EfCommandRepo<>));
 builder.Services.AddScoped<IUserService, UserService>();
 
 // Register strategies (Business Logic)
+builder.Services.AddScoped<IMemberStrategyFactory, MemberStrategyFactory>();
 builder.Services.AddScoped<IStrategyHandler, StrategyHandler>();
 builder.Services.AddScoped<IMemberStrategy, NormalMember>();
 builder.Services.AddScoped<IMemberStrategy, PremiumMember>();

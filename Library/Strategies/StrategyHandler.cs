@@ -4,19 +4,16 @@ namespace Library.Strategies
 {
     /// <summary>
     /// Strategy handler to manage member strategies
-    /// Business logic to select and execute appropriate member strategy based on role
+    /// Business logic to execute appropriate member strategy based on role
     /// </summary>
-    /// <param name="strategies"></param>
-    public class StrategyHandler(IEnumerable<IMemberStrategy> strategies) : IStrategyHandler
+    /// <param name="strategyFactory">Factory for creating member strategies</param>
+    public class StrategyHandler(IMemberStrategyFactory strategyFactory) : IStrategyHandler
     {
-        private readonly IEnumerable<IMemberStrategy> _strategies = strategies;
+        private readonly IMemberStrategyFactory _strategyFactory = strategyFactory;
 
         public async Task<Guid> HandleAsync(RegisterUserRequest request)
         {
-            var strategy = _strategies.FirstOrDefault(s => s.CanHandle(request.Role))
-                ?? throw new InvalidOperationException(
-                    $"No member strategy found for role {request.Role}");
-
+            var strategy = _strategyFactory.CreateStrategy(request.Role);
             return await strategy.AddMemberAsync(request);
         }
     }
