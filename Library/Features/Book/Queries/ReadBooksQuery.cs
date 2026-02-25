@@ -10,11 +10,9 @@ public record ReadBooksQuery(Genre? Genre, string? Name, PaginationRequestDto Pa
 
 public class GetBooksQueryHandler(IQueryRepo<Model.Book> queryRepo) : IRequestHandler<ReadBooksQuery, IEnumerable<Model.Book>>
 {
-    private readonly IQueryRepo<Model.Book> _queryRepo = queryRepo;
-
     public async Task<IEnumerable<Model.Book>> Handle(ReadBooksQuery query, CancellationToken cancellationToken)
     {
         var spec = new BooksOnlySpec(query.Genre, query.Name);
-        return await _queryRepo.ListAsync(spec, query.Page);
+        return await queryRepo.ListAsync(spec, query.Page);
     }
 }

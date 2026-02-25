@@ -9,11 +9,9 @@ namespace Library.Features.Member.Commands
         ICommandRepo<Model.Member> memberCommandRepo
         ) : IRequestHandler<CreateMemberCommand, Guid>
     {
-        private readonly ICommandRepo<Model.Member> _memberCommandRepo = memberCommandRepo;
-
         public async Task<Guid> Handle(CreateMemberCommand command, CancellationToken cancellationToken)
         {
-            var newId = await _memberCommandRepo.AddAsync(command.Member);
+            var newId = await memberCommandRepo.AddAsync(command.Member);
             return newId;
         }
     }

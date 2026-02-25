@@ -7,13 +7,11 @@ namespace Library.Strategies
     /// Business logic to execute appropriate member strategy based on role
     /// </summary>
     /// <param name="strategyFactory">Factory for creating member strategies</param>
-    public class StrategyHandler(IMemberStrategyFactory strategyFactory) : IStrategyHandler
+    public class StrategyHandler(IMemberStrategyFactory factory) : IStrategyHandler
     {
-        private readonly IMemberStrategyFactory _strategyFactory = strategyFactory;
-
         public async Task<Guid> HandleAsync(RegisterUserRequest request)
         {
-            var strategy = _strategyFactory.CreateStrategy(request.Role);
+            var strategy = factory.CreateStrategy(request.Role);
             return await strategy.AddMemberAsync(request);
         }
     }

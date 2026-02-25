@@ -7,21 +7,18 @@ namespace Library.Repository;
 /// <summary>
 /// Repository for managing library data with logging capabilities
 /// </summary>
-[Obsolete(message: "this repository is has been deprecated, please use create spec class")]
+[Obsolete(message: "this repository class has been deprecated, please use spec class")]
 public class LibraryRepository(
     LibraryContext context,
     ILogger<LibraryRepository> logger) : ILibraryQueryRepository, ILibraryCommandRepository
 {
-    private readonly LibraryContext _context = context;
-    private readonly ILogger<LibraryRepository> _logger = logger;
-
     #region Book
 
     public async Task<IEnumerable<Book>> GetBooksAsync(Genre? genre, string? name)
     {
-        _logger.LogInformation("Retrieving books based on genre or name");
+        logger.LogInformation("Retrieving books based on genre or name");
 
-        var books = await _context.Books
+        var books = await context.Books
             .Include(b => b.BookStocks)
             .Where(b =>
                 (!genre.HasValue || b.Genre == genre.Value) &&
@@ -41,38 +38,36 @@ public class LibraryRepository(
     /// <returns></returns>
     public async Task<Guid> AddBookAsync(Book book, int qty)
     {
-        _logger.LogInformation("Adding a new book to the library");
+        logger.LogInformation("Adding a new book to the library");
 
-        _context.Books.Add(book);
-        _context.BookStocks.Add(new BookStock
+        context.Books.Add(book);
+        context.BookStocks.Add(new BookStock
         {
             BookId = book.Id,
             Quantity = qty
         });
 
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
 
         return book.Id;
     }
 
-    //TODO - Bulk insert with batches
-
     public async Task<Book> UpdateBookAsync(Book book)
     {
-        _logger.LogInformation("Updating book information");
-        var existingForecast = await _context.Books
+        logger.LogInformation("Updating book information");
+        var existingForecast = await context.Books
             .FirstOrDefaultAsync(f => f.Id == book.Id);
 
         if (existingForecast == null)
         {
-            _logger.LogWarning("Book with ID: {Id} not found for update", book.Id);
+            logger.LogWarning("Book with ID: {Id} not found for update", book.Id);
             throw new KeyNotFoundException($"Book with ID {book.Id} not found.");
         }
 
-        _context.Entry(existingForecast).CurrentValues.SetValues(book);
-        await _context.SaveChangesAsync();
+        context.Entry(existingForecast).CurrentValues.SetValues(book);
+        await context.SaveChangesAsync();
 
-        _logger.LogInformation("Successfully updated weather forecast with ID: {Id}", book.Id);
+        logger.LogInformation("Successfully updated weather forecast with ID: {Id}", book.Id);
         return existingForecast;
     }
 
@@ -82,11 +77,11 @@ public class LibraryRepository(
 
     public async Task<IEnumerable<Member>> GetMembersAsync(string? name, DateOnly? date, bool include = false)
     {
-        _logger.LogInformation("Retrieving members based on name or date");
+        logger.LogInformation("Retrieving members based on name or date");
 
         if (include)
         {
-            var members = await _context.Members
+            var members = await context.Members
            .Include(b => b.LoanedBooks).ThenInclude(lb => lb.Book)
            .Where(b =>
                (!date.HasValue || b.JoinedDate == date) &&
@@ -98,7 +93,7 @@ public class LibraryRepository(
         }
         else
         {
-            var members = await _context.Members
+            var members = await context.Members
            .Where(b =>
                (!date.HasValue || b.JoinedDate == date) &&
                (string.IsNullOrEmpty(name) || b.Name.ToLower() == name.ToLower()))
@@ -116,11 +111,11 @@ public class LibraryRepository(
     /// <returns></returns>
     public async Task<Guid> AddMemberAsync(Member member)
     {
-        _logger.LogInformation("Adding a new member to the library");
+        logger.LogInformation("Adding a new member to the library");
 
-        _context.Members.Add(member);
+        context.Members.Add(member);
 
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
 
         return member.Id;
     }
@@ -131,8 +126,8 @@ public class LibraryRepository(
 
     public async Task<IEnumerable<LoanBook>> GetLoanBooksAsync(string? bookName, string? memberName)
     {
-        _logger.LogInformation("Retrieving loaned books based on book name or member name");
-        var books = await _context.LoanBooks
+        logger.LogInformation("Retrieving loaned books based on book name or member name");
+        var books = await context.LoanBooks
             .Include(b => b.Book).ThenInclude(bk => bk.BookStocks)
             .Include(b => b.Member)
             .Where(b =>
@@ -151,11 +146,11 @@ public class LibraryRepository(
     /// <returns></returns>
     public async Task<Guid> AddLoanBookAsync(LoanBook loanBook)
     {
-        _logger.LogInformation("Adding a new loaned book record");
+        logger.LogInformation("Adding a new loaned book record");
 
-        _context.LoanBooks.Add(loanBook);
+        context.LoanBooks.Add(loanBook);
 
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
 
         return loanBook.Id;
     }

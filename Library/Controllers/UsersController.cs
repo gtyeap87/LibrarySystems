@@ -16,9 +16,6 @@ namespace Library.Controllers
         IUserService userService
         ) : ControllerBase
     {
-        private readonly ILogger<UsersController> _logger = logger;
-        private readonly IUserService _userService = userService;
-
         /// <summary>
         /// Register users
         /// </summary>
@@ -33,27 +30,27 @@ namespace Library.Controllers
         {
             try
             {
-                _logger.LogInformation("Register user");
+                logger.LogInformation("Register user");
 
-                var newId = await _userService.RegisterUserAsync(request);
+                var newId = await userService.RegisterUserAsync(request);
 
-                if (_logger.IsEnabled(LogLevel.Information))
-                    _logger.LogInformation("User registered with id: {UserId}", newId);
+                if (logger.IsEnabled(LogLevel.Information))
+                    logger.LogInformation("User registered with id: {UserId}", newId);
 
                 return StatusCode(StatusCodes.Status201Created, newId);
             }
             catch (UnauthorizedAccessException ex)
             {
-                if (_logger.IsEnabled(LogLevel.Error))
+                if (logger.IsEnabled(LogLevel.Error))
                 {
-                    _logger.LogError(ex, "Unauthorized login attempt by user");
+                    logger.LogError(ex, "Unauthorized login attempt by user");
                 }
 
                 return Unauthorized();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while registering new user");
+                logger.LogError(ex, "Error occurred while registering new user");
 
                 return BadRequest();
             }
@@ -67,9 +64,9 @@ namespace Library.Controllers
         {
             try
             {
-                _logger.LogInformation("Read user");
+                logger.LogInformation("Read user");
 
-                var result = await _userService.ReadUserAsync(id);
+                var result = await userService.ReadUserAsync(id);
                 var user = result.User;
                 var roles = result.Roles;
 
@@ -87,14 +84,14 @@ namespace Library.Controllers
                         Roles: roles
                     );
 
-                if (_logger.IsEnabled(LogLevel.Information))
-                    _logger.LogInformation("User with id: {Id} has get user data", id);
+                if (logger.IsEnabled(LogLevel.Information))
+                    logger.LogInformation("User with id: {Id} has get user data", id);
 
                 return Ok(userDto);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while registering new user");
+                logger.LogError(ex, "Error occurred while registering new user");
 
                 return BadRequest();
             }
@@ -115,18 +112,18 @@ namespace Library.Controllers
         {
             try
             {
-                _logger.LogInformation("deleting user");
+                logger.LogInformation("deleting user");
 
-                await _userService.DeleteUserAsync(id);
+                await userService.DeleteUserAsync(id);
 
-                if (_logger.IsEnabled(LogLevel.Information))
-                    _logger.LogInformation("Deleted user with id {DeleteId}", id);
+                if (logger.IsEnabled(LogLevel.Information))
+                    logger.LogInformation("Deleted user with id {DeleteId}", id);
 
                 return NoContent();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while deleting new user");
+                logger.LogError(ex, "Error occurred while deleting new user");
 
                 return BadRequest();
             }
@@ -145,29 +142,29 @@ namespace Library.Controllers
         {
             try
             {
-                _logger.LogInformation("login user");
+                logger.LogInformation("login user");
 
-                var accessToken = await _userService.LoginUserAsync(request);
+                var accessToken = await userService.LoginUserAsync(request);
 
-                if (_logger.IsEnabled(LogLevel.Information))
+                if (logger.IsEnabled(LogLevel.Information))
                 {
-                    _logger.LogInformation("user has successfully logged in");
+                    logger.LogInformation("user has successfully logged in");
                 }
 
                 return Ok(accessToken);
             }
             catch (UnauthorizedAccessException ex)
             {
-                if (_logger.IsEnabled(LogLevel.Error))
+                if (logger.IsEnabled(LogLevel.Error))
                 {
-                    _logger.LogError(ex, "Unauthorized login attempt for user");
+                    logger.LogError(ex, "Unauthorized login attempt for user");
                 }
 
                 return Unauthorized();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while login user");
+                logger.LogError(ex, "Error occurred while login user");
 
                 return BadRequest();
             }
@@ -188,25 +185,25 @@ namespace Library.Controllers
         {
             try
             {
-                _logger.LogInformation("Update user");
+                logger.LogInformation("Update user");
 
-                await _userService.UpdateUserAsync(id, request);
+                await userService.UpdateUserAsync(id, request);
 
-                if (_logger.IsEnabled(LogLevel.Information))
-                    _logger.LogInformation("User with id: {Id} has updated user", id);
+                if (logger.IsEnabled(LogLevel.Information))
+                    logger.LogInformation("User with id: {Id} has updated user", id);
 
                 return NoContent();
             }
             catch (UnauthorizedAccessException ex)
             {
-                if (_logger.IsEnabled(LogLevel.Error))
-                    _logger.LogError(ex, "Unauthorized attempt for user: {LoginId}", id);
+                if (logger.IsEnabled(LogLevel.Error))
+                    logger.LogError(ex, "Unauthorized attempt for user: {LoginId}", id);
 
                 return Unauthorized();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while updating user");
+                logger.LogError(ex, "Error occurred while updating user");
 
                 return BadRequest();
             }
@@ -225,26 +222,26 @@ namespace Library.Controllers
         {
             try
             {
-                _logger.LogInformation("Change user password");
+                logger.LogInformation("Change user password");
 
-                await _userService.ChangePasswordAsync(request);
+                await userService.ChangePasswordAsync(request);
 
-                if (_logger.IsEnabled(LogLevel.Information))
+                if (logger.IsEnabled(LogLevel.Information))
                 {
-                    _logger.LogInformation("User has changed the password");
+                    logger.LogInformation("User has changed the password");
                 }
 
                 return Ok();
             }
             catch (InvalidOperationException ex)
             {
-                _logger.LogError(ex, "password doesnt meet criterias");
+                logger.LogError(ex, "password doesnt meet criterias");
 
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while changing password");
+                logger.LogError(ex, "Error occurred while changing password");
 
                 return BadRequest();
             }

@@ -9,10 +9,8 @@ public class CreateBulkMembersCommandHandler(
     ICommandRepo<Model.Member> memberCommandRepo
     ) : IRequestHandler<CreateBulkMembersCommand>
 {
-    private readonly ICommandRepo<Model.Member> _memberCommandRepo = memberCommandRepo;
-
     public async Task Handle(CreateBulkMembersCommand command, CancellationToken cancellationToken)
     {
-        await _memberCommandRepo.BulkInsertAsync(command.Members);
+        await memberCommandRepo.BulkInsertAsync(command.Members);
     }
 }

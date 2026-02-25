@@ -16,9 +16,6 @@ namespace Library.Controllers
         ILogger<LibrariesController> logger,
         ILibraryService service) : ControllerBase
     {
-        private readonly ILogger<LibrariesController> _logger = logger;
-        private readonly ILibraryService _service = service;
-
         #region Book
 
         /// <summary>
@@ -33,8 +30,8 @@ namespace Library.Controllers
         {
             try
             {
-                _logger.LogInformation("GetBooksAsync");
-                var books = await _service.ReadFullBooksAsync(genre, name, new PaginationRequestDto { PageSize = pageSize, PageNumber = pageNumber });
+                logger.LogInformation("GetBooksAsync");
+                var books = await service.ReadFullBooksAsync(genre, name, new PaginationRequestDto { PageSize = pageSize, PageNumber = pageNumber });
                 var bookDtos = books.Select(b => new BookDto
                 (
                     b.Genre,
@@ -46,7 +43,7 @@ namespace Library.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while reading books");
+                logger.LogError(ex, "Error occurred while reading books");
                 return BadRequest();
             }
         }
@@ -58,12 +55,12 @@ namespace Library.Controllers
         [RequirePermission(Permissions.CreateBooks)]
         public async Task<IActionResult> CreateBookAsync([FromBody] BookRequest request)
         {
-            _logger.LogInformation("Add new book to library");
+            logger.LogInformation("Add new book to library");
 
-            var newId = await _service.CreateBookAsync(request);
+            var newId = await service.CreateBookAsync(request);
 
-            if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Added {Qty} new book name {Name} with ID: {Id}", request.Qty, request.Book.Name, newId);
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation("Added {Qty} new book name {Name} with ID: {Id}", request.Qty, request.Book.Name, newId);
 
             return StatusCode(StatusCodes.Status201Created, newId);
         }
@@ -81,15 +78,15 @@ namespace Library.Controllers
         [RequirePermission(Permissions.CreateBooks)]
         public async Task<IActionResult> CreateBooksAsync([FromBody] BooksRequest request)
         {
-            _logger.LogInformation("Add new books to library");
+            logger.LogInformation("Add new books to library");
 
-            await _service.CreateBooksAsync(request);
+            await service.CreateBooksAsync(request);
 
-            if (_logger.IsEnabled(LogLevel.Information))
+            if (logger.IsEnabled(LogLevel.Information))
             {
                 foreach (var book in request.Books)
                 {
-                    _logger.LogInformation("Added new book name {Name}", book.Book.Name);
+                    logger.LogInformation("Added new book name {Name}", book.Book.Name);
                 }
             }
 
@@ -109,15 +106,15 @@ namespace Library.Controllers
         [RequirePermission(Permissions.CreateBooks)]
         public async Task<IActionResult> CreateBulkBooksAsync([FromBody] BooksRequest request)
         {
-            _logger.LogInformation("Add new books to library");
+            logger.LogInformation("Add new books to library");
 
-            await _service.CreateBulkBooksAsync(request);
+            await service.CreateBulkBooksAsync(request);
 
-            if (_logger.IsEnabled(LogLevel.Information))
+            if (logger.IsEnabled(LogLevel.Information))
             {
                 foreach (var book in request.Books)
                 {
-                    _logger.LogInformation("Added new book name {Name}", book.Book.Name);
+                    logger.LogInformation("Added new book name {Name}", book.Book.Name);
                 }
             }
 
@@ -131,12 +128,12 @@ namespace Library.Controllers
         [RequirePermission(Permissions.UpdateBooks)]
         public async Task<IActionResult> UpdateBookAsync([FromBody] BookRequest request)
         {
-            _logger.LogInformation("update book information");
+            logger.LogInformation("update book information");
 
-            var newId = await _service.UpdateBookAsync(request);
+            var newId = await service.UpdateBookAsync(request);
 
-            if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Update {Qty} new book name {Name} with ID: {Id}", request.Qty, request.Book.Name, newId);
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation("Update {Qty} new book name {Name} with ID: {Id}", request.Qty, request.Book.Name, newId);
 
             return NoContent();
         }
@@ -149,15 +146,15 @@ namespace Library.Controllers
         [RequirePermission(Permissions.UpdateBooks)]
         public async Task<IActionResult> UpdateBulkBooksAsync([FromBody] BooksRequest request)
         {
-            _logger.LogInformation("update books information");
+            logger.LogInformation("update books information");
 
             if (request == null)
                 return BadRequest("no patch data.");
 
-            await _service.UpdateBulkBooksAsync(request);
+            await service.UpdateBulkBooksAsync(request);
 
-            if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Books updated");
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation("Books updated");
 
             return NoContent();
         }
@@ -171,21 +168,21 @@ namespace Library.Controllers
         {
             try
             {
-                _logger.LogInformation("delete book information");
+                logger.LogInformation("delete book information");
 
                 if (id == Guid.Empty)
                     return BadRequest("Id not valid.");
 
-                await _service.DeleteBookAsync(id);
+                await service.DeleteBookAsync(id);
 
-                if (_logger.IsEnabled(LogLevel.Information))
-                    _logger.LogInformation("Deleted book with ID: {Id}", id);
+                if (logger.IsEnabled(LogLevel.Information))
+                    logger.LogInformation("Deleted book with ID: {Id}", id);
 
                 return NoContent();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while deleting book");
+                logger.LogError(ex, "Error occurred while deleting book");
                 return BadRequest();
             }
         }
@@ -205,9 +202,9 @@ namespace Library.Controllers
         [RequirePermission(Permissions.ReadMembers)]
         public async Task<IActionResult> ReadMembersAsync([FromQuery] string? name, DateOnly? date, int pageSize, int pageNumber)
         {
-            _logger.LogInformation("GetMembersAsync");
+            logger.LogInformation("GetMembersAsync");
 
-            var members2 = await _service.ReadMembersOnlyAsync(name, date, new PaginationRequestDto { PageSize = pageSize, PageNumber = pageNumber });
+            var members2 = await service.ReadMembersOnlyAsync(name, date, new PaginationRequestDto { PageSize = pageSize, PageNumber = pageNumber });
 
             var membersDto = members2.Select(m => new MemberDto
             (
@@ -231,11 +228,11 @@ namespace Library.Controllers
         [RequirePermission(Permissions.CreateMembers)]
         public async Task<IActionResult> CreateMemberAsync(MemberRequest request)
         {
-            _logger.LogInformation("Add new member to library");
-            var newId = await _service.CreateMemberAsync(request);
+            logger.LogInformation("Add new member to library");
+            var newId = await service.CreateMemberAsync(request);
 
-            if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Added new member name {Name} with ID: {Id}", request.Member.Name, newId);
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation("Added new member name {Name} with ID: {Id}", request.Member.Name, newId);
 
             return StatusCode(StatusCodes.Status201Created, newId);
         }
@@ -253,15 +250,15 @@ namespace Library.Controllers
         [RequirePermission(Permissions.CreateMembers)]
         public async Task<IActionResult> CreateMembersAsync(MembersRequest request)
         {
-            _logger.LogInformation("Add new members to library");
+            logger.LogInformation("Add new members to library");
 
-            await _service.CreateMembersAsync(request);
+            await service.CreateMembersAsync(request);
 
-            if (_logger.IsEnabled(LogLevel.Information))
+            if (logger.IsEnabled(LogLevel.Information))
             {
                 foreach (var req in request.Members)
                 {
-                    _logger.LogInformation("Added new member name {Name}", req.Member.Name);
+                    logger.LogInformation("Added new member name {Name}", req.Member.Name);
                 }
             }
 
@@ -281,15 +278,15 @@ namespace Library.Controllers
         [RequirePermission(Permissions.CreateMembers)]
         public async Task<IActionResult> CreateBulkMembersAsync(MembersRequest request)
         {
-            _logger.LogInformation("Add new members to library");
+            logger.LogInformation("Add new members to library");
 
-            await _service.CreateBulkMembersAsync(request);
+            await service.CreateBulkMembersAsync(request);
 
-            if (_logger.IsEnabled(LogLevel.Information))
+            if (logger.IsEnabled(LogLevel.Information))
             {
                 foreach (var req in request.Members)
                 {
-                    _logger.LogInformation("Added new member name {Name}", req.Member.Name);
+                    logger.LogInformation("Added new member name {Name}", req.Member.Name);
                 }
             }
 
@@ -303,13 +300,13 @@ namespace Library.Controllers
         [RequirePermission(Permissions.UpdateMembers)]
         public async Task<IActionResult> UpdateMemberAsync(Guid id, [FromBody] MemberRequest request)
         {
-            _logger.LogInformation("update member information");
+            logger.LogInformation("update member information");
 
-            var updatedMember = await _service.UpdateMemberAsync(request);
+            var updatedMember = await service.UpdateMemberAsync(request);
 
-            if (_logger.IsEnabled(LogLevel.Information))
+            if (logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Update member name {Name} with ID: {Id}", updatedMember.Name, id);
+                logger.LogInformation("Update member name {Name} with ID: {Id}", updatedMember.Name, id);
             }
 
             return NoContent();
@@ -323,15 +320,15 @@ namespace Library.Controllers
         [RequirePermission(Permissions.UpdateMembers)]
         public async Task<IActionResult> UpdateBulkMembersAsync([FromBody] MembersRequest request)
         {
-            _logger.LogInformation("update members information");
+            logger.LogInformation("update members information");
 
             if (request == null)
                 return BadRequest("no patch data.");
 
-            await _service.UpdateBulkMembersAsync(request);
+            await service.UpdateBulkMembersAsync(request);
 
-            if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Members updated");
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation("Members updated");
 
             return NoContent();
         }
@@ -347,9 +344,9 @@ namespace Library.Controllers
             if (id == Guid.Empty)
                 return BadRequest("Id is required.");
 
-            _logger.LogInformation("delete member information");
+            logger.LogInformation("delete member information");
 
-            await _service.DeleteMemberAsync(id);
+            await service.DeleteMemberAsync(id);
 
             LogDeleted(id);
 
@@ -385,8 +382,8 @@ namespace Library.Controllers
         {
             try
             {
-                _logger.LogInformation("GetLoanBooksAsync");
-                var loanBooks = await _service.ReadLoanBooksAsync(bookName, memberName, new PaginationRequestDto { PageSize = pageSize, PageNumber = pageNumber });
+                logger.LogInformation("GetLoanBooksAsync");
+                var loanBooks = await service.ReadLoanBooksAsync(bookName, memberName, new PaginationRequestDto { PageSize = pageSize, PageNumber = pageNumber });
                 var loanBookDtos = loanBooks.Select(lb => new LoanBookDto
                 (
                     lb?.Book?.Name!,
@@ -404,7 +401,7 @@ namespace Library.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while read loan books");
+                logger.LogError(ex, "Error occurred while read loan books");
                 return BadRequest();
             }
         }
@@ -422,11 +419,11 @@ namespace Library.Controllers
         [RequirePermission(Permissions.CreateLoanBooks)]
         public async Task<IActionResult> CreateLoanBookAsync(LoanBookRequest request)
         {
-            _logger.LogInformation("Add new loan book record");
-            var newId = await _service.CreateLoanBookAsync(request);
+            logger.LogInformation("Add new loan book record");
+            var newId = await service.CreateLoanBookAsync(request);
 
-            if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Added new loan book record with ID: {Id}", newId);
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation("Added new loan book record with ID: {Id}", newId);
 
             return StatusCode(StatusCodes.Status201Created, newId);
         }
@@ -438,12 +435,12 @@ namespace Library.Controllers
         [RequirePermission(Permissions.CreateLoanBooks)]
         public async Task<IActionResult> CreateBulkLoanBooksAsync(LoanBooksRequest request)
         {
-            _logger.LogInformation("Add new loan books record");
+            logger.LogInformation("Add new loan books record");
 
-            await _service.CreateBulkLoanBooksAsync(request);
+            await service.CreateBulkLoanBooksAsync(request);
 
-            if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Added new loan books");
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation("Added new loan books");
 
             return NoContent();
         }
@@ -455,12 +452,12 @@ namespace Library.Controllers
         [RequirePermission(Permissions.UpdateLoanBooks)]
         public async Task<IActionResult> UpdateLoanedBookAsync([FromBody] LoanBookRequest request)
         {
-            _logger.LogInformation("update returned date information");
+            logger.LogInformation("update returned date information");
 
-            var updatedLoanedBook = await _service.UpdateLoanedBookAsync(request);
+            var updatedLoanedBook = await service.UpdateLoanedBookAsync(request);
 
-            if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Update book name {Name} returned by member named {MemberName} on {ReturnedDate}",
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation("Update book name {Name} returned by member named {MemberName} on {ReturnedDate}",
                     updatedLoanedBook?.Book?.Name, updatedLoanedBook?.Member?.Name, DateTime.Now.Date);
 
             return NoContent();
@@ -474,12 +471,12 @@ namespace Library.Controllers
         [RequirePermission(Permissions.UpdateLoanBooks)]
         public async Task<IActionResult> UpdateBulkLoanBooksAsync([FromBody] LoanBooksRequest request)
         {
-            _logger.LogInformation("update loan books information");
+            logger.LogInformation("update loan books information");
 
-            await _service.UpdateBulkLoanedBooksAsync(request);
+            await service.UpdateBulkLoanedBooksAsync(request);
 
-            if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Loan books updated");
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation("Loan books updated");
 
             return NoContent();
         }
@@ -495,10 +492,10 @@ namespace Library.Controllers
         {
             try
             {
-                _logger.LogInformation("GetAllCountAsync");
-                var members = await _service.ReadMembersOnlyAsync(null, null, new PaginationRequestDto() { PageNumber = 1, PageSize = int.MaxValue });
-                var books = await _service.ReadBooksAsync(null, null, new PaginationRequestDto() { PageNumber = 1, PageSize = int.MaxValue });
-                var loanBooks = await _service.ReadLoanBooksAsync(null, null, new PaginationRequestDto() { PageNumber = 1, PageSize = int.MaxValue });
+                logger.LogInformation("GetAllCountAsync");
+                var members = await service.ReadMembersOnlyAsync(null, null, new PaginationRequestDto() { PageNumber = 1, PageSize = int.MaxValue });
+                var books = await service.ReadBooksAsync(null, null, new PaginationRequestDto() { PageNumber = 1, PageSize = int.MaxValue });
+                var loanBooks = await service.ReadLoanBooksAsync(null, null, new PaginationRequestDto() { PageNumber = 1, PageSize = int.MaxValue });
                 var totalLoanedBooks = loanBooks.Count(x => x.ReturnedDate == null);
 
                 var libraryDto = new LibraryDto(
@@ -511,7 +508,7 @@ namespace Library.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while read all count");
+                logger.LogError(ex, "Error occurred while read all count");
                 return BadRequest();
             }
         }
@@ -521,7 +518,7 @@ namespace Library.Controllers
         [ProducesResponseType(typeof(LibraryDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> ReadAllCount2Async()
         {
-            _logger.LogInformation("GetAllCount2Async");
+            logger.LogInformation("GetAllCount2Async");
 
             //TODO : implement new version logic here
 

@@ -20,37 +20,33 @@ namespace Library.Strategies
         IConfiguration configuration
         ) : IMemberStrategy
     {
-        private readonly ILibraryService _libraryService = libraryService;
-        private readonly ILogger<PremiumMember> _logger = logger;
-        private readonly IConfiguration _configuration = configuration;
-
         public async Task<Guid> AddMemberAsync(RegisterUserRequest request)
         {
             try
             {
-                _logger.LogInformation("Add new premium member to library");
+                logger.LogInformation("Add new premium member to library");
 
                 var memberRequest = new MemberRequest(
                   new Member()
                   {
                       Name = $"{request.FirstName} {request.LastName}",
                       JoinedDate = DateOnly.FromDateTime(DateTime.UtcNow),
-                      LibraryId = Guid.Parse(_configuration["Library:Id"]!)
+                      LibraryId = Guid.Parse(configuration["Library:Id"]!)
                   }
                 );
-                var newId = await _libraryService.CreateMemberAsync(memberRequest);
+                var newId = await libraryService.CreateMemberAsync(memberRequest);
 
-                if (_logger.IsEnabled(LogLevel.Information))
+                if (logger.IsEnabled(LogLevel.Information))
                 {
                     var name = $"{request.FirstName}{request.LastName}".Replace(Environment.NewLine, string.Empty);
-                    _logger.LogInformation("Added new premium member name {Name} with ID: {Id}", name, newId);
+                    logger.LogInformation("Added new premium member name {Name} with ID: {Id}", name, newId);
                 }
 
                 return newId;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while adding new premium member");
+                logger.LogError(ex, "Error occurred while adding new premium member");
                 return Guid.Empty;
             }
         }

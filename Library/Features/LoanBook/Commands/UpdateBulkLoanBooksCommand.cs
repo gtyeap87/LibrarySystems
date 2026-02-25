@@ -11,8 +11,6 @@ namespace Library.Features.LoanBook.Commands
         ICommandRepo<Model.LoanBook> loanBookCommandRepo
         ) : IRequestHandler<UpdateBulkLoanBooksCommand>
     {
-        private readonly ICommandRepo<Model.LoanBook> _loanBookCommandRepo = loanBookCommandRepo;
-
         public async Task Handle(UpdateBulkLoanBooksCommand command, CancellationToken cancellationToken)
         {
             var loanBooks = command.LoanBooks;
@@ -26,7 +24,7 @@ namespace Library.Features.LoanBook.Commands
                 nameof(Root.ModifiedAt)
             ];
             var options = new BulkConfig() { PropertiesToIncludeOnUpdate = includeLoanBookProps };
-            await _loanBookCommandRepo.BulkUpdateAsync(loanBooks, options);
+            await loanBookCommandRepo.BulkUpdateAsync(loanBooks, options);
         }
     }
 }

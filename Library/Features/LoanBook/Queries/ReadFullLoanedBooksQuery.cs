@@ -11,11 +11,9 @@ public record ReadFullLoanedBooksQuery(string? BookName, string? MemberName, Pag
 public class GetFullLoanedBooksQueryHandler(IQueryRepo<Model.LoanBook> queryRepo)
     : IRequestHandler<ReadFullLoanedBooksQuery, IEnumerable<Model.LoanBook>>
 {
-    private readonly IQueryRepo<Model.LoanBook> _memberQueryRepo = queryRepo;
-
     public async Task<IEnumerable<Model.LoanBook>> Handle(ReadFullLoanedBooksQuery command, CancellationToken cancellationToken)
     {
         var spec = new FullLoanedBookSpec(command.BookName, command.MemberName);
-        return await _memberQueryRepo.ListAsync(spec, command.Page);
+        return await queryRepo.ListAsync(spec, command.Page);
     }
 }

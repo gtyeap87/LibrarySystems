@@ -10,11 +10,9 @@ namespace Library.Features.Book.Commands
         ICommandRepo<BookStock> bookStockCommandRepo
         ) : IRequestHandler<UpdateBookStockCommand, BookStock>
     {
-        private readonly ICommandRepo<BookStock> _memberCommandRepo = bookStockCommandRepo;
-
         public async Task<BookStock> Handle(UpdateBookStockCommand command, CancellationToken cancellationToken)
         {
-            return await _memberCommandRepo.UpdateAsync(command.BookStock);
+            return await bookStockCommandRepo.UpdateAsync(command.BookStock);
         }
     }
 }

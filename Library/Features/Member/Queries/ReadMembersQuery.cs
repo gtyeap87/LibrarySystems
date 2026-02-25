@@ -9,11 +9,9 @@ public record ReadMembersQuery(string? Name, DateOnly? Date, PaginationRequestDt
 
 public class GetMembersQueryHandler(IQueryRepo<Model.Member> queryRepo) : IRequestHandler<ReadMembersQuery, IEnumerable<Model.Member>>
 {
-    private readonly IQueryRepo<Model.Member> _queryRepo = queryRepo;
-
     public async Task<IEnumerable<Model.Member>> Handle(ReadMembersQuery command, CancellationToken cancellationToken)
     {
         var spec = new MembersOnlySpec(command.Name, command.Date);
-        return await _queryRepo.ListAsync(spec, command.Page);
+        return await queryRepo.ListAsync(spec, command.Page);
     }
 }

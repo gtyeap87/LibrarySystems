@@ -9,8 +9,6 @@ namespace Library.Strategies
     /// <param name="strategies">Collection of available member strategies</param>
     public class MemberStrategyFactory(IEnumerable<IMemberStrategy> strategies) : IMemberStrategyFactory
     {
-        private readonly IEnumerable<IMemberStrategy> _strategies = strategies;
-
         public IMemberStrategy CreateStrategy(string role)
         {
             var strategy = GetStrategyByRole(role);
@@ -22,7 +20,7 @@ namespace Library.Strategies
         {
             return role switch
             {
-                Roles.Member => _strategies.FirstOrDefault(s => s.GetType().Name == nameof(PremiumMember)),
+                Roles.Member => strategies.FirstOrDefault(s => s.GetType().Name == nameof(PremiumMember)),
 
                 _ => null
             };

@@ -9,13 +9,11 @@ namespace Library.Features.LoanBook.Commands
         ICommandRepo<Model.LoanBook> loanBookCommandRepo
         ) : IRequestHandler<CreateBulkLoanBooksCommand>
     {
-        private readonly ICommandRepo<Model.LoanBook> _loanBookCommandRepo = loanBookCommandRepo;
-
         public async Task Handle(CreateBulkLoanBooksCommand command, CancellationToken cancellationToken)
         {
             var loanBooks = command.LoanBooks;
 
-            await _loanBookCommandRepo.BulkInsertAsync(loanBooks);
+            await loanBookCommandRepo.BulkInsertAsync(loanBooks);
         }
     }
 }

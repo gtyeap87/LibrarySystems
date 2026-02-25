@@ -18,11 +18,6 @@ namespace Library.Service
         IStrategyHandler strategyHandler
         ) : IUserService
     {
-        private readonly UserManager<ApplicationUser> _userManager = userManager;
-        private readonly ApplicationDbContext _dbContext = dbContext;
-        private readonly IConfiguration _configuration = configuration;
-        private readonly IStrategyHandler _strategyHandler = strategyHandler;
-
         public async Task<Guid> RegisterUserAsync(RegisterUserRequest request)
         {
             #region Validation
@@ -49,9 +44,9 @@ namespace Library.Service
 
             #region Execute
 
-            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            using var transaction = await dbContext.Database.BeginTransactionAsync();
 
-            var identityResult = await _userManager.CreateAsync(user, request.Password);
+            var identityResult = await userManager.CreateAsync(user, request.Password);
 
             if (!identityResult.Succeeded)
             {
@@ -59,7 +54,7 @@ namespace Library.Service
                 throw new InvalidOperationException($"User creation failed: {errors}");
             }
 
-            var roleResult = await _userManager.AddToRoleAsync(user, request.Role);
+            var roleResult = await userManager.AddToRoleAsync(user, request.Role);
             if (!roleResult.Succeeded)
             {
                 var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));
@@ -67,7 +62,7 @@ namespace Library.Service
             }
 
             //apply strategies
-            await _strategyHandler.HandleAsync(request);
+            await strategyHandler.HandleAsync(request);
 
             await transaction.CommitAsync();
 
@@ -78,18 +73,18 @@ namespace Library.Service
 
         public async Task<(ApplicationUser User, IList<string> Roles)> ReadUserAsync(Guid id)
         {
-            var user = await _userManager.FindByIdAsync(id.ToString()) ?? throw new InvalidOperationException("User not found.");
-            var roles = await _userManager.GetRolesAsync(user) ?? [];
+            var user = await userManager.FindByIdAsync(id.ToString()) ?? throw new InvalidOperationException("User not found.");
+            var roles = await userManager.GetRolesAsync(user) ?? [];
 
             return (user, roles);
         }
 
         public async Task DeleteUserAsync(Guid deleteUserId)
         {
-            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            using var transaction = await dbContext.Database.BeginTransactionAsync();
 
-            var deleteUser = await _userManager.FindByIdAsync(deleteUserId.ToString()) ?? throw new ArgumentException("Delete user not found.");
-            var deleteResult = await _userManager.DeleteAsync(deleteUser);
+            var deleteUser = await userManager.FindByIdAsync(deleteUserId.ToString()) ?? throw new ArgumentException("Delete user not found.");
+            var deleteResult = await userManager.DeleteAsync(deleteUser);
             if (!deleteResult.Succeeded)
             {
                 var errors = string.Join(", ", deleteResult.Errors.Select(e => e.Description));
@@ -101,22 +96,22 @@ namespace Library.Service
 
         public async Task<string> LoginUserAsync(LoginUserRequest request)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
+            var user = await userManager.FindByEmailAsync(request.Email);
 
-            if (user is null || !await _userManager.CheckPasswordAsync(user, request.Password))
+            if (user is null || !await userManager.CheckPasswordAsync(user, request.Password))
             {
                 throw new UnauthorizedAccessException();
             }
 
-            var roles = await _userManager.GetRolesAsync(user);
+            var roles = await userManager.GetRolesAsync(user);
 
-            var secretkey = _configuration["Jwt:SecretKey"]!;
+            var secretkey = configuration["Jwt:SecretKey"]!;
             var signingKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretkey));
             var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
             var permissions = await (
-                from role in _dbContext.Roles
-                join claim in _dbContext.RoleClaims on role.Id equals claim.RoleId
+                from role in dbContext.Roles
+                join claim in dbContext.RoleClaims on role.Id equals claim.RoleId
                 where roles.Contains(role.Name!) && claim.ClaimType == CustomClaimTypes.Permissions
                 select claim.ClaimValue
                 )
@@ -136,9 +131,9 @@ namespace Library.Service
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Issuer = _configuration["Jwt:Issuer"],
-                Audience = _configuration["Jwt:Audience"],
-                Expires = DateTime.UtcNow.AddMinutes(_configuration.GetValue<int>("Jwt:ExpiryInMinutes")),
+                Issuer = configuration["Jwt:Issuer"],
+                Audience = configuration["Jwt:Audience"],
+                Expires = DateTime.UtcNow.AddMinutes(configuration.GetValue<int>("Jwt:ExpiryInMinutes")),
                 SigningCredentials = credentials
             };
 
@@ -150,7 +145,7 @@ namespace Library.Service
 
         public async Task UpdateUserAsync(Guid id, UpdateUserRequest request)
         {
-            var user = await _userManager.FindByIdAsync(id.ToString()) ?? throw new InvalidOperationException("User not found.");
+            var user = await userManager.FindByIdAsync(id.ToString()) ?? throw new InvalidOperationException("User not found.");
 
             user.FirstName = request.FirstName switch
             {
@@ -197,9 +192,9 @@ namespace Library.Service
             if (request.LockoutEnd is not null)
                 user.LockoutEnd = DateTime.UtcNow.AddYears(1);
 
-            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            using var transaction = await dbContext.Database.BeginTransactionAsync();
 
-            var result = await _userManager.UpdateAsync(user);
+            var result = await userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
@@ -211,16 +206,16 @@ namespace Library.Service
 
         public async Task ChangePasswordAsync(ChangePasswordRequest request)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email) ?? throw new UnauthorizedAccessException();
+            var user = await userManager.FindByEmailAsync(request.Email) ?? throw new UnauthorizedAccessException();
 
-            if (!await _userManager.CheckPasswordAsync(user, request.Password))
+            if (!await userManager.CheckPasswordAsync(user, request.Password))
             {
                 throw new InvalidOperationException("Wrong old password");
             }
 
             await ValidatePassword(user, request.NewPassword);
 
-            var result = await _userManager.ChangePasswordAsync(user, request.Password, request.NewPassword);
+            var result = await userManager.ChangePasswordAsync(user, request.Password, request.NewPassword);
             if (!result.Succeeded)
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
@@ -231,7 +226,7 @@ namespace Library.Service
         private async Task ValidatePassword(ApplicationUser user, string newPasword)
         {
             var passwordValidator = new PasswordValidator<ApplicationUser>();
-            var passwordValidationResult = await passwordValidator.ValidateAsync(_userManager, user, newPasword);
+            var passwordValidationResult = await passwordValidator.ValidateAsync(userManager, user, newPasword);
 
             if (!passwordValidationResult.Succeeded)
             {

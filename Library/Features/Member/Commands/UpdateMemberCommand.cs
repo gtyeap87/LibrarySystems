@@ -9,11 +9,9 @@ namespace Library.Features.Member.Commands
         ICommandRepo<Model.Member> memberCommandRepo
         ) : IRequestHandler<UpdateMemberCommand, Model.Member>
     {
-        private readonly ICommandRepo<Model.Member> _memberCommandRepo = memberCommandRepo;
-
         public async Task<Model.Member> Handle(UpdateMemberCommand command, CancellationToken cancellationToken)
         {
-            return await _memberCommandRepo.UpdateAsync(command.Member);
+            return await memberCommandRepo.UpdateAsync(command.Member);
         }
     }
 }

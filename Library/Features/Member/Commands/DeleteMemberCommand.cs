@@ -7,37 +7,26 @@ namespace Library.Features.Member.Commands
 {
     public record DeleteMemberCommand(Guid MemberId, PaginationRequestDto Page) : IRequest;
 
-    public class DeleteMemberCommandHandler : IRequestHandler<DeleteMemberCommand>
+    public class DeleteMemberCommandHandler(
+        ICommandRepo<Model.Member> memberCommandRepo,
+        IQueryRepo<Model.Member> memberQueryRepo,
+        IQueryRepo<Model.LoanBook> loanBookQueryRepo
+            ) : IRequestHandler<DeleteMemberCommand>
     {
-        private readonly ICommandRepo<Model.Member> _memberCommandRepo;
-        private readonly IQueryRepo<Model.Member> _memberQueryRepo;
-        private readonly IQueryRepo<Model.LoanBook> _loanBookQueryRepo;
-
-        public DeleteMemberCommandHandler(
-            ICommandRepo<Model.Member> memberCommandRepo,
-            IQueryRepo<Model.Member> memberQueryRepo,
-            IQueryRepo<Model.LoanBook> loanBookQueryRepo
-            )
-        {
-            _memberCommandRepo = memberCommandRepo;
-            _memberQueryRepo = memberQueryRepo;
-            _loanBookQueryRepo = loanBookQueryRepo;
-        }
-
         public async Task Handle(DeleteMemberCommand command, CancellationToken cancellationToken)
         {
-            var member = await _memberQueryRepo.GetByIdAsync(command.MemberId)
+            var member = await memberQueryRepo.GetByIdAsync(command.MemberId)
                 ?? throw new KeyNotFoundException($"Member with ID {command.MemberId} not found.");
 
             var spec = new FullLoanedBookSpec(null, member.Name);
-            var activeLoans = await _loanBookQueryRepo.ListAsync(spec, command.Page);
+            var activeLoans = await loanBookQueryRepo.ListAsync(spec, command.Page);
 
             if (activeLoans.Any())
             {
                 throw new InvalidOperationException("Cannot delete member with active loans.");
             }
 
-            await _memberCommandRepo.DeleteAsync(member);
+            await memberCommandRepo.DeleteAsync(member);
         }
     }
 }
