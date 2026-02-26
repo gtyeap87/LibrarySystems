@@ -12,6 +12,8 @@ public class Book : Root, IRoot
     public Guid LibraryId { get; set; }
     public ICollection<BookStock> BookStocks { get; set; } = [];
     public required Genre Genre { get; set; }
+
+    [MaxLength(100)]
     public required string Name { get; set; }
 
     [Timestamp]
