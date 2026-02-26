@@ -25,6 +25,7 @@ Database
 
 Log
 - Build-in Logging
+- Might use Structure log like serilog when need to move up to production.
 
 Repository design
   1. ~Traditional Repository~
@@ -56,16 +57,17 @@ V1
 V2
 - Container
 - Microservice
-- Blazor (Web)
 
 V3
+- Clean Architecture
+
+V4
 - Desktop version
 - Minimal API
 
-V4
+V5
 - Angular (Web)
 - Vue.js (Web)
 - Mobile (Maui?)
+- Blazor (Web)
 
-V5
-- Clean Architecture
