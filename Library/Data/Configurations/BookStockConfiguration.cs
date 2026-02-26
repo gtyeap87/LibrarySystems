@@ -21,9 +21,12 @@ public class BookStockConfiguration : IEntityTypeConfiguration<BookStock>
               .IsRowVersion();
 
         // Relationship: BookStock → Book (many-to-one)
-        entity.HasOne<Book>()
+        entity.HasOne(e => e.Book)
               .WithMany(b => b.BookStocks)
               .HasForeignKey(e => e.BookId)
               .OnDelete(DeleteBehavior.Cascade);
+
+        entity.Navigation(e => e.Book)
+              .AutoInclude();
     }
 }

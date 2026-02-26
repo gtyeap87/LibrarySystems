@@ -31,8 +31,8 @@ public class MemberConfiguration : IEntityTypeConfiguration<Member>
 
         // Relationship: Member → LoanBook (one-to-many)
         entity.HasMany(e => e.LoanedBooks)
-              .WithOne()
+              .WithOne(lb => lb.Member)
               .HasForeignKey(lb => lb.MemberId)
-              .OnDelete(DeleteBehavior.Cascade);
+              .OnDelete(DeleteBehavior.Restrict);
     }
 }

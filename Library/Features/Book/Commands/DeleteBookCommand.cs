@@ -8,25 +8,25 @@ namespace Library.Features.Book.Commands
     public record DeleteBookCommand(Guid BookId, PaginationRequestDto Page) : IRequest;
 
     public class DeleteBookCommandHandler(
-        ICommandRepo<Model.Book> memberCommandRepo,
-        IQueryRepo<Model.Book> memberQueryRepo,
+        ICommandRepo<Model.Book> bookCommandRepo,
+        IQueryRepo<Model.Book> bookQueryRepo,
         IQueryRepo<Model.LoanBook> loanBookQueryRepo
         ) : IRequestHandler<DeleteBookCommand>
     {
         public async Task Handle(DeleteBookCommand command, CancellationToken cancellationToken)
         {
-            var member = await memberQueryRepo.GetByIdAsync(command.BookId)
+            var book = await bookQueryRepo.GetByIdAsync(command.BookId)
                 ?? throw new KeyNotFoundException($"Book with ID {command.BookId} not found.");
 
-            var spec = new FullLoanedBookSpec(null, member.Name);
+            var spec = new FullLoanedBookSpec(book.Name, null);
             var activeLoans = await loanBookQueryRepo.ListAsync(spec, command.Page);
 
             if (activeLoans.Any())
             {
-                throw new InvalidOperationException("Cannot delete member with active loans.");
+                throw new InvalidOperationException("Cannot delete book while book still under loan.");
             }
 
-            await memberCommandRepo.DeleteAsync(member);
+            await bookCommandRepo.DeleteAsync(book);
         }
     }
 }

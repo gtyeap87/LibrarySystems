@@ -29,11 +29,5 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
               .WithMany(l => l.Books)
               .HasForeignKey(e => e.LibraryId)
               .OnDelete(DeleteBehavior.Cascade);
-
-        // Relationship: Book → BookStock (one-to-many)
-        entity.HasMany(e => e.BookStocks)
-              .WithOne()
-              .HasForeignKey(bs => bs.BookId)
-              .OnDelete(DeleteBehavior.Cascade);
     }
 }

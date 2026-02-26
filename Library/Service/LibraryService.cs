@@ -75,7 +75,7 @@ namespace Library.Service
 
         public async Task DeleteBookAsync(Guid bookId)
         {
-            await mediator.Send(new DeleteBookCommand(bookId, new PaginationRequestDto() { PageNumber = 1, PageSize = int.MaxValue }));
+            await mediator.Send(new DeleteBookCommand(bookId, new PaginationRequestDto() { PageNumber = 1, PageSize = 10 }));
         }
 
         #endregion Book
