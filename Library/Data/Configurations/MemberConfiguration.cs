@@ -15,7 +15,8 @@ public class MemberConfiguration : IEntityTypeConfiguration<Member>
               .HasValueGenerator<UuidV7ValueGenerator>();
 
         entity.Property(e => e.Name)
-              .IsRequired();
+              .IsRequired()
+              .HasMaxLength(100);
 
         entity.Property(e => e.JoinedDate)
               .IsRequired();

@@ -19,7 +19,8 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
               .HasDefaultValue(Genre.Unknown);
 
         entity.Property(e => e.Name)
-              .IsRequired();
+              .IsRequired()
+              .HasMaxLength(100);
 
         entity.Property(e => e.RowVersion)
               .IsRowVersion();

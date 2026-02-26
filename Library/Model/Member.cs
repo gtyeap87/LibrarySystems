@@ -12,7 +12,6 @@ public class Member : Root, IRoot
     public Guid LibraryId { get; set; }
     public ICollection<LoanBook> LoanedBooks { get; set; } = [];
 
-    [MaxLength(100)]
     public required string Name { get; set; }
 
     public DateOnly JoinedDate { get; set; }

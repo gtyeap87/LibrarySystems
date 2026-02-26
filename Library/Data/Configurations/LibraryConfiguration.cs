@@ -15,7 +15,8 @@ public class LibraryConfiguration : IEntityTypeConfiguration<Model.Library>
               .HasValueGenerator<UuidV7ValueGenerator>();
 
         entity.Property(e => e.Location)
-              .IsRequired();
+              .IsRequired()
+              .HasMaxLength(100);
 
         // Relationship: Library → Members (one-to-many)
         entity.HasMany(e => e.Members)
