@@ -14,7 +14,7 @@ namespace Library.Factory
                 if (type == TranscationType.Create)
                 {
                     if (entity.Id == Guid.Empty)
-                        entity.Id = Guid.NewGuid();
+                        entity.Id = Guid.CreateVersion7();
 
                     if (entity.CreatedAt == default)
                         entity.CreatedAt = now;

@@ -52,7 +52,7 @@ namespace Library.Test
 
             var member = _fixture.Build<Member>()
                 .Without(m => m.LoanedBooks)
-                .With(m => m.LibraryId, Guid.NewGuid())
+                .With(m => m.LibraryId, Guid.CreateVersion7())
                 .With(m => m.JoinedDate, DateOnly.FromDateTime(DateTime.Now))
                 .Create();
 

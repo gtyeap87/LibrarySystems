@@ -80,7 +80,7 @@ namespace Library.Test
             var memberCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<Member>>>();
 
             // Mock command repo
-            var newGuid = Guid.NewGuid();
+            var newGuid = Guid.CreateVersion7();
             memberCommandRepoMock.Setup(x => x.AddAsync(
                 It.IsAny<Member>()))
                 .ReturnsAsync(newGuid);
@@ -207,7 +207,7 @@ namespace Library.Test
             var bookStockCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<BookStock>>>();
 
             // Mock command repo
-            var newBookId = Guid.NewGuid();
+            var newBookId = Guid.CreateVersion7();
             bookCommandRepoMock.Setup(x => x.AddAsync(
                 It.IsAny<Book>()))
                 .ReturnsAsync(newBookId);
@@ -270,7 +270,7 @@ namespace Library.Test
             // Arrange
             var bookCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<Book>>>();
 
-            var bookId = Guid.NewGuid();
+            var bookId = Guid.CreateVersion7();
             var book = _fixture.Build<Book>()
                 .Without(b => b.BookStocks)
                 .With(b => b.Id, bookId)
@@ -343,7 +343,7 @@ namespace Library.Test
 
             // Mock command repo
 
-            var newId = Guid.NewGuid();
+            var newId = Guid.CreateVersion7();
 
             loanBookCommandRepoMock.Setup(x => x.AddAsync(
                 It.IsAny<LoanBook>()))
@@ -402,7 +402,7 @@ namespace Library.Test
             // Arrange
             var loanBookCommandRepoMock = _fixture.Freeze<Mock<ICommandRepo<LoanBook>>>();
 
-            var id = Guid.NewGuid();
+            var id = Guid.CreateVersion7();
             var loanBook = _fixture.Build<LoanBook>()
                 .Without(lb => lb.Book)
                 .Without(lb => lb.Member)

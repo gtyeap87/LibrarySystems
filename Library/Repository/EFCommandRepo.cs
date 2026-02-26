@@ -1,5 +1,5 @@
 ﻿using EFCore.BulkExtensions;
-using Library.Data;
+using Library.Data.Contexts;
 using Library.Factory;
 
 namespace Library.Repository

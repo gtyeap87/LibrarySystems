@@ -1,0 +1,32 @@
+﻿using Library.Model;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace Library.Data.Configurations;
+
+public class LibraryConfiguration : IEntityTypeConfiguration<Model.Library>
+{
+    public void Configure(EntityTypeBuilder<Model.Library> entity)
+    {
+        entity.HasKey(e => e.Id);
+
+        entity.Property(x => x.Id)
+              .ValueGeneratedOnAdd()
+              .HasValueGenerator<UuidV7ValueGenerator>();
+
+        entity.Property(e => e.Location)
+              .IsRequired();
+
+        // Relationship: Library → Members (one-to-many)
+        entity.HasMany(e => e.Members)
+              .WithOne()
+              .HasForeignKey(m => m.LibraryId)
+              .OnDelete(DeleteBehavior.Cascade);
+
+        // Relationship: Library → Books (one-to-many)
+        entity.HasMany(e => e.Books)
+              .WithOne()
+              .HasForeignKey(b => b.LibraryId)
+              .OnDelete(DeleteBehavior.Cascade);
+    }
+}
