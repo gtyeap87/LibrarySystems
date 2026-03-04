@@ -1,4 +1,6 @@
-namespace Library.Strategies
+using Library.Strategies;
+
+namespace Library.Factory
 {
     /// <summary>
     /// Factory interface for creating member strategies based on role

@@ -1,6 +1,7 @@
 using Library.Data.Identity;
+using Library.Strategies;
 
-namespace Library.Strategies
+namespace Library.Factory
 {
     /// <summary>
     /// Factory implementation that maps roles to strategies

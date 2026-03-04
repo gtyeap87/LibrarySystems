@@ -5,6 +5,7 @@ using Library.Authorization;
 using Library.Data;
 using Library.Data.Contexts;
 using Library.Data.Identity;
+using Library.Factory;
 using Library.Features.Book.Queries;
 using Library.Middleware;
 using Library.Prototypes;
@@ -202,9 +203,9 @@ await app.UseGeneralExceptionHandler();
 await app.SetUpTestMinimalApi();
 
 app.UseHttpsRedirection();
-app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 app.MapControllers().RequireRateLimiting("FixedPolicy");
 
 await app.RunAsync();
