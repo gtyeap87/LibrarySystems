@@ -2,14 +2,14 @@
 using AutoFixture.AutoMoq;
 using EFCore.BulkExtensions;
 using FluentAssertions;
-using Library.Dto.Request;
+using Library.Dto.Requests;
 using Library.Features.Book.Commands;
 using Library.Features.LoanBook.Commands;
 using Library.Features.Member.Commands;
 using Library.Features.Member.Queries;
-using Library.Model;
-using Library.Repository;
-using Library.Service;
+using Library.Models;
+using Library.Repositories;
+using Library.Services;
 using MediatR;
 using Moq;
 
@@ -59,7 +59,7 @@ namespace Library.Test
             var libService = _fixture.Create<LibraryService>();
 
             // Act
-            var result = await libService.ReadMembersOnlyAsync(null, null, new Dto.Request.PaginationRequestDto());
+            var result = await libService.ReadMembersOnlyAsync(null, null, new Dto.Requests.PaginationRequestDto());
 
             // Assert
             Assert.NotNull(result);

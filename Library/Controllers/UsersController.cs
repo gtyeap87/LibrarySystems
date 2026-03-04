@@ -1,8 +1,8 @@
 ﻿using Asp.Versioning;
 using Library.Authorization;
-using Library.Dto.Identity;
-using Library.Dto.Request;
-using Library.Service;
+using Library.Dto.Identities;
+using Library.Dto.Requests;
+using Library.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Library.Controllers

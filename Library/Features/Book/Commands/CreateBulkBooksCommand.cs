@@ -1,6 +1,6 @@
-using Library.Dto.Request;
-using Library.Model;
-using Library.Repository;
+using Library.Dto.Requests;
+using Library.Models;
+using Library.Repositories;
 using MediatR;
 
 namespace Library.Features.Book.Commands
@@ -8,7 +8,7 @@ namespace Library.Features.Book.Commands
     public record CreateBulkBooksCommand(BooksRequest Request) : IRequest;
 
     public class CreateBulkBooksCommandHandler(
-        ICommandRepo<Model.Book> bookCommandRepo,
+        ICommandRepo<Models.Book> bookCommandRepo,
         ICommandRepo<BookStock> bookStockCommandRepo
         ) : IRequestHandler<CreateBulkBooksCommand>
     {

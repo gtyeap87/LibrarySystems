@@ -1,5 +1,5 @@
 ﻿using Library.Data.Contexts;
-using Library.Data.Identity;
+using Library.Data.Identities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Data;

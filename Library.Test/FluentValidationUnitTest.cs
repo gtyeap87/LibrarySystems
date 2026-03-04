@@ -3,8 +3,8 @@ using AutoFixture.AutoMoq;
 using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
-using Library.Dto.Request;
-using Library.Model;
+using Library.Dto.Requests;
+using Library.Models;
 using Microsoft.AspNetCore.Http;
 using Moq;
 

@@ -1,12 +1,12 @@
-using Library.Repository;
+using Library.Repositories;
 using MediatR;
 
 namespace Library.Features.LoanBook.Commands
 {
-    public record CreateLoanedBookCommand(Model.LoanBook LoanBook) : IRequest<Guid>;
+    public record CreateLoanedBookCommand(Models.LoanBook LoanBook) : IRequest<Guid>;
 
     public class AddLoanedBookCommandHandler(
-        ICommandRepo<Model.LoanBook> loanBookCommandRepo
+        ICommandRepo<Models.LoanBook> loanBookCommandRepo
         ) : IRequestHandler<CreateLoanedBookCommand, Guid>
     {
         public async Task<Guid> Handle(CreateLoanedBookCommand command, CancellationToken cancellationToken)

@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using Library.Model;
+using Library.Models;
 
 namespace Library.Validators
 {

@@ -1,20 +1,20 @@
 using EFCore.BulkExtensions;
-using Library.Model;
-using Library.Repository;
+using Library.Models;
+using Library.Repositories;
 using MediatR;
 
 namespace Library.Features.Member.Commands
 {
-    public record UpdateBulkMembersCommand(IEnumerable<Model.Member> Members) : IRequest;
+    public record UpdateBulkMembersCommand(IEnumerable<Models.Member> Members) : IRequest;
 
     public class UpdateBulkMembersCommandHandler(
-        ICommandRepo<Model.Member> memberCommandRepo
+        ICommandRepo<Models.Member> memberCommandRepo
         ) : IRequestHandler<UpdateBulkMembersCommand>
     {
         public async Task Handle(UpdateBulkMembersCommand command, CancellationToken cancellationToken)
         {
             var members = command.Members;
-            List<string> includeMemberProps = [nameof(Model.Member.Name), nameof(Model.Member.JoinedDate), nameof(Root.ModifiedAt)];
+            List<string> includeMemberProps = [nameof(Models.Member.Name), nameof(Models.Member.JoinedDate), nameof(Root.ModifiedAt)];
             var opt = new BulkConfig() { PropertiesToIncludeOnUpdate = includeMemberProps };
             await memberCommandRepo.BulkUpdateAsync(members, opt);
         }

@@ -1,5 +1,5 @@
 ﻿using Library.Data.Configurations;
-using Library.Model;
+using Library.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Library.Data.Contexts;
@@ -9,7 +9,7 @@ public class LibraryContext(DbContextOptions<LibraryContext> options) : DbContex
     public DbSet<Book> Books { get; set; }
     public DbSet<BookStock> BookStocks { get; set; }
     public DbSet<Member> Members { get; set; }
-    public DbSet<Model.Library> Libraries { get; set; }
+    public DbSet<Models.Library> Libraries { get; set; }
     public DbSet<LoanBook> LoanBooks { get; set; }
 
     /// <summary>

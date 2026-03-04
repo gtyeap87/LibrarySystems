@@ -1,4 +1,4 @@
-﻿using Library.Data.Identity;
+﻿using Library.Data.Identities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

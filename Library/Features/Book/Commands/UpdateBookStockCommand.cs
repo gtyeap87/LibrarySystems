@@ -1,5 +1,5 @@
-using Library.Model;
-using Library.Repository;
+using Library.Models;
+using Library.Repositories;
 using MediatR;
 
 namespace Library.Features.Book.Commands

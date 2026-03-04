@@ -1,15 +1,15 @@
-using Library.Repository;
+using Library.Repositories;
 using MediatR;
 
 namespace Library.Features.Member.Commands
 {
-    public record UpdateMemberCommand(Model.Member Member) : IRequest<Model.Member>;
+    public record UpdateMemberCommand(Models.Member Member) : IRequest<Models.Member>;
 
     public class UpdateMemberCommandHandler(
-        ICommandRepo<Model.Member> memberCommandRepo
-        ) : IRequestHandler<UpdateMemberCommand, Model.Member>
+        ICommandRepo<Models.Member> memberCommandRepo
+        ) : IRequestHandler<UpdateMemberCommand, Models.Member>
     {
-        public async Task<Model.Member> Handle(UpdateMemberCommand command, CancellationToken cancellationToken)
+        public async Task<Models.Member> Handle(UpdateMemberCommand command, CancellationToken cancellationToken)
         {
             return await memberCommandRepo.UpdateAsync(command.Member);
         }

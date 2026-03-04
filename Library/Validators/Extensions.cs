@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using Library.Dto.Request;
+using Library.Dto.Requests;
 using Library.Features.Book.Commands;
 using Library.Features.LoanBook.Commands;
 using Library.Features.Member.Commands;
-using Library.Model;
+using Library.Models;
 
 namespace Library.Validators
 {

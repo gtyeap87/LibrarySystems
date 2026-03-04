@@ -1,12 +1,11 @@
-﻿using Library.Model;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Library.Data.Configurations;
 
-public class LibraryConfiguration : IEntityTypeConfiguration<Model.Library>
+public class LibraryConfiguration : IEntityTypeConfiguration<Models.Library>
 {
-    public void Configure(EntityTypeBuilder<Model.Library> entity)
+    public void Configure(EntityTypeBuilder<Models.Library> entity)
     {
         entity.HasKey(e => e.Id);
 

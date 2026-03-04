@@ -1,16 +1,16 @@
-using Library.Dto.Request;
-using Library.Model;
-using Library.Repository;
-using Library.Specification;
+using Library.Dto.Requests;
+using Library.Models;
+using Library.Repositories;
+using Library.Specifications;
 using MediatR;
 
 namespace Library.Features.Book.Queries;
 
-public record ReadBooksQuery(Genre? Genre, string? Name, PaginationRequestDto Page) : IRequest<IEnumerable<Model.Book>>;
+public record ReadBooksQuery(Genre? Genre, string? Name, PaginationRequestDto Page) : IRequest<IEnumerable<Models.Book>>;
 
-public class GetBooksQueryHandler(IQueryRepo<Model.Book> queryRepo) : IRequestHandler<ReadBooksQuery, IEnumerable<Model.Book>>
+public class GetBooksQueryHandler(IQueryRepo<Models.Book> queryRepo) : IRequestHandler<ReadBooksQuery, IEnumerable<Models.Book>>
 {
-    public async Task<IEnumerable<Model.Book>> Handle(ReadBooksQuery query, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Models.Book>> Handle(ReadBooksQuery query, CancellationToken cancellationToken)
     {
         var spec = new BooksOnlySpec(query.Genre, query.Name);
         return await queryRepo.ListAsync(spec, query.Page);

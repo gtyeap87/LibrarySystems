@@ -1,4 +1,4 @@
-using Library.Model;
+using Library.Models;
 
 namespace Library.Dto;
 

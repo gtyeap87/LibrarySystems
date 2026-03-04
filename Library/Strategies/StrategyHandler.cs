@@ -1,5 +1,5 @@
-﻿using Library.Dto.Request;
-using Library.Factory;
+﻿using Library.Dto.Requests;
+using Library.Factories;
 
 namespace Library.Strategies
 {

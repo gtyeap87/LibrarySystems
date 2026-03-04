@@ -1,12 +1,12 @@
-using Library.Repository;
+using Library.Repositories;
 using MediatR;
 
 namespace Library.Features.LoanBook.Commands
 {
-    public record CreateBulkLoanBooksCommand(IEnumerable<Model.LoanBook> LoanBooks) : IRequest;
+    public record CreateBulkLoanBooksCommand(IEnumerable<Models.LoanBook> LoanBooks) : IRequest;
 
     public class CreateBulkLoanBooksCommandHandler(
-        ICommandRepo<Model.LoanBook> loanBookCommandRepo
+        ICommandRepo<Models.LoanBook> loanBookCommandRepo
         ) : IRequestHandler<CreateBulkLoanBooksCommand>
     {
         public async Task Handle(CreateBulkLoanBooksCommand command, CancellationToken cancellationToken)

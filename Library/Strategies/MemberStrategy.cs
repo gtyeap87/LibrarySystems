@@ -1,6 +1,6 @@
-﻿using Library.Dto.Request;
-using Library.Model;
-using Library.Service;
+﻿using Library.Dto.Requests;
+using Library.Models;
+using Library.Services;
 
 namespace Library.Strategies
 {

@@ -1,6 +1,6 @@
-using Library.Dto.Request;
-using Library.Repository;
-using Library.Specification;
+using Library.Dto.Requests;
+using Library.Repositories;
+using Library.Specifications;
 using MediatR;
 
 namespace Library.Features.Member.Commands
@@ -8,9 +8,9 @@ namespace Library.Features.Member.Commands
     public record DeleteMemberCommand(Guid MemberId, PaginationRequestDto Page) : IRequest;
 
     public class DeleteMemberCommandHandler(
-        ICommandRepo<Model.Member> memberCommandRepo,
-        IQueryRepo<Model.Member> memberQueryRepo,
-        IQueryRepo<Model.LoanBook> loanBookQueryRepo
+        ICommandRepo<Models.Member> memberCommandRepo,
+        IQueryRepo<Models.Member> memberQueryRepo,
+        IQueryRepo<Models.LoanBook> loanBookQueryRepo
             ) : IRequestHandler<DeleteMemberCommand>
     {
         public async Task Handle(DeleteMemberCommand command, CancellationToken cancellationToken)

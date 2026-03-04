@@ -1,4 +1,4 @@
-﻿using Library.Dto.Request;
+﻿using Library.Dto.Requests;
 
 namespace Library.Strategies
 {

@@ -25,7 +25,7 @@ namespace Library.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Library.Model.Book", b =>
+            modelBuilder.Entity("Library.Models.Book", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -61,7 +61,7 @@ namespace Library.Migrations
                     b.ToTable("Books");
                 });
 
-            modelBuilder.Entity("Library.Model.BookStock", b =>
+            modelBuilder.Entity("Library.Models.BookStock", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -91,7 +91,7 @@ namespace Library.Migrations
                     b.ToTable("BookStocks");
                 });
 
-            modelBuilder.Entity("Library.Model.Library", b =>
+            modelBuilder.Entity("Library.Models.Library", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -112,7 +112,7 @@ namespace Library.Migrations
                     b.ToTable("Libraries");
                 });
 
-            modelBuilder.Entity("Library.Model.LoanBook", b =>
+            modelBuilder.Entity("Library.Models.LoanBook", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -150,7 +150,7 @@ namespace Library.Migrations
                     b.ToTable("LoanBooks");
                 });
 
-            modelBuilder.Entity("Library.Model.Member", b =>
+            modelBuilder.Entity("Library.Models.Member", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -184,33 +184,33 @@ namespace Library.Migrations
                     b.ToTable("Members");
                 });
 
-            modelBuilder.Entity("Library.Model.Book", b =>
+            modelBuilder.Entity("Library.Models.Book", b =>
                 {
-                    b.HasOne("Library.Model.Library", null)
+                    b.HasOne("Library.Models.Library", null)
                         .WithMany("Books")
                         .HasForeignKey("LibraryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Library.Model.BookStock", b =>
+            modelBuilder.Entity("Library.Models.BookStock", b =>
                 {
-                    b.HasOne("Library.Model.Book", null)
+                    b.HasOne("Library.Models.Book", null)
                         .WithMany("BookStocks")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Library.Model.LoanBook", b =>
+            modelBuilder.Entity("Library.Models.LoanBook", b =>
                 {
-                    b.HasOne("Library.Model.Book", "Book")
+                    b.HasOne("Library.Models.Book", "Book")
                         .WithMany()
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Library.Model.Member", "Member")
+                    b.HasOne("Library.Models.Member", "Member")
                         .WithMany("LoanedBooks")
                         .HasForeignKey("MemberId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -221,28 +221,28 @@ namespace Library.Migrations
                     b.Navigation("Member");
                 });
 
-            modelBuilder.Entity("Library.Model.Member", b =>
+            modelBuilder.Entity("Library.Models.Member", b =>
                 {
-                    b.HasOne("Library.Model.Library", null)
+                    b.HasOne("Library.Models.Library", null)
                         .WithMany("Members")
                         .HasForeignKey("LibraryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Library.Model.Book", b =>
+            modelBuilder.Entity("Library.Models.Book", b =>
                 {
                     b.Navigation("BookStocks");
                 });
 
-            modelBuilder.Entity("Library.Model.Library", b =>
+            modelBuilder.Entity("Library.Models.Library", b =>
                 {
                     b.Navigation("Books");
 
                     b.Navigation("Members");
                 });
 
-            modelBuilder.Entity("Library.Model.Member", b =>
+            modelBuilder.Entity("Library.Models.Member", b =>
                 {
                     b.Navigation("LoanedBooks");
                 });

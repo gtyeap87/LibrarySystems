@@ -1,4 +1,4 @@
-using Library.Model;
+using Library.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -26,7 +26,7 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
               .IsRowVersion();
 
         // Relationship: Book → Library (many-to-one)
-        entity.HasOne<Model.Library>()
+        entity.HasOne<Models.Library>()
               .WithMany(l => l.Books)
               .HasForeignKey(e => e.LibraryId)
               .OnDelete(DeleteBehavior.Cascade);
