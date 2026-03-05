@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+:root {
+  --background: white;
+  --foreground: black;
+  /* Custom font family */
+  /* --font-calibri: "Calibri, Arial, Helvetica, sans-serif"; */
+  /* Global font */
+
+  /* Default font size */
+  --font-size-base: 14px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* Use your font variables */
+  /* --font-sans: var(--font-calibri);
+  --font-mono: "Courier New", monospace; */
+
+  /* Default font size */
+  --text-base: var(--font-size-base);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  /* font-family: Calibri, sans-serif Arial, Helvetica, sans-serif; */
+  /* font-family: var(--font-sans); */
+  font-size: var(--text-base);
+}
+
+/* Gradient background from white to darker white */
+/* .gradient-red {
+  background: linear-gradient(to bottom, #3a3939 0%, #960000 100%);
+} */
+.gradient-red {
+  background: linear-gradient(to bottom, #300000 0%, #960000 100%);
+}
