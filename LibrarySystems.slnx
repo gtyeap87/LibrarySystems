@@ -1,8 +1,10 @@
 <Solution>
-  <Folder Name="/Services/">
+  <Folder Name="/Services/" />
+  <Folder Name="/Services/Library/">
     <Project Path="Library.Api.Test/Library.Api.Test.csproj" Id="2055389e-fcc6-4a67-9b11-dabbb9fe2a75" />
     <Project Path="Library.Api/Library.Api.csproj" />
   </Folder>
+  <Folder Name="/Services/User/" />
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
   </Folder>
