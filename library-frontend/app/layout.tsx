@@ -44,7 +44,7 @@ export default function RootLayout({
 
           {/* Page Content */}
           <main className="overflow-auto p-6">
-            <div className="max-w-md mx-auto bg-white rounded-lg shadow-2xl p-6 min-h-full">
+            <div className="max-w-full mx-auto bg-white rounded-lg shadow-2xl p-6 min-h-full">
               <ThemeProvider theme={theme}>{children}</ThemeProvider>
             </div>
           </main>
