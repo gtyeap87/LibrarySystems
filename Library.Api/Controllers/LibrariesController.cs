@@ -28,24 +28,16 @@ namespace Library.Api.Controllers
         [RequirePermission(Permissions.ReadBooks)]
         public async Task<IActionResult> ReadBooksAsync([FromQuery] Genre? genre, string? name, int pageSize, int pageNumber)
         {
-            try
-            {
-                logger.LogInformation("GetBooksAsync");
-                var books = await service.ReadFullBooksAsync(genre, name, new PaginationRequestDto { PageSize = pageSize, PageNumber = pageNumber });
-                var bookDtos = books.Select(b => new BookDto
-                (
-                    b.Genre,
-                    b.Name,
-                    AvailableQuantity: b.BookStocks.Sum(bs => bs.Quantity)
-                ));
+            logger.LogInformation("GetBooksAsync");
+            var books = await service.ReadFullBooksAsync(genre, name, new PaginationRequestDto { PageSize = pageSize, PageNumber = pageNumber });
+            var bookDtos = books.Select(b => new BookDto
+            (
+                b.Genre,
+                b.Name,
+                AvailableQuantity: b.BookStocks.Sum(bs => bs.Quantity)
+            ));
 
-                return Ok(bookDtos);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error occurred while reading books");
-                return BadRequest();
-            }
+            return Ok(bookDtos);
         }
 
         [HttpPost("book")]
@@ -380,30 +372,22 @@ namespace Library.Api.Controllers
         [RequirePermission(Permissions.ReadLoanBooks)]
         public async Task<IActionResult> ReadLoanBooksAsync([FromQuery] string? bookName, string? memberName, int pageSize, int pageNumber)
         {
-            try
-            {
-                logger.LogInformation("GetLoanBooksAsync");
-                var loanBooks = await service.ReadLoanBooksAsync(bookName, memberName, new PaginationRequestDto { PageSize = pageSize, PageNumber = pageNumber });
-                var loanBookDtos = loanBooks.Select(lb => new LoanBookDto
-                (
-                    lb?.Book?.Name!,
-                    lb?.Member?.Name!,
-                    lb.LoanedDate,
-                    lb.ReturnedDate
-                ));
+            logger.LogInformation("GetLoanBooksAsync");
+            var loanBooks = await service.ReadLoanBooksAsync(bookName, memberName, new PaginationRequestDto { PageSize = pageSize, PageNumber = pageNumber });
+            var loanBookDtos = loanBooks.Select(lb => new LoanBookDto
+            (
+                lb?.Book?.Name!,
+                lb?.Member?.Name!,
+                lb.LoanedDate,
+                lb.ReturnedDate
+            ));
 
-                var loanBooksDetailsDto = new LoanBooksDetailsDto
-                (
-                    loanBookDtos,
-                    ReadLoanedOutBooksQuantity(loanBooks)
-                );
-                return Ok(loanBooksDetailsDto);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error occurred while read loan books");
-                return BadRequest();
-            }
+            var loanBooksDetailsDto = new LoanBooksDetailsDto
+            (
+                loanBookDtos,
+                ReadLoanedOutBooksQuantity(loanBooks)
+            );
+            return Ok(loanBooksDetailsDto);
         }
 
         private static int ReadLoanedOutBooksQuantity(IEnumerable<LoanBook> loanBooks)
@@ -490,27 +474,19 @@ namespace Library.Api.Controllers
         [ProducesResponseType(typeof(LibraryDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> ReadAllCountAsync()
         {
-            try
-            {
-                logger.LogInformation("GetAllCountAsync");
-                var members = await service.ReadMembersOnlyAsync(null, null, new PaginationRequestDto() { PageNumber = 1, PageSize = int.MaxValue });
-                var books = await service.ReadBooksAsync(null, null, new PaginationRequestDto() { PageNumber = 1, PageSize = int.MaxValue });
-                var loanBooks = await service.ReadLoanBooksAsync(null, null, new PaginationRequestDto() { PageNumber = 1, PageSize = int.MaxValue });
-                var totalLoanedBooks = loanBooks.Count(x => x.ReturnedDate == null);
+            logger.LogInformation("GetAllCountAsync");
+            var members = await service.ReadMembersOnlyAsync(null, null, new PaginationRequestDto() { PageNumber = 1, PageSize = int.MaxValue });
+            var books = await service.ReadBooksAsync(null, null, new PaginationRequestDto() { PageNumber = 1, PageSize = int.MaxValue });
+            var loanBooks = await service.ReadLoanBooksAsync(null, null, new PaginationRequestDto() { PageNumber = 1, PageSize = int.MaxValue });
+            var totalLoanedBooks = loanBooks.Count(x => x.ReturnedDate == null);
 
-                var libraryDto = new LibraryDto(
-                    NoOfMembers: members.Count(),
-                    TotalNumbersOfBooks: books.Sum(b => b.BookStocks.Sum(bs => bs.Quantity)),
-                    TotalLoanedBooks: totalLoanedBooks
-                );
+            var libraryDto = new LibraryDto(
+                NoOfMembers: members.Count(),
+                TotalNumbersOfBooks: books.Sum(b => b.BookStocks.Sum(bs => bs.Quantity)),
+                TotalLoanedBooks: totalLoanedBooks
+            );
 
-                return Ok(libraryDto);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error occurred while read all count");
-                return BadRequest();
-            }
+            return Ok(libraryDto);
         }
 
         [HttpGet("count")]
