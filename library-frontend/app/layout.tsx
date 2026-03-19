@@ -17,7 +17,7 @@ export default function RootLayout({
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <html lang="en">
+    <html lang="en" className="h-full bg-gray-100">
       <head>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -27,9 +27,9 @@ export default function RootLayout({
           crossOrigin=""
         />
       </head>
-      <body className="h-screen bg-gray-100">
+      <body className="h-full bg-gray-100">
         <div
-          className={`grid h-screen ${
+          className={`grid h-full ${
             collapsed ? "grid-cols-[80px_1fr]" : "grid-cols-[240px_1fr]"
           } grid-rows-[64px_1fr] bg-gray-100`}
         >
