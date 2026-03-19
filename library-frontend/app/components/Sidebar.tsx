@@ -1,23 +1,13 @@
 "use client";
 
-import AssignmentIcon from "@mui/icons-material/Assignment";
 import Copyright from "@mui/icons-material/Copyright";
-import DashboardIcon from "@mui/icons-material/Dashboard";
 import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
-import BookIcon from "@mui/icons-material/MenuBook";
-import PeopleIcon from "@mui/icons-material/People";
 
-import { SidebarItemType } from "../../interfaces/SidebarItem";
+import menu from "@/constant/sidebar";
+
 import SidebarItem from "./SidebarItem";
 
 export default function Sidebar({ collapsed }: { collapsed: boolean }) {
-  const menu: SidebarItemType[] = [
-    { name: "Home", icon: <DashboardIcon />, path: "/" },
-    { name: "Books", icon: <BookIcon />, path: "/books" },
-    { name: "Members", icon: <PeopleIcon />, path: "/members" },
-    { name: "Loaned out books", icon: <AssignmentIcon />, path: "/loanbooks" },
-  ];
-
   return (
     <div className="flex flex-col h-full gradient-red text-white">
       {/* Logo */}
