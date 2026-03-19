@@ -1,11 +1,13 @@
 import { Chip, emphasize, styled } from "@mui/material";
 
-interface BreadcrumbChipProps {
-  label: string;
-  onClick: () => void;
-  clickable?: boolean;
-  icon?: React.ReactElement;
-}
+import { BreadcrumbChipProps } from "@/interfaces/BreadcrumbChip";
+
+// interface BreadcrumbChipProps {
+//   label: string;
+//   onClick: () => void;
+//   clickable?: boolean;
+//   icon?: React.ReactElement;
+// }
 const BreadcrumbChip = (props: BreadcrumbChipProps) => {
   const StyledBreadcrumb = styled(Chip)(({ theme }) => {
     return {
