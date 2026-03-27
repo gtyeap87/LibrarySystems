@@ -1,15 +1,15 @@
 import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
 
+import RememberMeCheckbox from "@/app/components/RememberMeCheckbox";
 import AppButton from "@/components/AppButton";
 import AppInput from "@/components/AppInput";
+import AppLabel from "@/components/AppLabel";
 
 const LoginUserPage = () => {
   return (
     <>
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-        <div className="flex items-center justify-center h-full my-8">
+        <div className="flex items-center justify-center h-full my-4">
           <div className="flex items-center gap-3 text-center">
             <LocalLibraryIcon className="text-2xl" />
             <div className="leading-tight">
@@ -20,22 +20,15 @@ const LoginUserPage = () => {
             </div>
           </div>
         </div>
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action="#" method="POST" className="space-y-6">
+        <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-sm">
+          <form action="#" method="POST" className="space-y-3">
             <div>
-              <label htmlFor="email" className="block text-sm/6 font-medium">
-                Email address
-              </label>
-              <AppInput type="email" required={true} />
+              <AppLabel htmlFor="email" text="Email address" required />
+              <AppInput id="email" type="email" required={true} />
             </div>
             <div>
               <div className="flex items-center justify-between">
-                <label
-                  htmlFor="password"
-                  className="block text-sm/6 font-medium text-black"
-                >
-                  Password
-                </label>
+                <AppLabel htmlFor="password" text="Password" required={true} />
                 <div className="text-sm">
                   <a
                     href="#"
@@ -45,17 +38,10 @@ const LoginUserPage = () => {
                   </a>
                 </div>
               </div>
-              <AppInput type="password" required={true} />
+              <AppInput id="password" type="password" required={true} />
             </div>
             <div className="flex items-center justify-center h-full my-8">
-              <FormControlLabel
-                control={<Checkbox defaultChecked />}
-                label={
-                  <span className="block text-sm/6 font-medium text-gray-700">
-                    Remember me
-                  </span>
-                }
-              />
+              <RememberMeCheckbox checked={true} id={"remember-me"} />
             </div>
             <div>
               <AppButton text="Sign in" />

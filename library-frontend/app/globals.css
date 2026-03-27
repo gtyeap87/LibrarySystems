@@ -4,11 +4,11 @@
   --background: white;
   --foreground: black;
   /* Custom font family */
-  /* --font-calibri: "Calibri, Arial, Helvetica, sans-serif"; */
+  --font-calibri: "Calibri";
   /* Global font */
 
   /* Default font size */
-  --font-size-base: 14px;
+  --font-size-base: 0.875rem; /* 14px */
 }
 
 @theme inline {
@@ -34,7 +34,8 @@ body {
   background: var(--background);
   color: var(--foreground);
   /* font-family: Calibri, sans-serif Arial, Helvetica, sans-serif; */
-  /* font-family: var(--font-sans); */
+  /* font-family: "ui-sans-serif, system-ui"; */
+  font-family: var(--font-calibri);
   font-size: var(--text-base);
 }
 

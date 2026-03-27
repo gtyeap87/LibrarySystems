@@ -10,8 +10,8 @@ const AppButton = (props: AppButtonProps) => {
       color: "#fff",
       borderRadius: "0.375rem", // rounded-md
       padding: "6px 12px", // px-3 py-1.5
-      fontSize: "0.875rem", // text-sm
-      fontWeight: 600,
+      // fontSize: "0.875rem", // text-sm
+      // fontWeight: 600,
       lineHeight: "1.5rem", // leading-6
       textTransform: "none", // remove uppercase
       minHeight: "unset",

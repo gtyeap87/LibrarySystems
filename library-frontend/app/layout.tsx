@@ -41,11 +41,20 @@ export default function RootLayout({
           <div>
             <Header toggle={() => setCollapsed(!collapsed)} />
           </div>
-
           {/* Page Content */}
-          <main className="overflow-auto p-6">
+          {/* <main className="overflow-auto p-6">
             <div className="max-w-full mx-auto bg-white rounded-lg shadow-2xl p-6 min-h-full">
               <ThemeProvider theme={theme}>{children}</ThemeProvider>
+            </div>
+          </main> */}
+
+          {/* 2. Main Content (Fills the remaining screen space) */}
+          <main className="flex-1 flex flex-col p-4 md:p-6 bg-gray-50 overflow-hidden">
+            {/* 3. The Card Container */}
+            <div className="flex-1 w-full max-w-7xl mx-auto bg-white rounded-lg shadow-2xl p-6 flex flex-col overflow-hidden">
+              <ThemeProvider theme={theme}>
+                <div className="flex-1 overflow-auto">{children}</div>
+              </ThemeProvider>
             </div>
           </main>
         </div>

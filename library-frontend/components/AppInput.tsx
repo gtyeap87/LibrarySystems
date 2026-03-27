@@ -8,16 +8,22 @@ const AppInput = (props: AppInputProps) => {
     border: "1px solid rgba(0,0,0,0.1)",
     borderRadius: "0.375rem",
     padding: "3px 6px",
-    fontSize: "0.875rem", // 14px
+    fontSize: "var(--font-size-base)",
+    fontFamily: "var(--font-calibri)",
     lineHeight: "1.5rem", // 24px
-    fontFamily: "ui-sans-serif, system-ui",
     "&:focus-within": {
       border: "2px solid #960000",
     },
   })) as typeof InputBase;
 
   return (
-    <StyledInputBase fullWidth type={props.type} required={props.required} />
+    <StyledInputBase
+      fullWidth
+      type={props.type}
+      required={props.required}
+      id={props.id}
+      autoComplete="off"
+    />
   );
 };
 
